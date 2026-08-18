@@ -163,13 +163,13 @@ export class PaperPdfView extends ItemView {
 
     // A span, not a heading: heading children are invalid inside role="toolbar",
     // and Obsidian asks plugins not to style raw <h1>/<h2> themselves.
-    toolbar.createEl("span", {
+    toolbar.createSpan({
       cls: "paper-pdf-title",
       text: pdfTabTitle(this.paperTitle),
       attr: { title: pdfTabTitle(this.paperTitle) },
     });
 
-    toolbar.createEl("span", {
+    toolbar.createSpan({
       cls: "paper-pdf-page",
       text: pdfPageLabel(
         options?.pageCurrent ?? (this.pageCount ? this.currentPage : null),

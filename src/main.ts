@@ -375,7 +375,7 @@ export default class PaperPlugin extends Plugin {
         title: title || known?.title || PLUGIN_COPY.pickerUntitled,
       },
     });
-    this.app.workspace.revealLeaf(leaf);
+    await this.app.workspace.revealLeaf(leaf);
   }
 
   async openPaperFolder(): Promise<void> {
@@ -426,9 +426,9 @@ export default class PaperPlugin extends Plugin {
 
   private showFirstRunNotice(): void {
     const notice = new Notice("", 0);
-    notice.noticeEl.empty();
-    notice.noticeEl.createSpan({ text: PLUGIN_COPY.noticeFirstRun });
-    const actions = notice.noticeEl.createDiv({ cls: "paper-notice-actions" });
+    notice.messageEl.empty();
+    notice.messageEl.createSpan({ text: PLUGIN_COPY.noticeFirstRun });
+    const actions = notice.messageEl.createDiv({ cls: "paper-notice-actions" });
     const connect = actions.createEl("button", {
       text: PLUGIN_COPY.connect,
       attr: { type: "button" },

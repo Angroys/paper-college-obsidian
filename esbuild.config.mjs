@@ -1,9 +1,8 @@
 import esbuild from "esbuild";
 import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
+import { builtinModules, createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import builtins from "builtin-modules";
 
 const require = createRequire(import.meta.url);
 const prod = process.argv[2] === "production";
@@ -67,7 +66,8 @@ const context = await esbuild.context({
     "@lezer/common",
     "@lezer/highlight",
     "@lezer/lr",
-    ...builtins,
+    ...builtinModules,
+    ...builtinModules.map((name) => `node:${name}`),
   ],
   plugins: [pdfWorkerSourcePlugin],
   format: "cjs",

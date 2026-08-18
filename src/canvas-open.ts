@@ -102,7 +102,7 @@ function nodeFromDocument(
       node &&
         typeof node === "object" &&
         "id" in node &&
-        (node as { id: unknown }).id === nodeId,
+        node.id === nodeId,
     );
   });
 }

@@ -46,13 +46,22 @@ export async function fetchSyncPayload(
   return { ok: true, payload };
 }
 
+// Ids arrive from JSON as unknown, so anything that isn't already a primitive
+// would stringify to "[object Object]" and pass the non-empty id filters below.
+function idOf(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  return typeof value === "number" ? String(value) : "";
+}
+
 export function normalizeSyncPayload(json: unknown): SyncPayload {
   const record = json && typeof json === "object" ? (json as Record<string, unknown>) : {};
   const papers = Array.isArray(record.papers)
     ? record.papers
         .filter((p): p is Record<string, unknown> => Boolean(p) && typeof p === "object")
         .map((p) => ({
-          id: String(p.id ?? ""),
+          id: idOf(p.id),
           title: typeof p.title === "string" ? p.title : "",
         }))
         .filter((p) => p.id.length > 0)
@@ -61,12 +70,12 @@ export function normalizeSyncPayload(json: unknown): SyncPayload {
     ? record.glossary_terms
         .filter((t): t is Record<string, unknown> => Boolean(t) && typeof t === "object")
         .map((t) => ({
-          id: String(t.id ?? ""),
+          id: idOf(t.id),
           term: typeof t.term === "string" ? t.term : "",
           explanation: typeof t.explanation === "string" ? t.explanation : "",
           tags: Array.isArray(t.tags) ? t.tags.map((tag) => String(tag)) : [],
           rating: typeof t.rating === "number" ? t.rating : null,
-          paper_id: String(t.paper_id ?? ""),
+          paper_id: idOf(t.paper_id),
           created_at: typeof t.created_at === "string" ? t.created_at : "",
           normalized_term:
             typeof t.normalized_term === "string" ? t.normalized_term : "",

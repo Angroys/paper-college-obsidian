@@ -22241,29 +22241,29 @@ async function fetchSyncPayload(fetchFn, baseUrl, token) {
   const payload = normalizeSyncPayload(json);
   return { ok: true, payload };
 }
+function idOf(value) {
+  if (typeof value === "string") {
+    return value;
+  }
+  return typeof value === "number" ? String(value) : "";
+}
 function normalizeSyncPayload(json) {
   const record = json && typeof json === "object" ? json : {};
-  const papers = Array.isArray(record.papers) ? record.papers.filter((p) => Boolean(p) && typeof p === "object").map((p) => {
-    var _a2;
-    return {
-      id: String((_a2 = p.id) != null ? _a2 : ""),
-      title: typeof p.title === "string" ? p.title : ""
-    };
-  }).filter((p) => p.id.length > 0) : [];
-  const glossary_terms = Array.isArray(record.glossary_terms) ? record.glossary_terms.filter((t) => Boolean(t) && typeof t === "object").map((t) => {
-    var _a2, _b;
-    return {
-      id: String((_a2 = t.id) != null ? _a2 : ""),
-      term: typeof t.term === "string" ? t.term : "",
-      explanation: typeof t.explanation === "string" ? t.explanation : "",
-      tags: Array.isArray(t.tags) ? t.tags.map((tag) => String(tag)) : [],
-      rating: typeof t.rating === "number" ? t.rating : null,
-      paper_id: String((_b = t.paper_id) != null ? _b : ""),
-      created_at: typeof t.created_at === "string" ? t.created_at : "",
-      normalized_term: typeof t.normalized_term === "string" ? t.normalized_term : "",
-      highlight_id: typeof t.highlight_id === "string" ? t.highlight_id : null
-    };
-  }).filter((t) => t.id.length > 0) : [];
+  const papers = Array.isArray(record.papers) ? record.papers.filter((p) => Boolean(p) && typeof p === "object").map((p) => ({
+    id: idOf(p.id),
+    title: typeof p.title === "string" ? p.title : ""
+  })).filter((p) => p.id.length > 0) : [];
+  const glossary_terms = Array.isArray(record.glossary_terms) ? record.glossary_terms.filter((t) => Boolean(t) && typeof t === "object").map((t) => ({
+    id: idOf(t.id),
+    term: typeof t.term === "string" ? t.term : "",
+    explanation: typeof t.explanation === "string" ? t.explanation : "",
+    tags: Array.isArray(t.tags) ? t.tags.map((tag) => String(tag)) : [],
+    rating: typeof t.rating === "number" ? t.rating : null,
+    paper_id: idOf(t.paper_id),
+    created_at: typeof t.created_at === "string" ? t.created_at : "",
+    normalized_term: typeof t.normalized_term === "string" ? t.normalized_term : "",
+    highlight_id: typeof t.highlight_id === "string" ? t.highlight_id : null
+  })).filter((t) => t.id.length > 0) : [];
   const mindmap = isJsonCanvas(record.mindmap) ? record.mindmap : emptyCanvasDocument();
   return { papers, glossary_terms, mindmap };
 }
@@ -22878,12 +22878,12 @@ var PaperPdfView = class extends import_obsidian4.ItemView {
       attr: { type: "button" }
     });
     closeBtn.addEventListener("click", () => this.leaf.detach());
-    toolbar.createEl("span", {
+    toolbar.createSpan({
       cls: "paper-pdf-title",
       text: pdfTabTitle(this.paperTitle),
       attr: { title: pdfTabTitle(this.paperTitle) }
     });
-    toolbar.createEl("span", {
+    toolbar.createSpan({
       cls: "paper-pdf-page",
       text: pdfPageLabel(
         (_a2 = options == null ? void 0 : options.pageCurrent) != null ? _a2 : this.pageCount ? this.currentPage : null,
@@ -23973,7 +23973,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
         title: title || (known == null ? void 0 : known.title) || PLUGIN_COPY.pickerUntitled
       }
     });
-    this.app.workspace.revealLeaf(leaf);
+    await this.app.workspace.revealLeaf(leaf);
   }
   async openPaperFolder() {
     const folderPath = (0, import_obsidian7.normalizePath)(this.settings.folder);
@@ -24016,9 +24016,9 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
   }
   showFirstRunNotice() {
     const notice = new import_obsidian7.Notice("", 0);
-    notice.noticeEl.empty();
-    notice.noticeEl.createSpan({ text: PLUGIN_COPY.noticeFirstRun });
-    const actions = notice.noticeEl.createDiv({ cls: "paper-notice-actions" });
+    notice.messageEl.empty();
+    notice.messageEl.createSpan({ text: PLUGIN_COPY.noticeFirstRun });
+    const actions = notice.messageEl.createDiv({ cls: "paper-notice-actions" });
     const connect = actions.createEl("button", {
       text: PLUGIN_COPY.connect,
       attr: { type: "button" }

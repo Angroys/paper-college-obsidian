@@ -2,6 +2,7 @@ import { PLUGIN_COPY } from "./copy";
 import type { SyncGlossaryTerm, SyncPaper } from "./types";
 import { openPdfProtocolUrl } from "./urls";
 
+// eslint-disable-next-line no-control-regex -- Windows rejects control characters in filenames, and paper titles reach us straight from PDF metadata.
 const WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001f]/g;
 
 export function sanitizeFilename(raw: string): string {
