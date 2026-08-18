@@ -1,0 +1,247 @@
+/**
+ * Paper PDF ItemView, settings notes, and modal bodies only. Do not restyle
+ * Obsidian Settings, ribbon, palette, status bar, Notices, or Canvas chrome.
+ *
+ * Colors come from Obsidian's own CSS variables so themes and snippets keep
+ * working. The brand accent has no Obsidian equivalent, so it is exposed as
+ * plugin-owned `--paper-accent-*` properties (tokens from
+ * design/obsidian-visual-spec.md §6 and design/tokens/obsidian-sync.json).
+ * Never redefine core variables such as `--accent` here: everything Obsidian
+ * renders inside this view would inherit them.
+ */
+
+.paper-pdf-view {
+  --paper-accent: #4f46e5;
+  --paper-accent-hover: #4338ca;
+  --paper-accent-soft: #eef2ff;
+  --paper-accent-ink: #312e81;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-family: var(--font-interface);
+}
+
+.theme-dark .paper-pdf-view {
+  --paper-accent: #818cf8;
+  --paper-accent-hover: #a5b4fc;
+  --paper-accent-soft: #1e1b4b;
+  --paper-accent-ink: #c7d2fe;
+}
+
+.paper-pdf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  width: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.paper-pdf-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paper-pdf-page {
+  flex: 0 0 auto;
+  font-size: var(--font-ui-smaller);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.paper-pdf-btn {
+  height: 32px;
+  padding: 4px 8px;
+  border-radius: var(--radius-s);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--font-ui-medium);
+}
+
+.paper-pdf-btn:hover:not(:disabled) {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.paper-pdf-btn:active:not(:disabled) {
+  background: var(--background-modifier-active-hover);
+}
+
+.paper-pdf-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.paper-pdf-btn:focus-visible,
+.paper-pdf-open-in-paper:focus-visible {
+  outline: 2px solid var(--paper-accent);
+  outline-offset: 2px;
+}
+
+.paper-pdf-open-in-paper {
+  height: 32px;
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--paper-accent);
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+}
+
+.paper-pdf-open-in-paper:hover:not(:disabled) {
+  color: var(--paper-accent-hover);
+  text-decoration: underline;
+}
+
+.paper-pdf-open-in-paper:disabled {
+  color: var(--text-faint);
+  text-decoration: none;
+  cursor: default;
+}
+
+.paper-pdf-banner {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--font-ui-medium);
+}
+
+.paper-pdf-banner-info {
+  background: var(--paper-accent-soft);
+  color: var(--paper-accent-ink);
+}
+
+.paper-pdf-banner-error {
+  background: var(--background-modifier-error);
+  color: var(--text-error);
+}
+
+.paper-pdf-btn-retry {
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.paper-pdf-btn-reconnect {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: 0;
+}
+
+.paper-pdf-btn-reconnect:hover:not(:disabled) {
+  background: var(--interactive-accent-hover);
+  color: var(--text-on-accent);
+}
+
+.paper-pdf-document {
+  flex: 1 1 auto;
+  overflow: auto;
+  background: var(--background-secondary);
+}
+
+.paper-pdf-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.paper-pdf-page-canvas {
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+  display: block;
+  max-width: 100%;
+}
+
+.paper-pdf-message {
+  margin: 24px auto;
+  max-width: 28rem;
+  text-align: center;
+  font-size: var(--font-ui-medium);
+  color: var(--text-muted);
+}
+
+.paper-pdf-error-surface {
+  border: 1px solid var(--background-modifier-border-focus);
+  background: var(--background-modifier-error);
+  color: var(--text-error);
+  border-radius: var(--radius-m);
+  padding: 16px;
+}
+
+.paper-pdf-progress {
+  height: 4px;
+  width: 12rem;
+  margin: 12px auto 0;
+  border-radius: var(--radius-l);
+  background: var(--paper-accent);
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .paper-pdf-progress {
+    opacity: 1;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--paper-accent) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: paper-pdf-progress 1.2s linear infinite;
+  }
+}
+
+@keyframes paper-pdf-progress {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Settings tab and modal copy that is not part of a Setting row. */
+
+.paper-setting-note {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.paper-setting-error {
+  color: var(--text-error);
+}
+
+.paper-modal-body {
+  color: var(--text-normal);
+}
+
+.paper-confirm-buttons .setting-item {
+  border-top: 0;
+  padding-bottom: 0;
+}
+
+.paper-notice-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}

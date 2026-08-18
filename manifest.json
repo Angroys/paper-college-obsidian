@@ -1,0 +1,10 @@
+{
+	"id": "paper-college",
+	"name": "Paper College",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Sync glossary notes and your mindmap from paper.college into your vault, and open papers in a temporary PDF view without saving any files.",
+	"author": "Angroys",
+	"authorUrl": "https://github.com/Angroys",
+	"isDesktopOnly": true
+}
