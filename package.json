@@ -1,6 +1,6 @@
 {
   "name": "paper-college-obsidian",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Obsidian plugin for paper.college — one-way glossary/mindmap sync and in-memory PDF view.",
   "private": true,
   "license": "MIT",
