@@ -15,16 +15,19 @@ export type SyncGlossaryTerm = {
   highlight_id: string | null;
 };
 
-export type SyncMindmap = {
-  nodes: unknown[];
-  edges: unknown[];
-  paperCollege?: unknown;
+export type SyncCanvas = {
+  path: string;
+  document: {
+    nodes: unknown[];
+    edges: unknown[];
+    paperCollege?: unknown;
+  };
 };
 
 export type SyncPayload = {
   papers: SyncPaper[];
   glossary_terms: SyncGlossaryTerm[];
-  mindmap: SyncMindmap;
+  canvases: SyncCanvas[];
 };
 
 export type PaperPluginSettings = {

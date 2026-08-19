@@ -27,8 +27,8 @@ export function findPdfHazards(payload: unknown): PdfHazard[] {
   if (scanValue(record.papers, "papers").length > 0) {
     hazards.push({ part: "papers", reason: "papers payload contains PDF/binary" });
   }
-  if (scanValue(record.mindmap, "canvas").length > 0) {
-    hazards.push({ part: "canvas", reason: "mindmap payload contains PDF/binary" });
+  if (scanValue(record.canvases, "canvas").length > 0) {
+    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
   }
 
   return hazards;
@@ -121,7 +121,7 @@ export function emptyCanvasDocument(): {
   nodes: unknown[];
   edges: unknown[];
   paperCollege: {
-    kind: "mindmap";
+    kind: "projects";
     schemaVersion: 1;
     generatedAt: string;
     source: "paper.college";
@@ -131,7 +131,7 @@ export function emptyCanvasDocument(): {
     nodes: [],
     edges: [],
     paperCollege: {
-      kind: "mindmap",
+      kind: "projects",
       schemaVersion: 1,
       generatedAt: new Date(0).toISOString(),
       source: "paper.college",

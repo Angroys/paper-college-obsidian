@@ -1,6 +1,6 @@
 import type { SignedUrlResponse, SyncPayload } from "./types";
 import { bearerHeaders, signedFileApiUrl, syncApiUrl } from "./urls";
-import { isJsonCanvas, emptyCanvasDocument } from "./payload-guard";
+import { isJsonCanvas } from "./payload-guard";
 
 export type SyncFetchResult =
   | { ok: true; payload: SyncPayload }
@@ -84,11 +84,21 @@ export function normalizeSyncPayload(json: unknown): SyncPayload {
         }))
         .filter((t) => t.id.length > 0)
     : [];
-  const mindmap = isJsonCanvas(record.mindmap)
-    ? (record.mindmap as SyncPayload["mindmap"])
-    : emptyCanvasDocument();
+  const rawCanvases = Array.isArray(record.canvases) ? record.canvases : [];
+  const canvases: SyncPayload["canvases"] = rawCanvases
+    .filter(
+      (c): c is { path: string; document: unknown } =>
+        !!c &&
+        typeof c === "object" &&
+        typeof (c as Record<string, unknown>).path === "string" &&
+        isJsonCanvas((c as Record<string, unknown>).document),
+    )
+    .map((c) => ({
+      path: c.path,
+      document: c.document as SyncPayload["canvases"][number]["document"],
+    }));
 
-  return { papers, glossary_terms, mindmap };
+  return { papers, glossary_terms, canvases };
 }
 
 export async function fetchSignedUrl(

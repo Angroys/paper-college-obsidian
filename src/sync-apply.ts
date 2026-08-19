@@ -18,6 +18,7 @@ import type {
   ApplyPlan,
   ApplyResult,
   PlannedWrite,
+  SyncCanvas,
   SyncGlossaryTerm,
   SyncPaper,
   SyncPayload,
@@ -28,7 +29,8 @@ export { joinVaultPath };
 
 export const GLOSSARY_DIR = "Glossary";
 export const PAPERS_DIR = "Papers";
-export const CANVAS_FILENAME = "Mindmap.canvas";
+export const PROJECTS_DIR = "Projects";
+export const LEGACY_CANVAS_FILENAME = "Mindmap.canvas";
 export const EMPTY_INDEX_FILENAME = "Glossary.md";
 
 export interface VaultWriter {
@@ -101,18 +103,31 @@ export function buildApplyPlan(
   }
 
   if (!canvasAborted) {
-    const mindmap = isJsonCanvas(payload.mindmap)
-      ? payload.mindmap
-      : emptyCanvasDocument();
-    const canvasPath = joinVaultPath(folder, CANVAS_FILENAME);
-    if (isAllowedVaultPath(canvasPath) && isJsonCanvas(mindmap)) {
-      writes.push({
-        relativePath: canvasPath,
-        content: canvasFileContents(mindmap),
-        kind: "canvas",
-      });
+    const canvases: SyncCanvas[] = Array.isArray(payload.canvases) ? payload.canvases : [];
+    if (canvases.length === 0) {
+      const fallback = emptyCanvasDocument();
+      const canvasPath = joinVaultPath(folder, "Projects.canvas");
+      if (isAllowedVaultPath(canvasPath)) {
+        writes.push({
+          relativePath: canvasPath,
+          content: canvasFileContents(fallback),
+          kind: "canvas",
+        });
+      }
     } else {
-      abortReasons.push("canvas is not JSON Canvas");
+      for (const entry of canvases) {
+        const canvasPath = joinVaultPath(folder, entry.path);
+        if (!isAllowedVaultPath(canvasPath) || !isJsonCanvas(entry.document)) {
+          abortReasons.push(`canvas ${entry.path} is not valid`);
+          continue;
+        }
+        const doc = rewriteFileNodePaths(entry.document, folder);
+        writes.push({
+          relativePath: canvasPath,
+          content: canvasFileContents(doc),
+          kind: "canvas",
+        });
+      }
     }
   }
 
@@ -127,6 +142,19 @@ export function buildApplyPlan(
     paperCount: papers.length,
     emptyGlossary,
   };
+}
+
+function rewriteFileNodePaths(
+  document: SyncCanvas["document"],
+  folder: string,
+): SyncCanvas["document"] {
+  const nodes = (document.nodes as Array<Record<string, unknown>>).map((node) => {
+    if (node.type === "file" && typeof node.file === "string") {
+      return { ...node, file: `${folder}/${node.file}` };
+    }
+    return node;
+  });
+  return { ...document, nodes };
 }
 
 function planGlossaryWrite(
@@ -193,6 +221,12 @@ export async function applyPlan(
 
   try {
     await ensureFolderTree(vault, plan.folder);
+    // Prune the legacy Mindmap.canvas if it was plugin-owned
+    const legacyPath = joinVaultPath(plan.folder, LEGACY_CANVAS_FILENAME);
+    const legacyContent = await vault.read(legacyPath);
+    if (legacyContent !== null && hasPaperSyncMarker(legacyContent)) {
+      await vault.writeAtomic(legacyPath, "");
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : PLUGIN_COPY.folderError;
     result.folderError = message;
@@ -255,7 +289,7 @@ async function ensureFolderTree(vault: VaultWriter, folder: string): Promise<voi
   if (!(await vault.isFolder(folder))) {
     await vault.createFolder(folder);
   }
-  for (const child of [GLOSSARY_DIR, PAPERS_DIR]) {
+  for (const child of [GLOSSARY_DIR, PAPERS_DIR, PROJECTS_DIR]) {
     const path = joinVaultPath(folder, child);
     if (await vault.isFile(path)) {
       throw new Error(PLUGIN_COPY.folderError);

@@ -22,7 +22,7 @@ import { releasePdfWorker } from "./pdf-worker";
 import { EmptyPaperPickerModal, PaperPickerModal } from "./picker";
 import { obsidianFetch } from "./request";
 import { PaperSettingTab } from "./settings-tab";
-import { applyPlan, buildApplyPlan, CANVAS_FILENAME, joinVaultPath } from "./sync-apply";
+import { applyPlan, buildApplyPlan, joinVaultPath } from "./sync-apply";
 import {
   DEFAULT_SETTINGS,
   type PaperPluginSettings,
@@ -383,7 +383,7 @@ export default class PaperPlugin extends Plugin {
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
     if (folder instanceof TFolder) {
       const canvas = this.app.vault.getAbstractFileByPath(
-        normalizePath(joinVaultPath(folderPath, CANVAS_FILENAME)),
+        normalizePath(joinVaultPath(folderPath, "Projects.canvas")),
       );
       if (canvas instanceof TFile) {
         await this.app.workspace.getLeaf().openFile(canvas);

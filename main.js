@@ -22123,8 +22123,8 @@ function findPdfHazards(payload) {
   if (scanValue(record.papers, "papers").length > 0) {
     hazards.push({ part: "papers", reason: "papers payload contains PDF/binary" });
   }
-  if (scanValue(record.mindmap, "canvas").length > 0) {
-    hazards.push({ part: "canvas", reason: "mindmap payload contains PDF/binary" });
+  if (scanValue(record.canvases, "canvas").length > 0) {
+    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
   }
   return hazards;
 }
@@ -22204,7 +22204,7 @@ function emptyCanvasDocument() {
     nodes: [],
     edges: [],
     paperCollege: {
-      kind: "mindmap",
+      kind: "projects",
       schemaVersion: 1,
       generatedAt: (/* @__PURE__ */ new Date(0)).toISOString(),
       source: "paper.college"
@@ -22264,8 +22264,14 @@ function normalizeSyncPayload(json) {
     normalized_term: typeof t.normalized_term === "string" ? t.normalized_term : "",
     highlight_id: typeof t.highlight_id === "string" ? t.highlight_id : null
   })).filter((t) => t.id.length > 0) : [];
-  const mindmap = isJsonCanvas(record.mindmap) ? record.mindmap : emptyCanvasDocument();
-  return { papers, glossary_terms, mindmap };
+  const rawCanvases = Array.isArray(record.canvases) ? record.canvases : [];
+  const canvases = rawCanvases.filter(
+    (c) => !!c && typeof c === "object" && typeof c.path === "string" && isJsonCanvas(c.document)
+  ).map((c) => ({
+    path: c.path,
+    document: c.document
+  }));
+  return { papers, glossary_terms, canvases };
 }
 async function fetchSignedUrl(fetchFn, baseUrl, token, paperId, nowMs = Date.now()) {
   let response;
@@ -23337,7 +23343,8 @@ function joinVaultPath(...parts) {
 // src/sync-apply.ts
 var GLOSSARY_DIR = "Glossary";
 var PAPERS_DIR = "Papers";
-var CANVAS_FILENAME = "Mindmap.canvas";
+var PROJECTS_DIR = "Projects";
+var LEGACY_CANVAS_FILENAME = "Mindmap.canvas";
 var EMPTY_INDEX_FILENAME = "Glossary.md";
 function normalizeFolderName(raw) {
   const trimmed = raw.trim().replace(/^\/+|\/+$/g, "");
@@ -23391,16 +23398,31 @@ function buildApplyPlan(payload, folderRaw) {
     }
   }
   if (!canvasAborted) {
-    const mindmap = isJsonCanvas(payload.mindmap) ? payload.mindmap : emptyCanvasDocument();
-    const canvasPath = joinVaultPath(folder, CANVAS_FILENAME);
-    if (isAllowedVaultPath(canvasPath) && isJsonCanvas(mindmap)) {
-      writes.push({
-        relativePath: canvasPath,
-        content: canvasFileContents(mindmap),
-        kind: "canvas"
-      });
+    const canvases = Array.isArray(payload.canvases) ? payload.canvases : [];
+    if (canvases.length === 0) {
+      const fallback = emptyCanvasDocument();
+      const canvasPath = joinVaultPath(folder, "Projects.canvas");
+      if (isAllowedVaultPath(canvasPath)) {
+        writes.push({
+          relativePath: canvasPath,
+          content: canvasFileContents(fallback),
+          kind: "canvas"
+        });
+      }
     } else {
-      abortReasons.push("canvas is not JSON Canvas");
+      for (const entry of canvases) {
+        const canvasPath = joinVaultPath(folder, entry.path);
+        if (!isAllowedVaultPath(canvasPath) || !isJsonCanvas(entry.document)) {
+          abortReasons.push(`canvas ${entry.path} is not valid`);
+          continue;
+        }
+        const doc = rewriteFileNodePaths(entry.document, folder);
+        writes.push({
+          relativePath: canvasPath,
+          content: canvasFileContents(doc),
+          kind: "canvas"
+        });
+      }
     }
   }
   return {
@@ -23414,6 +23436,15 @@ function buildApplyPlan(payload, folderRaw) {
     paperCount: papers.length,
     emptyGlossary
   };
+}
+function rewriteFileNodePaths(document2, folder) {
+  const nodes = document2.nodes.map((node) => {
+    if (node.type === "file" && typeof node.file === "string") {
+      return { ...node, file: `${folder}/${node.file}` };
+    }
+    return node;
+  });
+  return { ...document2, nodes };
 }
 function planGlossaryWrite(folder, term, used) {
   const basename = uniqueBasename(term.term, term.id, used);
@@ -23463,6 +23494,11 @@ async function applyPlan(vault, plan) {
   };
   try {
     await ensureFolderTree(vault, plan.folder);
+    const legacyPath = joinVaultPath(plan.folder, LEGACY_CANVAS_FILENAME);
+    const legacyContent = await vault.read(legacyPath);
+    if (legacyContent !== null && hasPaperSyncMarker(legacyContent)) {
+      await vault.writeAtomic(legacyPath, "");
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : PLUGIN_COPY.folderError;
     result.folderError = message;
@@ -23520,7 +23556,7 @@ async function ensureFolderTree(vault, folder) {
   if (!await vault.isFolder(folder)) {
     await vault.createFolder(folder);
   }
-  for (const child of [GLOSSARY_DIR, PAPERS_DIR]) {
+  for (const child of [GLOSSARY_DIR, PAPERS_DIR, PROJECTS_DIR]) {
     const path = joinVaultPath(folder, child);
     if (await vault.isFile(path)) {
       throw new Error(PLUGIN_COPY.folderError);
@@ -23980,7 +24016,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
     if (folder instanceof import_obsidian7.TFolder) {
       const canvas = this.app.vault.getAbstractFileByPath(
-        (0, import_obsidian7.normalizePath)(joinVaultPath(folderPath, CANVAS_FILENAME))
+        (0, import_obsidian7.normalizePath)(joinVaultPath(folderPath, "Projects.canvas"))
       );
       if (canvas instanceof import_obsidian7.TFile) {
         await this.app.workspace.getLeaf().openFile(canvas);
