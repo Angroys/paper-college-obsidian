@@ -38,6 +38,20 @@ export function libraryUrl(baseUrl: string, paperId: string): string {
   return `${normalizeBaseUrl(baseUrl)}/library/${paperId}`;
 }
 
+/**
+ * Web-reader link for one page of a paper. The reader has no page deep link
+ * yet, so `#page=N` is a forward-compatible hint: today it opens the paper
+ * at the top; the plugin's `/library/` click interception skips these links
+ * so they open on the web instead of in the in-vault PDF view.
+ */
+export function readerPageUrl(baseUrl: string, paperId: string, page: number): string {
+  return `${libraryUrl(baseUrl, paperId)}#page=${page}`;
+}
+
+export function figureImageApiUrl(baseUrl: string, figureId: string): string {
+  return `${normalizeBaseUrl(baseUrl)}/api/obsidian/figures/${encodeURIComponent(figureId)}`;
+}
+
 export function pairingExchangeUrl(baseUrl: string): string {
   return `${normalizeBaseUrl(baseUrl)}/api/obsidian/pairing/exchange`;
 }

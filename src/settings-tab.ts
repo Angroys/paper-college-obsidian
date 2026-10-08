@@ -1,15 +1,19 @@
 import { PluginSettingTab, Setting, type App } from "obsidian";
+import { CanvasLayoutSection } from "./canvas-settings";
 import { connectedAs, PLUGIN_COPY } from "./copy";
 import type PaperPlugin from "./main";
 import { normalizeBaseUrl } from "./urls";
 import { normalizeFolderName } from "./sync-apply";
 
 export class PaperSettingTab extends PluginSettingTab {
+  private readonly canvasSection: CanvasLayoutSection;
+
   constructor(
     app: App,
     private readonly plugin: PaperPlugin,
   ) {
     super(app, plugin);
+    this.canvasSection = new CanvasLayoutSection(plugin);
   }
 
   display(): void {
@@ -130,6 +134,8 @@ export class PaperSettingTab extends PluginSettingTab {
       cls: "paper-setting-note",
       text: PLUGIN_COPY.overwriteDisclosure,
     });
+
+    this.canvasSection.render(containerEl.createDiv());
 
     new Setting(containerEl).setName(PLUGIN_COPY.pdfTitle).setHeading();
     containerEl.createEl("p", {

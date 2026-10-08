@@ -6,6 +6,11 @@
 const PDF_MAGIC = "%PDF";
 const PDF_PATH = /\.pdf(?:$|[?#])/i;
 const SIGNED_STORAGE = /\/storage\/v1\/object\/sign\//i;
+/** Any Supabase storage object URL/path (public, signed or authenticated). */
+const STORAGE_OBJECT = /\/storage\/v1\/object\//i;
+/** A field this long is a blob, not prose (highlights and terms are short). */
+export const MAX_CANVAS_FIELD_CHARS = 100_000;
+const BINARY_KEY = /pdf|binary|bytes|file_b64|pdf_bytes/i;
 
 export type PayloadPart = "glossary" | "papers" | "canvas";
 
@@ -27,11 +32,53 @@ export function findPdfHazards(payload: unknown): PdfHazard[] {
   if (scanValue(record.papers, "papers").length > 0) {
     hazards.push({ part: "papers", reason: "papers payload contains PDF/binary" });
   }
-  if (scanValue(record.canvases, "canvas").length > 0) {
-    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
+  // Canvases are generated locally from every array below (`canvases` itself
+  // is legacy and ignored). Their text is prose — papers routinely mention
+  // "appendix.pdf" or "%PDF" — so only real hazards block them: a field that
+  // starts with the `%PDF-` header, a storage-object URL/path, a binary
+  // value or binary-named field, or an oversized blob.
+  if (
+    [
+      record.papers,
+      record.glossary_terms,
+      record.projects,
+      record.project_papers,
+      record.highlights,
+    ].some((value) => hasRealHazard(value))
+  ) {    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
   }
 
   return hazards;
+}
+
+function hasRealHazard(value: unknown, depth = 0): boolean {
+  if (depth > 12 || value == null) {
+    return false;
+  }
+  if (typeof value === "string") {
+    return (
+      value.trimStart().startsWith(`${PDF_MAGIC}-`) ||
+      STORAGE_OBJECT.test(value) ||
+      value.length > MAX_CANVAS_FIELD_CHARS
+    );
+  }
+  if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.some((item) => hasRealHazard(item, depth + 1));
+  }
+  if (typeof value === "object") {
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      if (BINARY_KEY.test(key) && nested != null && nested !== "") {
+        return true;
+      }
+      if (hasRealHazard(nested, depth + 1)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 function scanValue(value: unknown, part: PayloadPart, depth = 0): string[] {
@@ -115,26 +162,4 @@ export function isJsonCanvas(value: unknown): boolean {
   }
   const record = value as Record<string, unknown>;
   return Array.isArray(record.nodes) && Array.isArray(record.edges);
-}
-
-export function emptyCanvasDocument(): {
-  nodes: unknown[];
-  edges: unknown[];
-  paperCollege: {
-    kind: "projects";
-    schemaVersion: 1;
-    generatedAt: string;
-    source: "paper.college";
-  };
-} {
-  return {
-    nodes: [],
-    edges: [],
-    paperCollege: {
-      kind: "projects",
-      schemaVersion: 1,
-      generatedAt: new Date(0).toISOString(),
-      source: "paper.college",
-    },
-  };
 }

@@ -5,7 +5,15 @@ import {
   TFile,
   TFolder,
 } from "obsidian";
-import { fetchSyncPayload } from "./api";
+import { fetchFigureImage, fetchSyncPayload } from "./api";
+import {
+  CanvasCssInjector,
+  isGeneratedCanvasFile,
+  parseGeneratedCanvas,
+} from "./canvas/css-injector";
+import { activePreset, migratePresetStore, type PresetStore } from "./canvas/store";
+import { migrateSettings } from "./settings-data";
+import type { CanvasPreset, GeneratedCanvas } from "./canvas/types";
 import { paperIdFromCanvasEvent } from "./canvas-open";
 import {
   formatRelativeTime,
@@ -14,6 +22,11 @@ import {
   syncPartialNotice,
   syncSuccessNotice,
 } from "./copy";
+import {
+  planFigurePlacements,
+  syncFigures,
+  type FigureSyncResult,
+} from "./figures";
 import { ConfirmModal } from "./modals";
 import { ObsidianVaultWriter } from "./obsidian-vault";
 import { exchangeErrorMessage, exchangePairingCode } from "./pairing";
@@ -22,11 +35,13 @@ import { releasePdfWorker } from "./pdf-worker";
 import { EmptyPaperPickerModal, PaperPickerModal } from "./picker";
 import { obsidianFetch } from "./request";
 import { PaperSettingTab } from "./settings-tab";
-import { applyPlan, buildApplyPlan, joinVaultPath } from "./sync-apply";
+import { applyPlan, buildApplyPlan, joinVaultPath, previewCanvases } from "./sync-apply";
 import {
   DEFAULT_SETTINGS,
   type PaperPluginSettings,
+  type PlacedFigure,
   type SyncPaper,
+  type SyncPayload,
 } from "./types";
 import {
   normalizeBaseUrl,
@@ -45,6 +60,8 @@ export default class PaperPlugin extends Plugin {
   private statusBar: HTMLElement | null = null;
   private syncError = false;
   private hookedCanvasEls = new WeakSet<HTMLElement>();
+  private readonly canvasCss = new CanvasCssInjector();
+  private canvasScopeRun = 0;
 
   isConnected(): boolean {
     return this.settings.token.length > 0;
@@ -144,6 +161,7 @@ export default class PaperPlugin extends Plugin {
 
     this.addSettingTab(new PaperSettingTab(this.app, this));
     this.registerCanvasHandlers();
+    this.registerCanvasScope();
     this.registerMarkdownPdfLinks();
 
     this.app.workspace.onLayoutReady(() => {
@@ -160,8 +178,8 @@ export default class PaperPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
-    const stored = (await this.loadData()) as Partial<PaperPluginSettings> | null;
-    this.settings = { ...DEFAULT_SETTINGS, ...(stored ?? {}) };
+    const stored: unknown = await this.loadData();
+    this.settings = migrateSettings(stored);
   }
 
   async saveSettings(): Promise<void> {
@@ -282,12 +300,80 @@ export default class PaperPlugin extends Plugin {
       return;
     }
 
-    const plan = buildApplyPlan(fetched.payload, this.settings.folder);
-    const writer = new ObsidianVaultWriter(this.app.vault);
-    const applied = await applyPlan(writer, plan);
+    const figures = await this.syncFigureImages(fetched.payload);
+    await this.applyPayload(fetched.payload, opts, figures);
+  }
+
+  /**
+   * Re-syncs with the active preset (settings "Re-sync with this preset").
+   * Online and connected: a full sync, so data is fresh. Otherwise the cached
+   * payload is re-applied, rewriting canvases and cleaning up stale ones.
+   */
+  async resyncCanvases(opts?: { quiet?: boolean }): Promise<void> {
+    if (this.syncing) {
+      return;
+    }
+    if (this.isConnected() && navigator.onLine) {
+      await this.syncNow(opts);
+      return;
+    }
+    const cached = this.settings.lastPayload;
+    if (!cached) {
+      new Notice(this.isConnected() ? PLUGIN_COPY.offline : PLUGIN_COPY.canvasResyncNeedsSync);
+      return;
+    }
+    await this.applyPayload(cached, opts, await this.cachedFigureImages(cached));
+  }
+
+  /** The preset canvases are generated with (edits applied). */
+  activeCanvasPreset(): CanvasPreset {
+    return activePreset(this.settings.canvasPresets);
+  }
+
+  /** Replaces the preset store (switch / edit / reset) and saves plugin data. */
+  async updateCanvasPresets(store: PresetStore): Promise<void> {
+    this.settings.canvasPresets = migratePresetStore(store);
+    this.canvasCss.setCss(this.activeCanvasPreset().css);
+    await this.saveSettings();
+  }
+
+  /**
+   * Pure preview from the cached payload: sync-folder-relative canvases for
+   * `preset` (default: the active one). Empty library when never synced.
+   */
+  canvasPreview(preset: CanvasPreset = this.activeCanvasPreset()): GeneratedCanvas[] {
+    return previewCanvases(this.settings.lastPayload, preset, {
+      folder: this.settings.folder,
+      origin: this.settings.baseUrl,
+    });
+  }
+
+  private async applyPayload(
+    payload: SyncPayload,
+    opts?: { quiet?: boolean },
+    figures: FigureSyncResult | null = null,
+  ): Promise<void> {
+    this.syncing = true;
+    this.syncError = false;
+    this.refreshStatusBar();
+    const plan = buildApplyPlan(payload, this.settings.folder, {
+      preset: this.activeCanvasPreset(),
+      origin: this.settings.baseUrl,
+      figures: figures?.available ?? [],
+    });
+    const writer = new ObsidianVaultWriter(this.app.vault, this.app.fileManager);
+    const applied = await applyPlan(writer, plan, {
+      manifest: this.settings.canvasManifest,
+    });
+    const figuresOk = !figures || figures.failed.length === 0;
 
     this.syncing = false;
-    this.settings.lastPapers = fetched.payload.papers.map((p) => ({
+    this.settings.lastPayload = payload;
+    if (applied.canvasManifest) {
+      this.settings.canvasManifest = applied.canvasManifest;
+    }
+    void this.refreshCanvasScope();
+    this.settings.lastPapers = payload.papers.map((p) => ({
       id: p.id,
       title: p.title,
     }));
@@ -304,7 +390,8 @@ export default class PaperPlugin extends Plugin {
       applied.papersOk &&
       !plan.glossaryAborted &&
       !plan.canvasAborted &&
-      !plan.papersAborted;
+      !plan.papersAborted &&
+      figuresOk;
 
     if (applied.folderError) {
       this.syncError = true;
@@ -337,12 +424,82 @@ export default class PaperPlugin extends Plugin {
     this.syncError = true;
     await this.saveSettings();
     this.refreshStatusBar();
+    const othersOk =
+      applied.failed.length === 0 &&
+      applied.glossaryOk &&
+      applied.canvasOk &&
+      applied.papersOk &&
+      !plan.glossaryAborted &&
+      !plan.canvasAborted &&
+      !plan.papersAborted;
     const failedPart = !applied.canvasOk
       ? PLUGIN_COPY.failedPartMindmap
-      : !applied.glossaryOk
-        ? PLUGIN_COPY.failedPartGlossary
+      : othersOk && !figuresOk
+        ? PLUGIN_COPY.failedPartFigures
         : PLUGIN_COPY.failedPartGlossary;
     new Notice(syncPartialNotice(failedPart));
+  }
+
+  /**
+   * Downloads figure PNGs one by one before the notes are written, so each
+   * paper note embeds only images that are actually in the vault. The
+   * manifest is saved straight away: it records files already written.
+   */
+  private async syncFigureImages(
+    payload: SyncPayload,
+  ): Promise<FigureSyncResult | null> {
+    const placements = planFigurePlacements(payload, this.settings.folder);
+    if (!placements) {
+      return null;
+    }
+    const { baseUrl, token } = this.settings;
+    const result = await syncFigures(
+      new ObsidianVaultWriter(this.app.vault, this.app.fileManager),
+      (id) => fetchFigureImage(obsidianFetch, baseUrl, token, id),
+      placements,
+      {
+        manifest: this.settings.figureManifest ?? {},
+        folders: this.settings.figureFolders ?? [],
+      },
+      this.settings.folder,
+    );
+    this.settings.figureManifest = result.state.manifest;
+    this.settings.figureFolders = result.state.folders;
+    await this.saveSettings();
+    return result;
+  }
+
+  /**
+   * Offline re-apply: no downloads, so the notes keep embedding the figure
+   * images an earlier sync already wrote to the vault.
+   */
+  private async cachedFigureImages(
+    payload: SyncPayload,
+  ): Promise<FigureSyncResult | null> {
+    const placements = planFigurePlacements(payload, this.settings.folder);
+    if (!placements) {
+      return null;
+    }
+    const manifest = this.settings.figureManifest ?? {};
+    const writer = new ObsidianVaultWriter(this.app.vault, this.app.fileManager);
+    const available: PlacedFigure[] = [];
+    for (const placed of placements) {
+      const entry = manifest[placed.figure.id];
+      if (entry && (await writer.isFile(entry.path))) {
+        available.push({ figure: placed.figure, path: entry.path });
+      }
+    }
+    return {
+      state: { manifest, folders: this.settings.figureFolders ?? [] },
+      available,
+      written: [],
+      renamed: [],
+      skipped: [],
+      skippedUser: [],
+      removed: [],
+      missing: [],
+      failed: [],
+    };
   }
 
   openPdfPicker(): void {
@@ -463,6 +620,11 @@ export default class PaperPlugin extends Plugin {
       if (!href.includes(PDF_PROTOCOL_ACTION) && !href.includes("/library/")) {
         return;
       }
+      // Figure "open page in Paper" links go to the web reader, not the
+      // in-vault PDF view.
+      if (/#page=\d+/.test(href)) {
+        return;
+      }
       const paperId =
         parsePaperIdFromProtocol(href) || parsePaperIdFromLibraryUrl(href);
       if (!paperId) {
@@ -528,5 +690,59 @@ export default class PaperPlugin extends Plugin {
         }
       }),
     );
+  }
+
+  /**
+   * Scoped preset CSS: while one of Paper's generated canvases is open, its
+   * view container gets the scope class and the active preset's CSS is
+   * adopted. Driven only by workspace / vault events and public DOM.
+   */
+  private registerCanvasScope(): void {
+    this.canvasCss.setCss(this.activeCanvasPreset().css);
+    this.register(() => this.canvasCss.destroy());
+    const refresh = () => {
+      void this.refreshCanvasScope();
+    };
+    this.registerEvent(this.app.workspace.on("active-leaf-change", refresh));
+    this.registerEvent(this.app.workspace.on("layout-change", refresh));
+    this.registerEvent(this.app.workspace.on("file-open", refresh));
+    this.registerEvent(
+      this.app.vault.on("modify", (file) => {
+        if (file instanceof TFile && file.extension === "canvas") {
+          refresh();
+        }
+      }),
+    );
+    this.registerEvent(this.app.vault.on("rename", refresh));
+    this.app.workspace.onLayoutReady(refresh);
+  }
+
+  private async refreshCanvasScope(): Promise<void> {
+    const run = ++this.canvasScopeRun;
+    const scoped = new Map<HTMLElement, Parameters<CanvasCssInjector["attach"]>[1]>();
+    for (const leaf of this.app.workspace.getLeavesOfType("canvas")) {
+      const view = leaf.view as unknown as { file?: TFile | null; containerEl: HTMLElement };
+      const file = view.file;
+      if (
+        !(file instanceof TFile) ||
+        !isGeneratedCanvasFile(file.path, normalizePath(this.settings.folder), this.settings.canvasManifest)
+      ) {
+        continue;
+      }
+      let doc = null;
+      try {
+        doc = parseGeneratedCanvas(await this.app.vault.cachedRead(file));
+      } catch {
+        doc = null;
+      }
+      if (doc) {
+        scoped.set(view.containerEl, doc);
+      }
+    }
+    if (run !== this.canvasScopeRun) {
+      return;
+    }
+    this.canvasCss.retainOnly(new Set(scoped.keys()));
+    scoped.forEach((doc, el) => this.canvasCss.attach(el, doc));
   }
 }

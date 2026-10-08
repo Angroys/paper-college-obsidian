@@ -183,14 +183,14 @@ function bytesToString(bytes) {
   }
   return strBuf.join("");
 }
-function stringToBytes(str) {
-  if (typeof str !== "string") {
+function stringToBytes(str2) {
+  if (typeof str2 !== "string") {
     unreachable("Invalid argument for stringToBytes");
   }
-  const length = str.length;
+  const length = str2.length;
   const bytes = new Uint8Array(length);
   for (let i = 0; i < length; ++i) {
-    bytes[i] = str.charCodeAt(i) & 255;
+    bytes[i] = str2.charCodeAt(i) & 255;
   }
   return bytes;
 }
@@ -218,15 +218,15 @@ function isEvalSupported() {
     return false;
   }
 }
-function stringToUTF8String(str) {
-  return decodeURIComponent(escape(str));
+function stringToUTF8String(str2) {
+  return decodeURIComponent(escape(str2));
 }
-function normalizeUnicode(str) {
+function normalizeUnicode(str2) {
   if (!NormalizeRegex) {
     NormalizeRegex = /([\u00a0\u00b5\u037e\u0eb3\u2000-\u200a\u202f\u2126\ufb00-\ufb04\ufb06\ufb20-\ufb36\ufb38-\ufb3c\ufb3e\ufb40-\ufb41\ufb43-\ufb44\ufb46-\ufba1\ufba4-\ufba9\ufbae-\ufbb1\ufbd3-\ufbdc\ufbde-\ufbe7\ufbea-\ufbf8\ufbfc-\ufbfd\ufc00-\ufc5d\ufc64-\ufcf1\ufcf5-\ufd3d\ufd88\ufdf4\ufdfa-\ufdfb\ufe71\ufe77\ufe79\ufe7b\ufe7d]+)|(\ufb05+)/gu;
     NormalizationMap = /* @__PURE__ */ new Map([["\uFB05", "\u017Ft"]]);
   }
-  return str.replaceAll(NormalizeRegex, (_, p1, p2) => p1 ? p1.normalize("NFKC") : NormalizationMap.get(p2));
+  return str2.replaceAll(NormalizeRegex, (_, p1, p2) => p1 ? p1.normalize("NFKC") : NormalizationMap.get(p2));
 }
 function getUuid() {
   if (typeof crypto.randomUUID === "function") {
@@ -353,18 +353,18 @@ function getXfaPageViewport(xfaPage, {
     rotation
   });
 }
-function getRGB(color) {
-  if (color.startsWith("#")) {
-    const colorRGB = parseInt(color.slice(1), 16);
+function getRGB(color2) {
+  if (color2.startsWith("#")) {
+    const colorRGB = parseInt(color2.slice(1), 16);
     return [(colorRGB & 16711680) >> 16, (colorRGB & 65280) >> 8, colorRGB & 255];
   }
-  if (color.startsWith("rgb(")) {
-    return color.slice(4, -1).split(",").map((x) => parseInt(x));
+  if (color2.startsWith("rgb(")) {
+    return color2.slice(4, -1).split(",").map((x) => parseInt(x));
   }
-  if (color.startsWith("rgba(")) {
-    return color.slice(5, -1).split(",").map((x) => parseInt(x)).slice(0, 3);
+  if (color2.startsWith("rgba(")) {
+    return color2.slice(5, -1).split(",").map((x) => parseInt(x)).slice(0, 3);
   }
-  warn(`Not a valid color format: "${color}"`);
+  warn(`Not a valid color format: "${color2}"`);
   return [0, 0, 0];
 }
 function getColorValues(colors) {
@@ -2644,10 +2644,10 @@ var init_pdf = __esm({
         const {
           lastModified,
           name,
-          size,
+          size: size2,
           type
         } = file;
-        return __privateMethod(this, _ImageManager_instances, get_fn).call(this, `${lastModified}_${name}_${size}_${type}`, file);
+        return __privateMethod(this, _ImageManager_instances, get_fn).call(this, `${lastModified}_${name}_${size2}_${type}`, file);
       }
       async getFromUrl(url) {
         return __privateMethod(this, _ImageManager_instances, get_fn).call(this, url, url);
@@ -2973,9 +2973,9 @@ var init_pdf = __esm({
         this.buffer.push("shift");
       }
       this.buffer.push(event.key);
-      const str = this.buffer.join("+");
+      const str2 = this.buffer.join("+");
       this.buffer.length = 0;
-      return str;
+      return str2;
     };
     _ColorManager = class _ColorManager {
       get _colors() {
@@ -2983,8 +2983,8 @@ var init_pdf = __esm({
         getColorValues(colors);
         return shadow(this, "_colors", colors);
       }
-      convert(color) {
-        const rgb = getRGB(color);
+      convert(color2) {
+        const rgb = getRGB(color2);
         if (!window.matchMedia("(forced-colors: active)").matches) {
           return rgb;
         }
@@ -6835,13 +6835,13 @@ var init_pdf = __esm({
         if (!this.cssFontInfo) {
           nativeFontFace = new FontFace(this.loadedName, this.data, {});
         } else {
-          const css = {
+          const css2 = {
             weight: this.cssFontInfo.fontWeight
           };
           if (this.cssFontInfo.italicAngle) {
-            css.style = `oblique ${this.cssFontInfo.italicAngle}deg`;
+            css2.style = `oblique ${this.cssFontInfo.italicAngle}deg`;
           }
-          nativeFontFace = new FontFace(this.cssFontInfo.fontFamily, this.data, css);
+          nativeFontFace = new FontFace(this.cssFontInfo.fontFamily, this.data, css2);
         }
         (_a2 = this._inspectFont) == null ? void 0 : _a2.call(this, this);
         return nativeFontFace;
@@ -6856,11 +6856,11 @@ var init_pdf = __esm({
         if (!this.cssFontInfo) {
           rule = `@font-face {font-family:"${this.loadedName}";src:${url}}`;
         } else {
-          let css = `font-weight: ${this.cssFontInfo.fontWeight};`;
+          let css2 = `font-weight: ${this.cssFontInfo.fontWeight};`;
           if (this.cssFontInfo.italicAngle) {
-            css += `font-style: oblique ${this.cssFontInfo.italicAngle}deg;`;
+            css2 += `font-style: oblique ${this.cssFontInfo.italicAngle}deg;`;
           }
-          rule = `@font-face {font-family:"${this.cssFontInfo.fontFamily}";${css}src:${url}}`;
+          rule = `@font-face {font-family:"${this.cssFontInfo.fontFamily}";${css2}src:${url}}`;
         }
         (_a2 = this._inspectFont) == null ? void 0 : _a2.call(this, this, url);
         return rule;
@@ -7065,12 +7065,12 @@ var init_pdf = __esm({
       const streamId = data.streamId, sourceName = this.sourceName, targetName = data.sourceName, comObj = this.comObj;
       const self = this, action = this.actionHandler[data.action];
       const streamSink = {
-        enqueue(chunk, size = 1, transfers) {
+        enqueue(chunk, size2 = 1, transfers) {
           if (this.isCancelled) {
             return;
           }
           const lastDesiredSize = this.desiredSize;
-          this.desiredSize -= size;
+          this.desiredSize -= size2;
           if (lastDesiredSize > 0 && this.desiredSize <= 0) {
             this.sinkCapability = Promise.withResolvers();
             this.ready = this.sinkCapability.promise;
@@ -7689,8 +7689,8 @@ var init_pdf = __esm({
       filter.append(feComponentTransfer);
       __privateMethod(this, _DOMFilterFactory_instances, appendFeFunc_fn).call(this, feComponentTransfer, "feFuncA", aTable);
     };
-    getRGB_fn = function(color) {
-      __privateGet(this, _DOMFilterFactory_instances, defs_get).style.color = color;
+    getRGB_fn = function(color2) {
+      __privateGet(this, _DOMFilterFactory_instances, defs_get).style.color = color2;
       return getRGB(getComputedStyle(__privateGet(this, _DOMFilterFactory_instances, defs_get)).getPropertyValue("color"));
     };
     BaseStandardFontDataFactory = class {
@@ -7901,7 +7901,7 @@ var init_pdf = __esm({
       UNCOLORED: 2
     };
     _TilingPattern = class _TilingPattern {
-      constructor(IR, color, ctx, canvasGraphicsFactory, baseTransform) {
+      constructor(IR, color2, ctx, canvasGraphicsFactory, baseTransform) {
         this.operatorList = IR[2];
         this.matrix = IR[3];
         this.bbox = IR[4];
@@ -7909,7 +7909,7 @@ var init_pdf = __esm({
         this.ystep = IR[6];
         this.paintType = IR[7];
         this.tilingType = IR[8];
-        this.color = color;
+        this.color = color2;
         this.ctx = ctx;
         this.canvasGraphicsFactory = canvasGraphicsFactory;
         this.baseTransform = baseTransform;
@@ -7920,7 +7920,7 @@ var init_pdf = __esm({
           operatorList,
           paintType,
           tilingType,
-          color,
+          color: color2,
           canvasGraphicsFactory
         } = this;
         let {
@@ -7958,7 +7958,7 @@ var init_pdf = __esm({
         const tmpCtx = tmpCanvas.context;
         const graphics = canvasGraphicsFactory.createCanvasGraphics(tmpCtx);
         graphics.groupLevel = owner.groupLevel;
-        this.setFillAndStrokeStyleToContext(graphics, paintType, color);
+        this.setFillAndStrokeStyleToContext(graphics, paintType, color2);
         tmpCtx.translate(-dimx.scale * x0, -dimy.scale * y0);
         graphics.transform(dimx.scale, 0, 0, dimy.scale, 0, 0);
         tmpCtx.save();
@@ -8006,15 +8006,15 @@ var init_pdf = __esm({
       }
       getSizeAndScale(step, realOutputSize, scale) {
         const maxSize = Math.max(_TilingPattern.MAX_PATTERN_SIZE, realOutputSize);
-        let size = Math.ceil(step * scale);
-        if (size >= maxSize) {
-          size = maxSize;
+        let size2 = Math.ceil(step * scale);
+        if (size2 >= maxSize) {
+          size2 = maxSize;
         } else {
-          scale = size / step;
+          scale = size2 / step;
         }
         return {
           scale,
-          size
+          size: size2
         };
       }
       clipBbox(graphics, x0, y0, x1, y1) {
@@ -8025,7 +8025,7 @@ var init_pdf = __esm({
         graphics.clip();
         graphics.endPath();
       }
-      setFillAndStrokeStyleToContext(graphics, paintType, color) {
+      setFillAndStrokeStyleToContext(graphics, paintType, color2) {
         const context = graphics.ctx, current = graphics.current;
         switch (paintType) {
           case PaintType.COLORED:
@@ -8036,7 +8036,7 @@ var init_pdf = __esm({
             current.strokeColor = ctx.strokeStyle;
             break;
           case PaintType.UNCOLORED:
-            const cssColor = Util.makeHexColor(color[0], color[1], color[2]);
+            const cssColor = Util.makeHexColor(color2[0], color2[1], color2[2]);
             context.fillStyle = cssColor;
             context.strokeStyle = cssColor;
             current.fillColor = cssColor;
@@ -8874,7 +8874,7 @@ var init_pdf = __esm({
       setLeading(leading) {
         this.current.leading = -leading;
       }
-      setFont(fontRefName, size) {
+      setFont(fontRefName, size2) {
         var _a2;
         const fontObj = this.commonObjs.get(fontRefName);
         const current = this.current;
@@ -8885,14 +8885,14 @@ var init_pdf = __esm({
         if (current.fontMatrix[0] === 0 || current.fontMatrix[3] === 0) {
           warn("Invalid font matrix for font " + fontRefName);
         }
-        if (size < 0) {
-          size = -size;
+        if (size2 < 0) {
+          size2 = -size2;
           current.fontDirection = -1;
         } else {
           current.fontDirection = 1;
         }
         this.current.font = fontObj;
-        this.current.fontSize = size;
+        this.current.fontSize = size2;
         if (fontObj.isType3Font) {
           return;
         }
@@ -8905,13 +8905,13 @@ var init_pdf = __esm({
           bold = "bold";
         }
         const italic = fontObj.italic ? "italic" : "normal";
-        let browserFontSize = size;
-        if (size < MIN_FONT_SIZE) {
+        let browserFontSize = size2;
+        if (size2 < MIN_FONT_SIZE) {
           browserFontSize = MIN_FONT_SIZE;
-        } else if (size > MAX_FONT_SIZE) {
+        } else if (size2 > MAX_FONT_SIZE) {
           browserFontSize = MAX_FONT_SIZE;
         }
-        this.current.fontSizeScale = size / browserFontSize;
+        this.current.fontSizeScale = size2 / browserFontSize;
         this.ctx.font = `${italic} ${bold} ${browserFontSize}px ${typeface}`;
       }
       setTextRenderingMode(mode) {
@@ -9209,7 +9209,7 @@ var init_pdf = __esm({
       getColorN_Pattern(IR) {
         let pattern;
         if (IR[0] === "TilingPattern") {
-          const color = IR[1];
+          const color2 = IR[1];
           const baseTransform = this.baseTransform || getCurrentTransform(this.ctx);
           const canvasGraphicsFactory = {
             createCanvasGraphics: (ctx) => new _CanvasGraphics(ctx, this.commonObjs, this.objs, this.canvasFactory, this.filterFactory, {
@@ -9217,7 +9217,7 @@ var init_pdf = __esm({
               markedContentStack: this.markedContentStack
             })
           };
-          pattern = new TilingPattern(IR, color, this.ctx, canvasGraphicsFactory, baseTransform);
+          pattern = new TilingPattern(IR, color2, this.ctx, canvasGraphicsFactory, baseTransform);
         } else {
           pattern = this._getPattern(IR[1], IR[2]);
         }
@@ -11576,13 +11576,13 @@ var init_pdf = __esm({
       }
       return ctx;
     };
-    ensureCtxFont_fn = function(ctx, size, family) {
+    ensureCtxFont_fn = function(ctx, size2, family) {
       const cached = __privateGet(this, _canvasCtxFonts).get(ctx);
-      if (size === cached.size && family === cached.family) {
+      if (size2 === cached.size && family === cached.family) {
         return;
       }
-      ctx.font = `${size}px ${family}`;
-      cached.size = size;
+      ctx.font = `${size2}px ${family}`;
+      cached.size = size2;
       cached.family = family;
     };
     ensureMinFontSizeComputed_fn = function() {
@@ -11661,20 +11661,20 @@ var init_pdf = __esm({
           if (!node) {
             return;
           }
-          let str = null;
+          let str2 = null;
           const name = node.name;
           if (name === "#text") {
-            str = node.value;
+            str2 = node.value;
           } else if (!_XfaText.shouldBuildText(name)) {
             return;
           } else if ((_a2 = node == null ? void 0 : node.attributes) == null ? void 0 : _a2.textContent) {
-            str = node.attributes.textContent;
+            str2 = node.attributes.textContent;
           } else if (node.value) {
-            str = node.value;
+            str2 = node.value;
           }
-          if (str !== null) {
+          if (str2 !== null) {
             items.push({
-              str
+              str: str2
             });
           }
           if (!node.children) {
@@ -13456,11 +13456,11 @@ var init_pdf = __esm({
       static RGB_G([r, g, b]) {
         return ["G", 0.3 * r + 0.59 * g + 0.11 * b];
       }
-      static RGB_rgb(color) {
-        return color.map(scaleAndClamp);
+      static RGB_rgb(color2) {
+        return color2.map(scaleAndClamp);
       }
-      static RGB_HTML(color) {
-        return `#${color.map(makeColorComp).join("")}`;
+      static RGB_HTML(color2) {
+        return `#${color2.map(makeColorComp).join("")}`;
       }
       static T_HTML() {
         return "#00000000";
@@ -13977,9 +13977,9 @@ var init_pdf = __esm({
       }
       get _commonActions() {
         const setColor = (jsName, styleName, event) => {
-          const color = event.detail[jsName];
-          const colorType = color[0];
-          const colorArray = color.slice(1);
+          const color2 = event.detail[jsName];
+          const colorType = color2[0];
+          const colorArray = color2.slice(1);
           event.target.style[styleName] = ColorConverters[`${colorType}_HTML`](colorArray);
           this.annotationStorage.setValue(this.data.id, {
             [styleName]: ColorConverters[`${colorType}_rgb`](colorArray)
@@ -14634,8 +14634,8 @@ var init_pdf = __esm({
         }
       }
       _setBackgroundColor(element) {
-        const color = this.data.backgroundColor || null;
-        element.style.backgroundColor = color === null ? "transparent" : Util.makeHexColor(color[0], color[1], color[2]);
+        const color2 = this.data.backgroundColor || null;
+        element.style.backgroundColor = color2 === null ? "transparent" : Util.makeHexColor(color2[0], color2[1], color2[2]);
       }
       _setTextStyle(element) {
         const TEXT_ALIGNMENT = ["left", "center", "right"];
@@ -15442,7 +15442,7 @@ var init_pdf = __esm({
     PopupElement = class {
       constructor({
         container,
-        color,
+        color: color2,
         elements,
         titleObj,
         modificationDate,
@@ -15479,7 +15479,7 @@ var init_pdf = __esm({
         __privateSet(this, _contentsObj, contentsObj);
         __privateSet(this, _richText, richText);
         __privateSet(this, _parent, parent);
-        __privateSet(this, _color, color);
+        __privateSet(this, _color, color2);
         __privateSet(this, _rect, rect);
         __privateSet(this, _parentRect, parentRect);
         __privateSet(this, _elements, elements);
@@ -15547,13 +15547,13 @@ var init_pdf = __esm({
         __privateGet(this, _container4).append(popup);
       }
       _formatContents({
-        str,
+        str: str2,
         dir
       }) {
         const p = document.createElement("p");
         p.classList.add("popupContent");
         p.dir = dir;
-        const lines = str.split(/(?:\r\n?|\n)/);
+        const lines = str2.split(/(?:\r\n?|\n)/);
         for (let i = 0, ii = lines.length; i < ii; ++i) {
           const line = lines[i];
           p.append(document.createTextNode(line));
@@ -16868,10 +16868,10 @@ var init_pdf = __esm({
         }
         const padding = _FreeTextEditor._internalPadding * this.parentScale;
         const rect = this.getRect(padding, padding);
-        const color = AnnotationEditor._colorManager.convert(this.isAttachedToDOM ? getComputedStyle(this.editorDiv).color : __privateGet(this, _color2));
+        const color2 = AnnotationEditor._colorManager.convert(this.isAttachedToDOM ? getComputedStyle(this.editorDiv).color : __privateGet(this, _color2));
         const serialized = {
           annotationType: AnnotationEditorType.FREETEXT,
-          color,
+          color: color2,
           fontSize: __privateGet(this, _fontSize),
           value: __privateMethod(this, _FreeTextEditor_instances, serializeContent_fn).call(this),
           pageIndex: this.pageIndex,
@@ -16923,10 +16923,10 @@ var init_pdf = __esm({
     _fontSize = new WeakMap();
     _FreeTextEditor_instances = new WeakSet();
     updateFontSize_fn = function(fontSize) {
-      const setFontsize = (size) => {
-        this.editorDiv.style.fontSize = `calc(${size}px * var(--scale-factor))`;
-        this.translate(0, -(size - __privateGet(this, _fontSize)) * this.parentScale);
-        __privateSet(this, _fontSize, size);
+      const setFontsize = (size2) => {
+        this.editorDiv.style.fontSize = `calc(${size2}px * var(--scale-factor))`;
+        this.translate(0, -(size2 - __privateGet(this, _fontSize)) * this.parentScale);
+        __privateSet(this, _fontSize, size2);
         __privateMethod(this, _FreeTextEditor_instances, setEditorDimensions_fn).call(this);
       };
       const savedFontsize = __privateGet(this, _fontSize);
@@ -16940,13 +16940,13 @@ var init_pdf = __esm({
         keepUndo: true
       });
     };
-    updateColor_fn = function(color) {
+    updateColor_fn = function(color2) {
       const setColor = (col) => {
         __privateSet(this, _color2, this.editorDiv.style.color = col);
       };
       const savedColor = __privateGet(this, _color2);
       this.addCommands({
-        cmd: setColor.bind(this, color),
+        cmd: setColor.bind(this, color2),
         undo: setColor.bind(this, savedColor),
         post: this._uiManager.updateUI.bind(this._uiManager, this),
         mustExec: true,
@@ -17023,10 +17023,10 @@ var init_pdf = __esm({
       const {
         value,
         fontSize,
-        color,
+        color: color2,
         pageIndex
       } = this._initialData;
-      return this._hasBeenMoved || serialized.value !== value || serialized.fontSize !== fontSize || serialized.color.some((c, i) => c !== color[i]) || serialized.pageIndex !== pageIndex;
+      return this._hasBeenMoved || serialized.value !== value || serialized.fontSize !== fontSize || serialized.color.some((c, i) => c !== color2[i]) || serialized.pageIndex !== pageIndex;
     };
     __privateAdd(_FreeTextEditor, _FreeTextEditor_static);
     __publicField(_FreeTextEditor, "_freeTextDefaultContent", "");
@@ -17804,11 +17804,11 @@ var init_pdf = __esm({
           __privateMethod(this, _ColorPicker_instances, openDropdown_fn).call(this, event);
           return;
         }
-        const color = event.target.getAttribute("data-color");
-        if (!color) {
+        const color2 = event.target.getAttribute("data-color");
+        if (!color2) {
           return;
         }
-        __privateMethod(this, _ColorPicker_instances, colorSelect_fn).call(this, color, event);
+        __privateMethod(this, _ColorPicker_instances, colorSelect_fn).call(this, color2, event);
       }
       _moveToNext(event) {
         var _a2, _b;
@@ -17872,16 +17872,16 @@ var init_pdf = __esm({
           focusVisible: __privateGet(this, _dropdownWasFromKeyboard)
         });
       }
-      updateColor(color) {
+      updateColor(color2) {
         if (__privateGet(this, _buttonSwatch)) {
-          __privateGet(this, _buttonSwatch).style.backgroundColor = color;
+          __privateGet(this, _buttonSwatch).style.backgroundColor = color2;
         }
         if (!__privateGet(this, _dropdown)) {
           return;
         }
         const i = __privateGet(this, _uiManager2).highlightColors.values();
         for (const child of __privateGet(this, _dropdown).children) {
-          child.setAttribute("aria-selected", i.next().value === color);
+          child.setAttribute("aria-selected", i.next().value === color2);
         }
       }
       destroy() {
@@ -17917,19 +17917,19 @@ var init_pdf = __esm({
       div.setAttribute("aria-multiselectable", false);
       div.setAttribute("aria-orientation", "vertical");
       div.setAttribute("data-l10n-id", "pdfjs-editor-colorpicker-dropdown");
-      for (const [name, color] of __privateGet(this, _uiManager2).highlightColors) {
+      for (const [name, color2] of __privateGet(this, _uiManager2).highlightColors) {
         const button = document.createElement("button");
         button.tabIndex = "0";
         button.role = "option";
-        button.setAttribute("data-color", color);
+        button.setAttribute("data-color", color2);
         button.title = name;
         button.setAttribute("data-l10n-id", __privateGet(_ColorPicker, _l10nColor)[name]);
         const swatch = document.createElement("span");
         button.append(swatch);
         swatch.className = "swatch";
-        swatch.style.backgroundColor = color;
-        button.setAttribute("aria-selected", color === __privateGet(this, _defaultColor));
-        button.addEventListener("click", __privateMethod(this, _ColorPicker_instances, colorSelect_fn).bind(this, color), {
+        swatch.style.backgroundColor = color2;
+        button.setAttribute("aria-selected", color2 === __privateGet(this, _defaultColor));
+        button.addEventListener("click", __privateMethod(this, _ColorPicker_instances, colorSelect_fn).bind(this, color2), {
           signal
         });
         div.append(button);
@@ -17939,12 +17939,12 @@ var init_pdf = __esm({
       });
       return div;
     };
-    colorSelect_fn = function(color, event) {
+    colorSelect_fn = function(color2, event) {
       event.stopPropagation();
       __privateGet(this, _eventBus).dispatch("switchannotationeditorparams", {
         source: this,
         type: __privateGet(this, _type),
-        value: color
+        value: color2
       });
     };
     keyDown_fn2 = function(event) {
@@ -18366,7 +18366,7 @@ var init_pdf = __esm({
               rect,
               rotation,
               id,
-              color: color2,
+              color: color3,
               opacity: opacity2,
               popupRef
             },
@@ -18378,7 +18378,7 @@ var init_pdf = __esm({
           } = data;
           initialData = data = {
             annotationType: AnnotationEditorType.HIGHLIGHT,
-            color: Array.from(color2),
+            color: Array.from(color3),
             opacity: opacity2,
             quadPoints: quadPoints2,
             boxes: null,
@@ -18396,7 +18396,7 @@ var init_pdf = __esm({
               rect,
               rotation,
               id,
-              color: color2,
+              color: color3,
               borderStyle: {
                 rawWidth: thickness
               },
@@ -18410,7 +18410,7 @@ var init_pdf = __esm({
           } = data;
           initialData = data = {
             annotationType: AnnotationEditorType.HIGHLIGHT,
-            color: Array.from(color2),
+            color: Array.from(color3),
             thickness,
             inkLists: inkLists2,
             boxes: null,
@@ -18423,13 +18423,13 @@ var init_pdf = __esm({
           };
         }
         const {
-          color,
+          color: color2,
           quadPoints,
           inkLists,
           opacity
         } = data;
         const editor = await super.deserialize(data, parent, uiManager);
-        editor.color = Util.makeHexColor(...color);
+        editor.color = Util.makeHexColor(...color2);
         __privateSet(editor, _opacity, opacity || 1);
         if (inkLists) {
           __privateSet(editor, _thickness2, data.thickness);
@@ -18499,10 +18499,10 @@ var init_pdf = __esm({
           return this.serializeDeleted();
         }
         const rect = this.getRect(0, 0);
-        const color = AnnotationEditor._colorManager.convert(this.color);
+        const color2 = AnnotationEditor._colorManager.convert(this.color);
         const serialized = {
           annotationType: AnnotationEditorType.HIGHLIGHT,
-          color,
+          color: color2,
           opacity: __privateGet(this, _opacity),
           thickness: __privateGet(this, _thickness2),
           quadPoints: __privateMethod(this, _HighlightEditor_instances, serializeBoxes_fn).call(this),
@@ -18637,7 +18637,7 @@ var init_pdf = __esm({
       } = __privateGet(this, _focusOutlines);
       __privateSet(this, _lastPoint2, [(lastPoint[0] - x) / width, (lastPoint[1] - y) / height]);
     };
-    updateColor_fn2 = function(color) {
+    updateColor_fn2 = function(color2) {
       const setColorAndOpacity = (col, opa) => {
         var _a2, _b;
         this.color = col;
@@ -18653,7 +18653,7 @@ var init_pdf = __esm({
       const savedColor = this.color;
       const savedOpacity = __privateGet(this, _opacity);
       this.addCommands({
-        cmd: setColorAndOpacity.bind(this, color, _HighlightEditor._defaultOpacity),
+        cmd: setColorAndOpacity.bind(this, color2, _HighlightEditor._defaultOpacity),
         undo: setColorAndOpacity.bind(this, savedColor, savedOpacity),
         post: this._uiManager.updateUI.bind(this._uiManager, this),
         mustExec: true,
@@ -18663,7 +18663,7 @@ var init_pdf = __esm({
       });
       this._reportTelemetry({
         action: "color_changed",
-        color: this._uiManager.highlightColorNames.get(color)
+        color: this._uiManager.highlightColorNames.get(color2)
       }, true);
     };
     updateThickness_fn = function(thickness) {
@@ -18825,9 +18825,9 @@ var init_pdf = __esm({
     };
     hasElementChanged_fn2 = function(serialized) {
       const {
-        color
+        color: color2
       } = this._initialData;
-      return serialized.color.some((c, i) => c !== color[i]);
+      return serialized.color.some((c, i) => c !== color2[i]);
     };
     __privateAdd(_HighlightEditor, _HighlightEditor_static);
     __publicField(_HighlightEditor, "_defaultColor", null);
@@ -20235,7 +20235,7 @@ var init_pdf = __esm({
               rect,
               rotation,
               id,
-              color,
+              color: color2,
               opacity,
               borderStyle: {
                 rawWidth: thickness
@@ -20250,7 +20250,7 @@ var init_pdf = __esm({
           } = data;
           initialData = data = {
             annotationType: AnnotationEditorType.INK,
-            color: Array.from(color),
+            color: Array.from(color2),
             thickness,
             opacity,
             paths: {
@@ -20293,12 +20293,12 @@ var init_pdf = __esm({
         parent.drawLayer.updateProperties(this._currentDrawId, this._defaultDrawingOptions.toSVGProperties());
       }
       createDrawingOptions({
-        color,
+        color: color2,
         thickness,
         opacity
       }) {
         this._drawingOptions = _InkEditor.getDefaultDrawingOptions({
-          stroke: Util.makeHexColor(...color),
+          stroke: Util.makeHexColor(...color2),
           "stroke-width": thickness,
           "stroke-opacity": opacity
         });
@@ -20361,12 +20361,12 @@ var init_pdf = __esm({
     _InkEditor_instances = new WeakSet();
     hasElementChanged_fn3 = function(serialized) {
       const {
-        color,
+        color: color2,
         thickness,
         opacity,
         pageIndex
       } = this._initialData;
-      return this._hasBeenMoved || this._hasBeenResized || serialized.color.some((c, i) => c !== color[i]) || serialized.thickness !== thickness || serialized.opacity !== opacity || serialized.pageIndex !== pageIndex;
+      return this._hasBeenMoved || this._hasBeenResized || serialized.color.some((c, i) => c !== color2[i]) || serialized.thickness !== thickness || serialized.opacity !== opacity || serialized.pageIndex !== pageIndex;
     };
     __publicField(_InkEditor, "_type", "ink");
     __publicField(_InkEditor, "_editorType", AnnotationEditorType.INK);
@@ -21999,7 +21999,7 @@ __export(main_exports, {
   default: () => PaperPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian7 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 
 // src/urls.ts
 var DEFAULT_BASE_URL = "https://paper.college";
@@ -22028,6 +22028,12 @@ function settingsDeepLink(baseUrl) {
 }
 function libraryUrl(baseUrl, paperId) {
   return `${normalizeBaseUrl(baseUrl)}/library/${paperId}`;
+}
+function readerPageUrl(baseUrl, paperId, page) {
+  return `${libraryUrl(baseUrl, paperId)}#page=${page}`;
+}
+function figureImageApiUrl(baseUrl, figureId) {
+  return `${normalizeBaseUrl(baseUrl)}/api/obsidian/figures/${encodeURIComponent(figureId)}`;
 }
 function pairingExchangeUrl(baseUrl) {
   return `${normalizeBaseUrl(baseUrl)}/api/obsidian/pairing/exchange`;
@@ -22107,111 +22113,6 @@ function paperIdFromCanvasNode(node) {
   return null;
 }
 
-// src/payload-guard.ts
-var PDF_MAGIC = "%PDF";
-var PDF_PATH = /\.pdf(?:$|[?#])/i;
-var SIGNED_STORAGE = /\/storage\/v1\/object\/sign\//i;
-function findPdfHazards(payload) {
-  if (!payload || typeof payload !== "object") {
-    return [];
-  }
-  const record = payload;
-  const hazards = [];
-  if (scanValue(record.glossary_terms, "glossary").length > 0) {
-    hazards.push({ part: "glossary", reason: "glossary payload contains PDF/binary" });
-  }
-  if (scanValue(record.papers, "papers").length > 0) {
-    hazards.push({ part: "papers", reason: "papers payload contains PDF/binary" });
-  }
-  if (scanValue(record.canvases, "canvas").length > 0) {
-    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
-  }
-  return hazards;
-}
-function scanValue(value, part, depth = 0) {
-  if (depth > 12 || value == null) {
-    return [];
-  }
-  if (typeof value === "string") {
-    if (value.includes(PDF_MAGIC) || PDF_PATH.test(value) || SIGNED_STORAGE.test(value)) {
-      return [part];
-    }
-    return [];
-  }
-  if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
-    if (looksLikePdfBytes(value)) {
-      return [part];
-    }
-    return [part];
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const hit = scanValue(item, part, depth + 1);
-      if (hit.length > 0) {
-        return hit;
-      }
-    }
-    return [];
-  }
-  if (typeof value === "object") {
-    const obj = value;
-    if (obj.type === "file") {
-      const file = typeof obj.file === "string" ? obj.file : "";
-      if (PDF_PATH.test(file) || file.toLowerCase().includes("pdf")) {
-        return [part];
-      }
-    }
-    for (const [key, nested] of Object.entries(obj)) {
-      if (/pdf|binary|bytes|file_b64|pdf_bytes/i.test(key)) {
-        if (typeof nested === "string" && nested.length > 0) {
-          return [part];
-        }
-        if (nested && typeof nested === "object") {
-          return [part];
-        }
-      }
-      const hit = scanValue(nested, part, depth + 1);
-      if (hit.length > 0) {
-        return hit;
-      }
-    }
-  }
-  return [];
-}
-function looksLikePdfBytes(value) {
-  const bytes = value instanceof ArrayBuffer ? new Uint8Array(value) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-  if (bytes.length < 4) {
-    return false;
-  }
-  return bytes[0] === 37 && bytes[1] === 80 && bytes[2] === 68 && bytes[3] === 70;
-}
-function isAllowedVaultPath(relativePath) {
-  const lower = relativePath.toLowerCase();
-  if (lower.endsWith(".pdf") || lower.includes(".pdf/") || lower.includes("/.pdf")) {
-    return false;
-  }
-  return lower.endsWith(".md") || lower.endsWith(".canvas");
-}
-function isJsonCanvas(value) {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-  const record = value;
-  return Array.isArray(record.nodes) && Array.isArray(record.edges);
-}
-function emptyCanvasDocument() {
-  return {
-    nodes: [],
-    edges: [],
-    paperCollege: {
-      kind: "projects",
-      schemaVersion: 1,
-      generatedAt: (/* @__PURE__ */ new Date(0)).toISOString(),
-      source: "paper.college"
-    }
-  };
-}
-
 // src/api.ts
 async function fetchSyncPayload(fetchFn, baseUrl, token) {
   let response;
@@ -22251,7 +22152,8 @@ function normalizeSyncPayload(json) {
   const record = json && typeof json === "object" ? json : {};
   const papers = Array.isArray(record.papers) ? record.papers.filter((p) => Boolean(p) && typeof p === "object").map((p) => ({
     id: idOf(p.id),
-    title: typeof p.title === "string" ? p.title : ""
+    title: typeof p.title === "string" ? p.title : "",
+    added_from_paper_id: idOf(p.added_from_paper_id) || null
   })).filter((p) => p.id.length > 0) : [];
   const glossary_terms = Array.isArray(record.glossary_terms) ? record.glossary_terms.filter((t) => Boolean(t) && typeof t === "object").map((t) => ({
     id: idOf(t.id),
@@ -22264,14 +22166,86 @@ function normalizeSyncPayload(json) {
     normalized_term: typeof t.normalized_term === "string" ? t.normalized_term : "",
     highlight_id: typeof t.highlight_id === "string" ? t.highlight_id : null
   })).filter((t) => t.id.length > 0) : [];
-  const rawCanvases = Array.isArray(record.canvases) ? record.canvases : [];
-  const canvases = rawCanvases.filter(
-    (c) => !!c && typeof c === "object" && typeof c.path === "string" && isJsonCanvas(c.document)
-  ).map((c) => ({
-    path: c.path,
-    document: c.document
-  }));
-  return { papers, glossary_terms, canvases };
+  const projects = records(record.projects).map((p) => ({
+    id: idOf(p.id),
+    name: typeof p.name === "string" ? p.name : null,
+    created_at: typeof p.created_at === "string" ? p.created_at : null
+  })).filter((p) => p.id.length > 0);
+  const project_papers = records(record.project_papers).map((pp) => ({
+    project_id: idOf(pp.project_id),
+    paper_id: idOf(pp.paper_id),
+    added_at: typeof pp.added_at === "string" ? pp.added_at : null
+  })).filter((pp) => pp.project_id.length > 0 && pp.paper_id.length > 0);
+  const highlights = records(record.highlights).map((h) => ({
+    id: idOf(h.id),
+    paper_id: idOf(h.paper_id),
+    selected_text: typeof h.selected_text === "string" ? h.selected_text : "",
+    page_number: typeof h.page_number === "number" ? h.page_number : null,
+    created_at: typeof h.created_at === "string" ? h.created_at : null
+  })).filter((h) => h.id.length > 0 && h.paper_id.length > 0);
+  const normalized = { papers, glossary_terms, projects, project_papers, highlights };
+  if (Array.isArray(record.figure_highlights)) {
+    normalized.figure_highlights = normalizeFigures(record.figure_highlights);
+  }
+  return normalized;
+}
+function nullableString(value) {
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
+}
+function normalizeFigures(raw) {
+  return raw.filter((f) => Boolean(f) && typeof f === "object").map((f) => ({
+    id: idOf(f.id),
+    paper_id: idOf(f.paper_id),
+    page_number: typeof f.page_number === "number" ? f.page_number : NaN,
+    label: nullableString(f.label),
+    caption: nullableString(f.caption),
+    note: nullableString(f.note),
+    created_at: typeof f.created_at === "string" ? f.created_at : "",
+    updated_at: typeof f.updated_at === "string" ? f.updated_at : ""
+  })).filter(
+    (f) => f.id.length > 0 && f.paper_id.length > 0 && Number.isInteger(f.page_number) && f.page_number >= 1
+  ).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+}
+var PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
+function isPng(data) {
+  const bytes = new Uint8Array(data);
+  return bytes.length >= PNG_SIGNATURE.length && PNG_SIGNATURE.every((byte, i) => bytes[i] === byte);
+}
+async function fetchFigureImage(fetchFn, baseUrl, token, figureId) {
+  let response;
+  try {
+    response = await fetchFn(figureImageApiUrl(baseUrl, figureId), {
+      method: "GET",
+      headers: { ...bearerHeaders(token), Accept: "image/png" }
+    });
+  } catch (e) {
+    return { ok: false, status: 0, kind: "offline" };
+  }
+  if (response.status === 401) {
+    return { ok: false, status: 401, kind: "auth" };
+  }
+  if (response.status === 404) {
+    return { ok: false, status: 404, kind: "missing" };
+  }
+  if (response.status >= 500) {
+    return { ok: false, status: response.status, kind: "server" };
+  }
+  if (!response.ok) {
+    return { ok: false, status: response.status, kind: "unknown" };
+  }
+  let data;
+  try {
+    data = await response.arrayBuffer();
+  } catch (e) {
+    return { ok: false, status: response.status, kind: "unknown" };
+  }
+  if (!isPng(data)) {
+    return { ok: false, status: response.status, kind: "unknown" };
+  }
+  return { ok: true, data };
+}
+function records(value) {
+  return Array.isArray(value) ? value.filter((v) => Boolean(v) && typeof v === "object") : [];
 }
 async function fetchSignedUrl(fetchFn, baseUrl, token, paperId, nowMs = Date.now()) {
   let response;
@@ -22317,6 +22291,2772 @@ async function fetchSignedUrl(fetchFn, baseUrl, token, paperId, nowMs = Date.now
 }
 function signedUrlExpired(expiresAt, nowMs = Date.now(), skewMs = 3e4) {
   return nowMs + skewMs >= expiresAt;
+}
+
+// src/copy.ts
+var PLUGIN_COPY = {
+  commandConnect: "Connect",
+  commandSync: "Sync glossary and mindmap",
+  commandOpenPdf: "Open paper PDF\u2026",
+  commandOpenFolder: "Open Paper folder",
+  commandDisconnect: "Disconnect",
+  connect: "Connect",
+  syncNow: "Sync now",
+  disconnect: "Disconnect",
+  cancel: "Cancel",
+  retry: "Retry",
+  close: "Close",
+  copied: "Copied.",
+  offline: "No connection. Check your network and try again.",
+  noticeFirstRun: "Paper can put your glossary and mindmap in this vault. PDFs stay on Paper.",
+  noticeFirstRunDismiss: "Not now",
+  noticeSyncError: "Couldn't sync. Your existing notes were left as they are.",
+  canvasResyncNeedsSync: "Connect and sync once so Paper can build your canvases.",
+  noticeSyncEmpty: "Synced. No glossary terms on Paper yet. The folder is ready.",
+  connectionTitle: "Connection",
+  connectionDisconnected: "This vault is not connected to Paper. Create a pairing code in Paper Settings, then paste it here.",
+  connectionManualUrl: "If the browser did not open, copy this link:",
+  connectionCodeLabel: "Pairing code",
+  connectionCodeHelp: "Paste the numbers from Paper Settings.",
+  connectionReplace: "Replace connection",
+  connectionReplaceTitle: "Replace this connection?",
+  connectionReplaceBody: "This vault will use a new pairing. Notes already in the folder stay.",
+  connectionReplaceConfirm: "Replace",
+  folderTitle: "Vault folder",
+  folderHelp: "Glossary notes, paper notes, and the mindmap go in this folder. PDFs are not saved here.",
+  folderError: "Choose a folder name. If that path is already a file, pick a different name.",
+  folderDefault: "Paper",
+  syncTitle: "Sync",
+  syncStartup: "Sync on startup",
+  syncDisabledHelp: "Connect this vault before you sync.",
+  overwriteDisclosure: "On sync, Paper replaces files it created in this folder. Your other notes are left alone.",
+  pdfTitle: "PDF",
+  pdfPolicy: "Papers open through Paper. The PDF is not saved to this vault or to your computer.",
+  siteUrlTitle: "Paper URL",
+  siteUrlHelp: "Default https://paper.college. Use http://localhost:3000 when developing.",
+  statusNever: "Not synced yet",
+  statusSyncing: "Syncing\u2026",
+  statusLastSyncFallback: "Synced",
+  statusError: "Sync failed",
+  pickerTitle: "Open paper PDF",
+  pickerEmpty: "No papers from the last sync. Sync to list them here.",
+  pickerUntitled: "Untitled paper",
+  pickerSearch: "Search papers",
+  pdfLoading: "Loading paper\u2026",
+  pdfOpenInPaper: "Open in Paper",
+  pdfOffline: "This paper needs a network connection to open. Your vault notes still work.",
+  pdfPartialPages: "Some pages could not load. Try again.",
+  pdfErrorAuth: "Connection expired. Reconnect to open this paper.",
+  pdfErrorMissing: "This paper is no longer on Paper.",
+  pdfErrorRetry: "Couldn't open this paper. Try again.",
+  pdfErrorEmpty: "No paper selected. Close this view.",
+  pdfErrorRefresh: "Couldn't refresh this paper. Try again.",
+  pdfZoomIn: "Zoom in",
+  pdfZoomOut: "Zoom out",
+  connectInvalidCode: "That code did not work. Create a new code in Paper Settings.",
+  connectExpiredCode: "That code expired. Create a new one in Paper Settings.",
+  connectOfferSync: "Connected. Sync your glossary and mindmap when you are ready.",
+  connectExchanging: "Connecting\u2026",
+  disconnectTitle: "Disconnect this vault?",
+  disconnectBody: "This vault will stop getting updates. Glossary notes, paper notes, and the mindmap already in the vault stay where they are.",
+  disconnectConfirm: "Disconnect",
+  noteFolderEmpty: "No glossary terms yet. Highlight terms in your papers on Paper, then sync.",
+  notePaperOpenPdf: "Open PDF",
+  noteGlossaryOpenPdf: "Open paper PDF",
+  failedPartGlossary: "glossary notes",
+  failedPartMindmap: "mindmap",
+  failedPartFigures: "figure images",
+  noteFiguresHeading: "Figures",
+  noteFigureCaption: "Caption",
+  noteFigureNote: "Note",
+  canvasFallbackTitle: "Mindmap"
+};
+function connectedAs(accountLabel) {
+  return `Connected as ${accountLabel}.`;
+}
+function statusBarText(slot) {
+  return `Paper \xB7 ${slot}`;
+}
+function formatRelativeTime(iso, nowMs = Date.now()) {
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) {
+    return PLUGIN_COPY.statusLastSyncFallback;
+  }
+  const deltaSec = Math.max(0, Math.round((nowMs - then) / 1e3));
+  if (deltaSec < 60) {
+    return `${deltaSec} sec ago`;
+  }
+  const deltaMin = Math.round(deltaSec / 60);
+  if (deltaMin < 60) {
+    return `${deltaMin} min ago`;
+  }
+  const deltaHours = Math.round(deltaMin / 60);
+  if (deltaHours < 48) {
+    return `${deltaHours} hour${deltaHours === 1 ? "" : "s"} ago`;
+  }
+  const deltaDays = Math.round(deltaHours / 24);
+  return `${deltaDays} day${deltaDays === 1 ? "" : "s"} ago`;
+}
+function termCountPhrase(termCount) {
+  return termCount === 1 ? "1 term" : `${termCount} terms`;
+}
+function paperCountPhrase(paperCount) {
+  return paperCount === 1 ? "1 paper" : `${paperCount} papers`;
+}
+function syncSuccessNotice(termCount, paperCount, first) {
+  const base = `Synced ${termCountPhrase(termCount)}, ${paperCountPhrase(paperCount)}, and your mindmap.`;
+  if (first) {
+    return `${base} PDFs stay on Paper and were not copied here.`;
+  }
+  return base;
+}
+function syncPartialNotice(failedPart) {
+  return `Sync finished in part. ${failedPart} did not update. Earlier files were kept.`;
+}
+function pdfPageLabel(current, total) {
+  if (current == null || total == null) {
+    return "Page \u2013 of \u2013";
+  }
+  return `Page ${current} of ${total}`;
+}
+function figureHeading(page, label) {
+  return label ? `Page ${page} \xB7 ${label}` : `Page ${page}`;
+}
+function figureOpenPageLink(page) {
+  return `Open page ${page} in Paper`;
+}
+function pdfTabTitle(paperTitle) {
+  const title = paperTitle == null ? void 0 : paperTitle.trim();
+  return title ? title : PLUGIN_COPY.pickerUntitled;
+}
+var CANVAS_COPY = {
+  libraryHub: "Library",
+  projectsHub: "Projects",
+  papersHub: "Papers",
+  termsHub: "Terms",
+  unassignedProject: "Unassigned",
+  unassignedHint: "Papers that are not in a project yet.",
+  projectUntitled: "Untitled project",
+  paperUntitled: "Untitled paper",
+  openInPaper: "Open in Paper",
+  groupTerms: "Terms",
+  groupHighlights: "Highlights",
+  groupNotes: "Notes",
+  groupMerged: "From this paper",
+  groupProjectTerms: "Shared terms",
+  highlightNoPage: "Highlight",
+  emptyLibrary: "Your mindmap will grow here. Add papers in Paper, then sync again.",
+  emptyProject: "No papers in this project yet. Add papers in Paper, then sync again.",
+  emptyPaper: "Nothing captured yet. Highlight or explain text in Paper, then sync again.",
+  emptyTerms: "No terms yet. Explain a highlight in Paper to add one.",
+  fullList: "Full list"
+};
+function plural(n, one, many) {
+  return n === 1 ? `1 ${one}` : `${n} ${many}`;
+}
+function canvasCountProjects(n) {
+  return plural(n, "project", "projects");
+}
+function canvasCountPapers(n) {
+  return plural(n, "paper", "papers");
+}
+function canvasCountTerms(n) {
+  return plural(n, "term", "terms");
+}
+function canvasCountHighlights(n) {
+  return plural(n, "highlight", "highlights");
+}
+function canvasTermInPapers(n) {
+  return `In ${plural(n, "paper", "papers")}`;
+}
+function canvasHighlightPage(page) {
+  return `Page ${page}`;
+}
+function canvasRatedLine(n) {
+  return `Rated ${n} of 5`;
+}
+function canvasMoreLine(n) {
+  return `+${n} more`;
+}
+var CANVAS_PRESET_COPY = {
+  "library-tree": {
+    name: "Library tree",
+    description: "Library, projects and papers as a top-down tree; click through three levels."
+  },
+  "library-radial": {
+    name: "Library radial",
+    description: "Library at the centre with projects and papers on rings; three levels."
+  },
+  "library-columns": {
+    name: "Library columns",
+    description: "One overview with a column per project and its papers listed below."
+  },
+  "project-tree": {
+    name: "Project tree",
+    description: "Each project canvas shows its papers and what you captured in them."
+  },
+  "project-radial": {
+    name: "Project radial",
+    description: "Projects as radial maps you click through, three levels deep."
+  },
+  "paper-columns": {
+    name: "Paper columns",
+    description: "A column per paper with its terms, highlights and notes stacked below."
+  },
+  "paper-radial": {
+    name: "Paper radial",
+    description: "Papers around a centre, each ringed by what you captured."
+  },
+  "term-tree": {
+    name: "Term tree",
+    description: "Every term with the papers it appears in, left to right."
+  },
+  "term-radial": {
+    name: "Term radial",
+    description: "Terms around a centre with the papers they appear in on the outer ring."
+  },
+  "library-flat": {
+    name: "Library flat overview",
+    description: "One flat overview tree; unfiled papers hang off the library itself."
+  },
+  "reading-desk": {
+    name: "Reading desk",
+    description: "Papers side by side with highlights first, sized to their text."
+  },
+  "glossary-atlas": {
+    name: "Glossary atlas",
+    description: "A grid of terms, each opening its own canvas of papers and highlights."
+  },
+  "highlight-reel": {
+    name: "Highlight reel",
+    description: "Only highlights, page by page, flowing left to right."
+  },
+  "citation-web": {
+    name: "Citation web",
+    description: "Radial library with shared terms and citations linked across papers."
+  },
+  "minimal-outline": {
+    name: "Minimal outline",
+    description: "Plain titles, no colours, no arrows; a quiet outline."
+  },
+  "study-board": {
+    name: "Study board",
+    description: "Project boards with large cards that hold full definitions."
+  },
+  "project-kanban": {
+    name: "Project kanban",
+    description: "A column per project, papers stacked like cards."
+  },
+  "concept-spine": {
+    name: "Concept spine",
+    description: "Most shared terms first, linked in a spine, with their papers below."
+  },
+  "wide-timeline": {
+    name: "Wide timeline",
+    description: "Papers in date order along a wide row, linked in sequence."
+  },
+  "dense-index": {
+    name: "Dense index",
+    description: "Small cards in tight grids; the most on one screen."
+  }
+};
+var CANVAS_SETTINGS_COPY = {
+  title: "Canvas layout",
+  intro: "Choose how Paper lays out the canvases it writes. Edits save as you go; re-sync to rewrite the canvases in your vault.",
+  preset: "Preset",
+  reset: "Reset preset",
+  resetDesc: "Discard your edits to this preset and restore the shipped version.",
+  resetDone: "Preset restored.",
+  resync: "Re-sync with this preset",
+  resyncDesc: "Rewrite the canvases in your vault with this preset. Canvases Paper wrote for the previous preset are removed.",
+  resyncBusy: "Syncing\u2026",
+  edit: "Edit preset",
+  edited: "Edited",
+  details: "Name and description",
+  name: "Name",
+  description: "Description",
+  structure: "Structure",
+  root: "Root",
+  rootDesc: "What the overview canvas is built around.",
+  depth: "Depth",
+  depthDesc: "Two levels keep children inline on one canvas; three levels add canvases to click through.",
+  emitTitle: "Canvas files to write",
+  emitOverview: "Overview canvas",
+  emitProject: "Project canvases",
+  emitPaper: "Paper canvases",
+  emitTerm: "Term canvases",
+  unassigned: "Papers in no project",
+  grouping: "Grouping",
+  groupTerms: "Terms inside a paper",
+  groupHighlights: "Highlights inside a paper",
+  groupNotes: "Notes inside a paper",
+  projectTerms: "Project-level terms",
+  sort: "Sort by",
+  maxTerms: "Max terms per canvas",
+  maxHighlights: "Max highlights per canvas",
+  capDesc: 'Extra items collapse into a "+N more" note. Use 0 for no limit.',
+  layout: "Layout",
+  algorithm: "Algorithm",
+  siblingGap: "Gap between siblings",
+  levelGap: "Gap between levels",
+  groupPadding: "Padding inside groups",
+  groupColumns: "Columns inside a group",
+  gridColumns: "Grid columns",
+  gridColumnsDesc: "Used by the grid layout. Use 0 to pick automatically.",
+  sizing: "Node sizing",
+  maxLines: "Max lines per card",
+  maxLinesDesc: "Longer text is shortened. Use 0 for no limit.",
+  sizesTitle: "Card sizes",
+  sizesDesc: "Minimum and maximum width and height, in canvas pixels.",
+  minWidth: "Min width",
+  maxWidth: "Max width",
+  minHeight: "Min height",
+  maxHeight: "Max height",
+  connections: "Connections",
+  siblings: "Link siblings",
+  siblingsDesc: "Chain cards that share a parent.",
+  backlinks: "Cross links",
+  backlinksDesc: "Link shared terms and citations across papers.",
+  arrow: "Arrow at the end of links",
+  sides: "Link sides",
+  noLabels: "Links never carry labels.",
+  look: "Look",
+  colorMode: "Colour cards by",
+  kindColorsTitle: "Colour per kind",
+  levelColorsTitle: "Colour per level",
+  colorCustom: "Custom colour",
+  colorPickerLabel: "Pick a colour",
+  hubText: "Hub text",
+  termText: "Term text",
+  highlightText: "Highlight text",
+  files: "File links",
+  noteNodesTitle: "Show note files",
+  noteNodesDesc: "Embed paper and glossary notes as file cards on these canvases.",
+  paperNode: "Paper cards",
+  termNode: "Term cards",
+  backlinkToParent: "Link back to the parent canvas",
+  paperFolders: "Paper canvas folders",
+  css: "Custom CSS",
+  cssDesc: "Applied only while a canvas Paper generated is open. Rules are scoped under .paper-canvas-scope so they never reach other canvases.",
+  cssPlaceholder: ".canvas-node { }",
+  previewTitle: "Preview",
+  previewDesc: "Built from your last sync. Nothing is written until you re-sync.",
+  previewEmpty: "Sync once to preview your canvases.",
+  previewFile: "Canvas file",
+  previewModeDrawing: "Drawing",
+  previewModeOutline: "Outline",
+  previewMode: "View",
+  previewRawJson: "Show raw JSON",
+  previewDrawingLabel: "Scaled drawing of the selected canvas",
+  previewNoNodes: "This canvas has no cards."
+};
+var CANVAS_LEVEL_LABELS = {
+  overview: "Overview",
+  project: "Project",
+  paper: "Paper",
+  term: "Term"
+};
+var CANVAS_KIND_LABELS = {
+  hub: "Hub",
+  project: "Project",
+  paper: "Paper",
+  term: "Term",
+  highlight: "Highlight",
+  note: "Note",
+  more: "More",
+  up: "Back link",
+  empty: "Empty state",
+  group: "Group"
+};
+var CANVAS_COLOR_PRESET_LABELS = {
+  "1": "Red",
+  "2": "Orange",
+  "3": "Yellow",
+  "4": "Green",
+  "5": "Cyan",
+  "6": "Purple"
+};
+function canvasLevelColorLabel(level) {
+  return level === 0 ? "Level 0 (hub)" : level === 3 ? "Level 3 and deeper" : `Level ${level}`;
+}
+function canvasPreviewSummary(nodes, edges, groups) {
+  const n = nodes === 1 ? "1 card" : `${nodes} cards`;
+  const e = edges === 1 ? "1 link" : `${edges} links`;
+  const g = groups === 1 ? "1 group" : `${groups} groups`;
+  return `${n}, ${g}, ${e}`;
+}
+var CANVAS_OPTION_LABELS = {
+  root: { library: "Library", project: "Projects", paper: "Papers", term: "Terms" },
+  depth: { "2": "Two levels (one overview)", "3": "Three levels (click through)" },
+  unassigned: { bucket: 'An "Unassigned" bucket', root: "Attach to the root", hidden: "Hide them" },
+  cluster: { separate: "Own box each", merged: "One shared box", hidden: "Hidden" },
+  projectTerms: { all: "All terms", shared: "Only terms shared by 2+ papers", none: "None" },
+  sort: { alpha: "Alphabetical", date: "Date", rating: "Rating", shared: "Papers sharing it" },
+  algorithm: {
+    "tree-TB": "Tree, top to bottom",
+    "tree-LR": "Tree, left to right",
+    radial: "Radial",
+    columns: "Columns",
+    grid: "Grid"
+  },
+  sizing: { fixed: "Fixed width", fit: "Fit to text" },
+  arrow: { none: "None", end: "Arrow" },
+  sides: { flow: "Follow the layout direction", nearest: "Nearest sides" },
+  colorMode: { level: "Level", kind: "Kind", plain: "No colour" },
+  hubText: {
+    title: "Title only",
+    counts: "Title and counts",
+    "counts-link": "Title, counts and paper.college link"
+  },
+  termText: { definition: "Term and definition", term: "Term only" },
+  highlightText: { page: "Highlight and page", text: "Text only" },
+  entityNode: { text: "Text card", file: "Live note embed" },
+  paperFolders: { project: "By project", flat: "Flat" }
+};
+
+// src/vault-notes.ts
+var WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001f]/g;
+function sanitizeFilename(raw) {
+  let name = raw.replace(WINDOWS_FORBIDDEN, "-").replace(/\s+/g, " ").trim();
+  name = name.replace(/^\.+/, "").replace(/\.+$/, "").trim();
+  if (!name) {
+    name = "untitled";
+  }
+  if (name.length > 80) {
+    name = name.slice(0, 80).trim();
+  }
+  return name;
+}
+function shortTitle(raw) {
+  const words = raw.trim().split(/\s+/).filter(Boolean).slice(0, 3);
+  return sanitizeFilename(words.join(" "));
+}
+function uniqueBasename(preferred, id, used) {
+  const base = sanitizeFilename(preferred).toLowerCase();
+  if (!used.has(base)) {
+    used.add(base);
+    return sanitizeFilename(preferred);
+  }
+  const withId = sanitizeFilename(`${sanitizeFilename(preferred)}-${id.slice(0, 8)}`);
+  const key = withId.toLowerCase();
+  if (!used.has(key)) {
+    used.add(key);
+    return withId;
+  }
+  let n = 2;
+  while (used.has(`${key}-${n}`)) {
+    n += 1;
+  }
+  const fallback = `${withId}-${n}`;
+  used.add(fallback.toLowerCase());
+  return fallback;
+}
+function yamlScalar(value) {
+  if (value === "") {
+    return '""';
+  }
+  if (/[:#{}[\],&*?|!<>=!%@`'\n]/.test(value) || value !== value.trim()) {
+    return JSON.stringify(value);
+  }
+  return value;
+}
+function yamlStringArray(values) {
+  if (values.length === 0) {
+    return "[]";
+  }
+  return `[${values.map((v) => yamlScalar(v)).join(", ")}]`;
+}
+function hasPaperSyncMarker(content) {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) {
+    return false;
+  }
+  return /^paper_sync:\s*true\s*$/m.test(match[1]);
+}
+function frontmatterBlock(fields) {
+  const lines = Object.entries(fields).map(([key, value]) => `${key}: ${value}`);
+  return `---
+${lines.join("\n")}
+---
+`;
+}
+function glossaryNoteMarkdown(term) {
+  var _a2, _b;
+  const tags = Array.isArray(term.tags) ? term.tags : [];
+  const rating = typeof term.rating === "number" && Number.isFinite(term.rating) ? String(term.rating) : '""';
+  const heading = term.term.trim() || "Untitled term";
+  const explanation = (_b = (_a2 = term.explanation) == null ? void 0 : _a2.trim()) != null ? _b : "";
+  const open = PLUGIN_COPY.noteGlossaryOpenPdf;
+  const protocol = openPdfProtocolUrl(term.paper_id);
+  return frontmatterBlock({
+    paper_sync: "true",
+    source: "paper.college",
+    term_id: yamlScalar(term.id),
+    paper_id: yamlScalar(term.paper_id),
+    tags: yamlStringArray(tags),
+    rating
+  }) + `
+# ${heading}
+
+` + (explanation ? `${explanation}
+
+` : "") + `[${open}](${protocol})
+`;
+}
+function paperStubMarkdown(paper, linkedTerms, figures = [], baseUrl = DEFAULT_BASE_URL) {
+  const title = paper.title.trim() || PLUGIN_COPY.pickerUntitled;
+  const open = PLUGIN_COPY.notePaperOpenPdf;
+  const protocol = openPdfProtocolUrl(paper.id);
+  const links = linkedTerms.length === 0 ? "" : `
+${linkedTerms.map((item) => `- [[${wikilinkTarget(item.path)}|${item.term}]]`).join("\n")}
+`;
+  return frontmatterBlock({
+    paper_sync: "true",
+    source: "paper.college",
+    paper_id: yamlScalar(paper.id)
+  }) + `
+# ${title}
+
+[${open}](${protocol})
+` + links + figuresSectionMarkdown(paper.id, figures, baseUrl);
+}
+function compareFigures(a, b) {
+  if (a.figure.page_number !== b.figure.page_number) {
+    return a.figure.page_number - b.figure.page_number;
+  }
+  return a.figure.id < b.figure.id ? -1 : a.figure.id > b.figure.id ? 1 : 0;
+}
+function figuresSectionMarkdown(paperId, figures, baseUrl = DEFAULT_BASE_URL) {
+  if (figures.length === 0) {
+    return "";
+  }
+  const blocks = [...figures].sort(compareFigures).map(({ figure, path }) => {
+    var _a2, _b, _c;
+    const page = figure.page_number;
+    const label = ((_a2 = figure.label) == null ? void 0 : _a2.trim()) || null;
+    const parts = [
+      `### ${figureHeading(page, label)}`,
+      `![[${path}]]`
+    ];
+    const caption = (_b = figure.caption) == null ? void 0 : _b.replace(/\s+/g, " ").trim();
+    if (caption) {
+      parts.push(`**${PLUGIN_COPY.noteFigureCaption}:** ${caption}`);
+    }
+    const note = (_c = figure.note) == null ? void 0 : _c.trim();
+    if (note) {
+      parts.push(`**${PLUGIN_COPY.noteFigureNote}:** ${note}`);
+    }
+    parts.push(
+      `[${figureOpenPageLink(page)}](${readerPageUrl(baseUrl, paperId, page)})`
+    );
+    return parts.join("\n\n");
+  });
+  return `
+## ${PLUGIN_COPY.noteFiguresHeading}
+
+${blocks.join("\n\n")}
+`;
+}
+function emptyIndexMarkdown() {
+  return frontmatterBlock({
+    paper_sync: "true",
+    source: "paper.college"
+  }) + `
+# Glossary
+
+${PLUGIN_COPY.noteFolderEmpty}
+`;
+}
+function wikilinkTarget(relativePath) {
+  return relativePath.replace(/\.md$/i, "");
+}
+function joinVaultPath(...parts) {
+  return parts.map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean).join("/");
+}
+
+// src/canvas/text.ts
+var SECTION_LABEL_RE = /^[ \t]*(?:\*{1,2}|_{1,2})?(?:In\s+plain\s+words|Plain\s+words|Plain\s+English|Mathematical|Mathematics|Math)(?:\*{1,2}|_{1,2})?\s*:(?:\*{1,2}|_{1,2})?\s*/gim;
+function stripExplainSectionLabels(text) {
+  return text.replace(SECTION_LABEL_RE, "").trim();
+}
+var TYPE_TAGS = [
+  "dataset",
+  "benchmark",
+  "term",
+  "method",
+  "metric",
+  "model",
+  "architecture",
+  "task",
+  "library",
+  "concept"
+];
+function isTypeTag(tag) {
+  return TYPE_TAGS.indexOf(tag) !== -1;
+}
+function firstTypeTag(tags) {
+  for (const tag of tags != null ? tags : []) {
+    if (isTypeTag(tag)) return tag;
+  }
+  return null;
+}
+function compareStrings(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+function round(value) {
+  return Math.round(value) || 0;
+}
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+var TEXT_METRICS = {
+  charPx: 8,
+  headingCharPx: 12,
+  linePx: 24,
+  headingLinePx: 36,
+  /** Horizontal padding inside a card, both sides together. */
+  chromeX: 40,
+  /** Vertical padding inside a card, both sides together. */
+  chromeY: 32
+};
+function isHeading(line) {
+  return /^#{1,6} /.test(line);
+}
+function wrappedLines(line, width) {
+  const heading = isHeading(line);
+  const charPx = heading ? TEXT_METRICS.headingCharPx : TEXT_METRICS.charPx;
+  const perLine = Math.max(8, Math.floor((width - TEXT_METRICS.chromeX) / charPx));
+  return Math.max(1, Math.ceil(line.length / perLine));
+}
+function estimateHeight(text, width) {
+  let total = TEXT_METRICS.chromeY;
+  for (const line of text.split("\n")) {
+    const n = wrappedLines(line, width);
+    total += n * (isHeading(line) ? TEXT_METRICS.headingLinePx : TEXT_METRICS.linePx);
+  }
+  return round(total);
+}
+function estimateWidth(text) {
+  let widest = 0;
+  for (const line of text.split("\n")) {
+    const px = line.length * (isHeading(line) ? TEXT_METRICS.headingCharPx : TEXT_METRICS.charPx);
+    widest = Math.max(widest, px);
+  }
+  return round(widest + TEXT_METRICS.chromeX);
+}
+function truncateToLines(text, width, maxLines) {
+  if (maxLines <= 0) return text;
+  const lines = text.split("\n");
+  const out = [];
+  let used = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const n = wrappedLines(line, width);
+    if (i === 0 || used + n <= maxLines) {
+      out.push(line);
+      used += n;
+      continue;
+    }
+    const remaining = maxLines - used;
+    if (remaining > 0) {
+      const perLine = Math.max(8, Math.floor((width - TEXT_METRICS.chromeX) / TEXT_METRICS.charPx));
+      const keep = Math.max(1, remaining * perLine - 1);
+      out.push(`${line.slice(0, keep).trimEnd()}\u2026`);
+    } else if (out.length > 0) {
+      out[out.length - 1] = `${out[out.length - 1].replace(/…$/, "")}\u2026`;
+    }
+    break;
+  }
+  return out.join("\n");
+}
+function oneLine(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+// src/canvas/layout.ts
+function outerH(block) {
+  return block.height + block.padTop;
+}
+function setTopLeft(out, block, left, outerTop) {
+  out.set(block.id, { x: round(left), y: round(outerTop + block.padTop) });
+}
+function breadthFirst(root) {
+  const out = [];
+  const queue = [{ block: root, depth: 0 }];
+  for (let i = 0; i < queue.length; i += 1) {
+    const entry = queue[i];
+    out.push(entry);
+    for (const child of entry.block.children) queue.push({ block: child, depth: entry.depth + 1 });
+  }
+  return out;
+}
+function treeTB(root, s, out) {
+  var _a2;
+  const levelH = [];
+  for (const { block, depth } of breadthFirst(root)) {
+    levelH[depth] = Math.max((_a2 = levelH[depth]) != null ? _a2 : 0, outerH(block));
+  }
+  const levelY = [];
+  let y = 0;
+  for (let d = 0; d < levelH.length; d += 1) {
+    levelY[d] = y;
+    y += levelH[d] + s.levelGap;
+  }
+  const span = /* @__PURE__ */ new Map();
+  const measure = (block) => {
+    let kids = 0;
+    block.children.forEach((child, i) => {
+      kids += measure(child) + (i > 0 ? s.siblingGap : 0);
+    });
+    const w = Math.max(block.width, kids);
+    span.set(block.id, w);
+    return w;
+  };
+  measure(root);
+  const place = (block, left, depth) => {
+    var _a3, _b;
+    const w = (_a3 = span.get(block.id)) != null ? _a3 : block.width;
+    setTopLeft(out, block, left + (w - block.width) / 2, levelY[depth]);
+    let kidsW = 0;
+    block.children.forEach((child, i) => {
+      var _a4;
+      kidsW += ((_a4 = span.get(child.id)) != null ? _a4 : child.width) + (i > 0 ? s.siblingGap : 0);
+    });
+    let x = left + (w - kidsW) / 2;
+    for (const child of block.children) {
+      place(child, x, depth + 1);
+      x += ((_b = span.get(child.id)) != null ? _b : child.width) + s.siblingGap;
+    }
+  };
+  place(root, 0, 0);
+}
+function treeLR(root, s, out) {
+  var _a2;
+  const levelW = [];
+  for (const { block, depth } of breadthFirst(root)) {
+    levelW[depth] = Math.max((_a2 = levelW[depth]) != null ? _a2 : 0, block.width);
+  }
+  const levelX = [];
+  let x = 0;
+  for (let d = 0; d < levelW.length; d += 1) {
+    levelX[d] = x;
+    x += levelW[d] + s.levelGap;
+  }
+  const span = /* @__PURE__ */ new Map();
+  const measure = (block) => {
+    let kids = 0;
+    block.children.forEach((child, i) => {
+      kids += measure(child) + (i > 0 ? s.siblingGap : 0);
+    });
+    const h = Math.max(outerH(block), kids);
+    span.set(block.id, h);
+    return h;
+  };
+  measure(root);
+  const place = (block, top, depth) => {
+    var _a3, _b;
+    const h = (_a3 = span.get(block.id)) != null ? _a3 : outerH(block);
+    setTopLeft(out, block, levelX[depth], top + (h - outerH(block)) / 2);
+    let kidsH = 0;
+    block.children.forEach((child, i) => {
+      var _a4;
+      kidsH += ((_a4 = span.get(child.id)) != null ? _a4 : outerH(child)) + (i > 0 ? s.siblingGap : 0);
+    });
+    let y = top + (h - kidsH) / 2;
+    for (const child of block.children) {
+      place(child, y, depth + 1);
+      y += ((_b = span.get(child.id)) != null ? _b : outerH(child)) + s.siblingGap;
+    }
+  };
+  place(root, 0, 0);
+}
+function leafWeight(block, memo) {
+  if (block.children.length === 0) {
+    memo.set(block.id, 1);
+    return 1;
+  }
+  let sum = 0;
+  for (const child of block.children) sum += leafWeight(child, memo);
+  memo.set(block.id, sum);
+  return sum;
+}
+function radial(root, s, out) {
+  var _a2;
+  const weights = /* @__PURE__ */ new Map();
+  leafWeight(root, weights);
+  const levels = [];
+  for (const { block, depth } of breadthFirst(root)) {
+    ((_a2 = levels[depth]) != null ? _a2 : levels[depth] = []).push(block);
+  }
+  const spanOf = (b) => Math.max(b.width, outerH(b));
+  const radii = [0];
+  let prevHalf = spanOf(root) / 2;
+  for (let d = 1; d < levels.length; d += 1) {
+    const blocks = levels[d];
+    const maxSpan = Math.max(...blocks.map(spanOf));
+    const circumference = blocks.reduce((sum, b) => sum + spanOf(b) + s.siblingGap, 0);
+    const byCircumference = circumference / (2 * Math.PI);
+    radii[d] = Math.max(radii[d - 1] + prevHalf + s.levelGap + maxSpan / 2, byCircumference);
+    prevHalf = maxSpan / 2;
+  }
+  const center = (block, cx, cy) => {
+    out.set(block.id, {
+      x: round(cx - block.width / 2),
+      y: round(cy - block.height / 2 + block.padTop / 2)
+    });
+  };
+  center(root, 0, 0);
+  const assign = (block, depth, start, end) => {
+    var _a3, _b;
+    const total = (_a3 = weights.get(block.id)) != null ? _a3 : 1;
+    let a = start;
+    for (const child of block.children) {
+      const share = (end - start) * ((_b = weights.get(child.id)) != null ? _b : 1) / total;
+      const mid = a + share / 2;
+      const r = radii[depth + 1];
+      center(child, r * Math.cos(mid), r * Math.sin(mid));
+      assign(child, depth + 1, a, a + share);
+      a += share;
+    }
+  };
+  assign(root, 0, -Math.PI / 2 - Math.PI / Math.max(1, root.children.length), 3 * Math.PI / 2 - Math.PI / Math.max(1, root.children.length));
+}
+function columns(root, s, out) {
+  const cols = root.children.map((head) => {
+    const stack = [];
+    const walk = (b) => {
+      stack.push(b);
+      for (const c of b.children) walk(c);
+    };
+    walk(head);
+    return stack;
+  });
+  const widths = cols.map((stack) => Math.max(...stack.map((b) => b.width)));
+  const total = widths.reduce((sum, w, i) => sum + w + (i > 0 ? s.siblingGap : 0), 0);
+  const rowTop = outerH(root) + s.levelGap;
+  setTopLeft(out, root, (total - root.width) / 2, 0);
+  let x = 0;
+  cols.forEach((stack, i) => {
+    let y = rowTop;
+    stack.forEach((b, j) => {
+      setTopLeft(out, b, x + (widths[i] - b.width) / 2, y);
+      y += outerH(b) + (j === 0 ? s.levelGap : s.siblingGap);
+    });
+    x += widths[i] + s.siblingGap;
+  });
+}
+function grid(root, s, out) {
+  const rest = breadthFirst(root).slice(1).map((e) => e.block);
+  const n = rest.length;
+  const cols = s.gridColumns > 0 ? s.gridColumns : Math.max(1, Math.ceil(Math.sqrt(n)));
+  const cellW = n > 0 ? Math.max(...rest.map((b) => b.width)) : root.width;
+  const gridW = Math.min(n, cols) * cellW + Math.max(0, Math.min(n, cols) - 1) * s.siblingGap;
+  setTopLeft(out, root, (gridW - root.width) / 2, 0);
+  let y = outerH(root) + s.levelGap;
+  for (let i = 0; i < n; i += cols) {
+    const row = rest.slice(i, i + cols);
+    const rowH = Math.max(...row.map(outerH));
+    row.forEach((b, j) => {
+      setTopLeft(out, b, j * (cellW + s.siblingGap) + (cellW - b.width) / 2, y);
+    });
+    y += rowH + s.siblingGap;
+  }
+}
+function layoutTree(root, algorithm, spacing) {
+  const out = /* @__PURE__ */ new Map();
+  switch (algorithm) {
+    case "tree-LR":
+      treeLR(root, spacing, out);
+      break;
+    case "radial":
+      radial(root, spacing, out);
+      break;
+    case "columns":
+      columns(root, spacing, out);
+      break;
+    case "grid":
+      grid(root, spacing, out);
+      break;
+    default:
+      treeTB(root, spacing, out);
+  }
+  return out;
+}
+
+// src/canvas/markers.ts
+var CANVAS_SCOPE_CLASS = "paper-canvas-scope";
+var KIND_MARKER_CLASS = "paper-canvas-kind";
+var KIND_MARKER_ATTR = "data-paper-kind";
+function kindMarker(kind) {
+  return `<span class="${KIND_MARKER_CLASS}" ${KIND_MARKER_ATTR}="${kind}"></span>`;
+}
+function withKindMarker(text, kind) {
+  const marker = kindMarker(kind);
+  const newline = text.indexOf("\n");
+  if (newline === -1) return `${text} ${marker}`;
+  return `${text.slice(0, newline)} ${marker}${text.slice(newline)}`;
+}
+function readKindMarker(text) {
+  const match = new RegExp(`${KIND_MARKER_ATTR}="([a-z]+)"`).exec(text);
+  return match ? match[1] : null;
+}
+
+// src/canvas/place.ts
+function rectOf(x, y, box) {
+  var _a2;
+  return {
+    left: x,
+    top: y - ((_a2 = box.padTop) != null ? _a2 : 0),
+    right: x + box.width,
+    bottom: y + box.height
+  };
+}
+function collides(a, b, margin) {
+  return a.left < b.right + margin && b.left < a.right + margin && a.top < b.bottom + margin && b.top < a.bottom + margin;
+}
+function isFree(rect, placed, margin) {
+  for (const other of placed) {
+    if (collides(rect, other, margin)) return false;
+  }
+  return true;
+}
+function resolvePlacement(boxes, margin) {
+  var _a2;
+  const gap = Math.max(0, round(margin));
+  const placed = [];
+  const out = [];
+  let lowest = Number.NEGATIVE_INFINITY;
+  for (const box of boxes) {
+    const pad = (_a2 = box.padTop) != null ? _a2 : 0;
+    const want = { x: round(box.x), y: round(box.y) };
+    let at = want;
+    if (!isFree(rectOf(want.x, want.y, box), placed, gap)) {
+      const candidates = [];
+      for (const r of placed) {
+        candidates.push(
+          { x: r.right + gap, y: want.y },
+          { x: r.left - gap - box.width, y: want.y },
+          { x: want.x, y: r.bottom + gap + pad },
+          { x: want.x, y: r.top - gap - box.height }
+        );
+      }
+      candidates.push({ x: want.x, y: lowest + gap + pad });
+      const order = candidates.map((c, index) => ({ c, index, d: Math.abs(c.x - want.x) + Math.abs(c.y - want.y) })).sort((a, b) => a.d - b.d || a.index - b.index);
+      at = candidates[candidates.length - 1];
+      for (const { c } of order) {
+        if (isFree(rectOf(c.x, c.y, box), placed, gap)) {
+          at = c;
+          break;
+        }
+      }
+    }
+    const rect = rectOf(at.x, at.y, box);
+    placed.push(rect);
+    lowest = Math.max(lowest, rect.bottom);
+    out.push({ x: round(at.x), y: round(at.y) });
+  }
+  return out;
+}
+
+// src/canvas/generate.ts
+var DEFAULT_ORIGIN = "https://paper.college";
+var PROJECTS_DIR = "Projects";
+var PAPERS_DIR = "Papers";
+var GLOSSARY_DIR = "Glossary";
+var TERMS_DIR = "Terms";
+var OVERVIEW_PATHS = {
+  library: "Projects.canvas",
+  project: "Projects.canvas",
+  paper: "Papers.canvas",
+  term: "Terms.canvas"
+};
+function isGeneratedCanvasPath(path) {
+  if (Object.values(OVERVIEW_PATHS).includes(path)) return true;
+  return /^(Projects|Terms)\/[^/]+\.canvas$/.test(path) || /^Papers\/(?:[^/]+\/)?[^/]+\.canvas$/.test(path);
+}
+var GROUP_LABEL_BAND = 40;
+function isRated(n) {
+  return typeof n === "number" && Number.isFinite(n) && n >= 1 && n <= 5;
+}
+function resolveLibrary(payload, preset) {
+  var _a2, _b, _c, _d, _e;
+  const usedPaper = /* @__PURE__ */ new Set();
+  const papers = [];
+  const paperById = /* @__PURE__ */ new Map();
+  (Array.isArray(payload.papers) ? payload.papers : []).forEach((paper, index) => {
+    var _a3, _b2, _c2;
+    const title = ((_a3 = paper.title) != null ? _a3 : "").trim() || PLUGIN_COPY.pickerUntitled;
+    const basename2 = uniqueBasename(title, (_b2 = paper.id) != null ? _b2 : "", usedPaper);
+    if (!paper.id || paperById.has(paper.id)) return;
+    const resolved = {
+      id: paper.id,
+      title,
+      basename: basename2,
+      notePath: joinVaultPath(PAPERS_DIR, `${basename2}.md`),
+      canvasPath: "",
+      order: index,
+      addedFrom: (_c2 = paper.added_from_paper_id) != null ? _c2 : null,
+      projectIds: []
+    };
+    papers.push(resolved);
+    paperById.set(paper.id, resolved);
+  });
+  const usedTerm = /* @__PURE__ */ new Set();
+  const termRows = [];
+  (Array.isArray(payload.glossary_terms) ? payload.glossary_terms : []).forEach((row, index) => {
+    var _a3, _b2, _c2, _d2;
+    const basename2 = uniqueBasename(row.term, row.id, usedTerm);
+    if (!row.normalized_term || !paperById.has(row.paper_id)) return;
+    const shown = ((_a3 = row.term) != null ? _a3 : "").trim() || row.normalized_term;
+    termRows.push({
+      id: row.id,
+      term: shown,
+      normalized: row.normalized_term,
+      paperId: row.paper_id,
+      prose: stripExplainSectionLabels((_b2 = row.explanation) != null ? _b2 : ""),
+      typeTag: firstTypeTag(row.tags),
+      rating: isRated(row.rating) ? row.rating : null,
+      highlightId: (_c2 = row.highlight_id) != null ? _c2 : null,
+      createdAt: (_d2 = row.created_at) != null ? _d2 : "",
+      notePath: joinVaultPath(GLOSSARY_DIR, `${basename2}.md`),
+      canvasPath: joinVaultPath(TERMS_DIR, `${basename2}.canvas`),
+      order: index
+    });
+  });
+  const termByNormalized = /* @__PURE__ */ new Map();
+  for (const row of termRows) {
+    const existing = termByNormalized.get(row.normalized);
+    if (!existing) {
+      termByNormalized.set(row.normalized, {
+        normalized: row.normalized,
+        rep: row,
+        paperIds: [row.paperId],
+        highlightIds: row.highlightId ? [row.highlightId] : [],
+        createdAt: row.createdAt
+      });
+      continue;
+    }
+    if (!existing.paperIds.includes(row.paperId)) existing.paperIds.push(row.paperId);
+    if (row.highlightId && !existing.highlightIds.includes(row.highlightId)) {
+      existing.highlightIds.push(row.highlightId);
+    }
+    if (compareStrings(row.createdAt, existing.createdAt) > 0) existing.createdAt = row.createdAt;
+  }
+  const terms = Array.from(termByNormalized.values());
+  for (const t of terms) {
+    t.paperIds.sort(compareStrings);
+    t.highlightIds.sort(compareStrings);
+  }
+  const highlights = [];
+  const seenHighlight = /* @__PURE__ */ new Set();
+  for (const h of Array.isArray(payload.highlights) ? payload.highlights : []) {
+    if (!h || !h.id || seenHighlight.has(h.id) || !paperById.has(h.paper_id)) continue;
+    const text = oneLine((_a2 = h.selected_text) != null ? _a2 : "");
+    if (!text) continue;
+    seenHighlight.add(h.id);
+    highlights.push({
+      id: h.id,
+      paperId: h.paper_id,
+      text,
+      page: typeof h.page_number === "number" ? h.page_number : null,
+      createdAt: (_b = h.created_at) != null ? _b : ""
+    });
+  }
+  const usedProject = /* @__PURE__ */ new Set();
+  const unassignedBase = uniqueBasename(CANVAS_COPY.unassignedProject, "", usedProject);
+  const projects = [];
+  const projectById = /* @__PURE__ */ new Map();
+  (Array.isArray(payload.projects) ? payload.projects : []).forEach((project, index) => {
+    var _a3;
+    if (!project || !project.id || projectById.has(project.id)) return;
+    const name = ((_a3 = project.name) != null ? _a3 : "").trim() || CANVAS_COPY.projectUntitled;
+    const basename2 = uniqueBasename(name, project.id, usedProject);
+    const resolved = {
+      id: project.id,
+      name,
+      basename: basename2,
+      canvasPath: joinVaultPath(PROJECTS_DIR, `${basename2}.canvas`),
+      order: index,
+      papers: []
+    };
+    projects.push(resolved);
+    projectById.set(project.id, resolved);
+  });
+  const primary = /* @__PURE__ */ new Map();
+  const seenMember = /* @__PURE__ */ new Set();
+  for (const row of Array.isArray(payload.project_papers) ? payload.project_papers : []) {
+    if (!row) continue;
+    const paper = paperById.get(row.paper_id);
+    const project = projectById.get(row.project_id);
+    if (!paper || !project) continue;
+    const key = `${row.project_id}\0${row.paper_id}`;
+    if (seenMember.has(key)) continue;
+    seenMember.add(key);
+    project.papers.push(paper);
+    paper.projectIds.push(project.id);
+    const addedAt = (_c = row.added_at) != null ? _c : "";
+    const current = primary.get(paper.id);
+    if (!current || compareStrings(addedAt, current.addedAt) < 0 || addedAt === current.addedAt && compareStrings(row.project_id, current.projectId) < 0) {
+      primary.set(paper.id, { projectId: row.project_id, addedAt });
+    }
+  }
+  for (const paper of papers) paper.projectIds.sort(compareStrings);
+  const unfiled = papers.filter((p) => p.projectIds.length === 0);
+  const unassigned = {
+    id: null,
+    name: CANVAS_COPY.unassignedProject,
+    basename: unassignedBase,
+    canvasPath: joinVaultPath(PROJECTS_DIR, `${unassignedBase}.canvas`),
+    order: Number.MAX_SAFE_INTEGER,
+    papers: unfiled.slice()
+  };
+  for (const paper of papers) {
+    if (preset.files.paperFolders === "flat") {
+      paper.canvasPath = joinVaultPath(PAPERS_DIR, `${paper.basename}.canvas`);
+      continue;
+    }
+    const owner = primary.get(paper.id);
+    const folder = owner ? (_e = (_d = projectById.get(owner.projectId)) == null ? void 0 : _d.basename) != null ? _e : unassignedBase : unassignedBase;
+    paper.canvasPath = joinVaultPath(PAPERS_DIR, folder, `${paper.basename}.canvas`);
+  }
+  return {
+    papers,
+    paperById,
+    termRows,
+    terms,
+    termByNormalized,
+    highlights,
+    projects,
+    unassigned,
+    unfiled,
+    projectById
+  };
+}
+function paperRating(lib, paper) {
+  let sum = 0;
+  let n = 0;
+  for (const row of lib.termRows) {
+    if (row.paperId === paper.id && row.rating != null) {
+      sum += row.rating;
+      n += 1;
+    }
+  }
+  return n === 0 ? 0 : sum / n;
+}
+function paperTermCount(lib, paper) {
+  let n = 0;
+  for (const t of lib.terms) if (t.paperIds.includes(paper.id)) n += 1;
+  return n;
+}
+function sortPapers(lib, list, preset) {
+  const alpha = (a, b) => compareStrings(a.title.toLowerCase(), b.title.toLowerCase()) || compareStrings(a.id, b.id);
+  const sort = preset.grouping.sort;
+  return list.slice().sort((a, b) => {
+    if (sort === "date") return a.order - b.order || compareStrings(a.id, b.id);
+    if (sort === "rating") return paperRating(lib, b) - paperRating(lib, a) || alpha(a, b);
+    if (sort === "shared") return paperTermCount(lib, b) - paperTermCount(lib, a) || alpha(a, b);
+    return alpha(a, b);
+  });
+}
+function sortProjects(list, preset) {
+  const alpha = (a, b) => {
+    var _a2, _b;
+    return compareStrings(a.name.toLowerCase(), b.name.toLowerCase()) || compareStrings((_a2 = a.id) != null ? _a2 : "", (_b = b.id) != null ? _b : "");
+  };
+  const sort = preset.grouping.sort;
+  return list.slice().sort((a, b) => {
+    if (sort === "date") return a.order - b.order || alpha(a, b);
+    if (sort === "shared") return b.papers.length - a.papers.length || alpha(a, b);
+    return alpha(a, b);
+  });
+}
+function sortTerms(list, preset) {
+  const alpha = (a, b) => compareStrings(a.normalized, b.normalized) || compareStrings(a.rep.id, b.rep.id);
+  const sort = preset.grouping.sort;
+  return list.slice().sort((a, b) => {
+    var _a2, _b;
+    if (sort === "date") return compareStrings(b.createdAt, a.createdAt) || alpha(a, b);
+    if (sort === "rating") return ((_a2 = b.rep.rating) != null ? _a2 : 0) - ((_b = a.rep.rating) != null ? _b : 0) || alpha(a, b);
+    if (sort === "shared") return b.paperIds.length - a.paperIds.length || alpha(a, b);
+    return alpha(a, b);
+  });
+}
+function sortHighlights(list, preset) {
+  const byPage = (a, b) => {
+    var _a2, _b;
+    return ((_a2 = a.page) != null ? _a2 : Number.MAX_SAFE_INTEGER) - ((_b = b.page) != null ? _b : Number.MAX_SAFE_INTEGER) || compareStrings(a.createdAt, b.createdAt) || compareStrings(a.id, b.id);
+  };
+  const sort = preset.grouping.sort;
+  return list.slice().sort((a, b) => {
+    if (sort === "date") return compareStrings(a.createdAt, b.createdAt) || compareStrings(a.id, b.id);
+    if (sort === "alpha") return compareStrings(a.text.toLowerCase(), b.text.toLowerCase()) || byPage(a, b);
+    return byPage(a, b);
+  });
+}
+var Canvas = class {
+  constructor(lib, preset, level, opts) {
+    this.lib = lib;
+    this.preset = preset;
+    this.level = level;
+    this.opts = opts;
+    this.used = /* @__PURE__ */ new Set();
+    this.up = [];
+  }
+  uid(base) {
+    let id = base;
+    let n = 2;
+    while (this.used.has(id)) {
+      id = `${base}#${n}`;
+      n += 1;
+    }
+    this.used.add(id);
+    return id;
+  }
+  /** Text node sized by the preset's sizing rules. */
+  text(kind, styleKind, level, raw, entityId) {
+    const size2 = this.preset.layout.sizes[styleKind != null ? styleKind : "note"];
+    const width = this.preset.layout.sizing === "fit" ? clamp(estimateWidth(raw), size2.minWidth, size2.maxWidth) : size2.maxWidth;
+    const body = truncateToLines(raw, width, this.preset.layout.maxLines);
+    const height = clamp(estimateHeight(body, width), size2.minHeight, size2.maxHeight);
+    return {
+      id: this.uid(entityId ? `${kind}:${entityId}` : kind),
+      kind,
+      styleKind,
+      level,
+      type: "text",
+      text: withKindMarker(body, kind),
+      width: round(width),
+      height: round(height),
+      entityId
+    };
+  }
+  /** File node; `embed` = a live `.md` note (taller) vs a canvas link. */
+  file(kind, styleKind, level, file, embed, entityId) {
+    const size2 = this.preset.layout.sizes[styleKind];
+    const base = file.slice(file.lastIndexOf("/") + 1);
+    const width = this.preset.layout.sizing === "fit" ? clamp(estimateWidth(`# ${base}`), size2.minWidth, size2.maxWidth) : size2.maxWidth;
+    return {
+      id: this.uid(entityId ? `${kind}:${entityId}` : `${kind}:${file}`),
+      kind,
+      styleKind,
+      level,
+      type: "file",
+      file,
+      width: round(width),
+      height: round(embed ? size2.maxHeight : size2.minHeight),
+      entityId
+    };
+  }
+};
+function folderPrefix(opts) {
+  const f = opts.folder.trim().replace(/^\/+|\/+$/g, "");
+  return f ? `${f}/` : "";
+}
+function wikilink(opts, path, alias) {
+  return `[[${folderPrefix(opts)}${path.replace(/\.md$/, "")}|${alias}]]`;
+}
+function paperUrl(opts, paperId) {
+  return `${opts.origin.replace(/\/+$/, "")}/library/${paperId}`;
+}
+function libraryUrl2(opts) {
+  return `${opts.origin.replace(/\/+$/, "")}/library`;
+}
+function hubLines(c, title, counts, url) {
+  const mode = c.preset.look.hubText;
+  const lines = [`# ${title}`];
+  if (mode !== "title" && counts) lines.push(counts);
+  if (mode === "counts-link" && url) lines.push(`[${CANVAS_COPY.openInPaper}](${url})`);
+  return lines;
+}
+function termText(c, t, full) {
+  const suffix = t.rep.typeTag ? ` \xB7 ${t.rep.typeTag}` : "";
+  const lines = [`# ${t.rep.term}${suffix}`];
+  if (full || c.preset.look.termText === "definition") {
+    if (t.rep.prose) lines.push(t.rep.prose);
+    if (t.rep.rating != null) lines.push(canvasRatedLine(t.rep.rating));
+  }
+  return lines.join("\n");
+}
+function highlightText(c, h) {
+  const quote = `> ${h.text}`;
+  if (c.preset.look.highlightText === "text") return quote;
+  return [`# ${h.page == null ? CANVAS_COPY.highlightNoPage : canvasHighlightPage(h.page)}`, quote].join("\n");
+}
+function projectItem(c, p, level, link) {
+  var _a2;
+  const key = (_a2 = p.id) != null ? _a2 : "unassigned";
+  if (link && c.preset.structure.emit.project && projectCanvasEmitted(c.preset, p)) {
+    return c.file("project", "project", level, p.canvasPath, false, key);
+  }
+  const second = p.id === null ? CANVAS_COPY.unassignedHint : canvasCountPapers(p.papers.length);
+  return c.text("project", "project", level, `# ${p.name}
+${second}`, key);
+}
+function paperItem(c, p, level, link) {
+  let item;
+  if (link && c.preset.structure.emit.paper) {
+    item = c.file("paper", "paper", level, p.canvasPath, false, p.id);
+  } else if (c.preset.files.paperNode === "file") {
+    item = c.file("paper", "paper", level, p.notePath, true, p.id);
+  } else {
+    const nTerms = paperTermCount(c.lib, p);
+    const nHigh = c.lib.highlights.filter((h) => h.paperId === p.id).length;
+    item = c.text(
+      "paper",
+      "paper",
+      level,
+      `# ${p.title}
+${canvasCountTerms(nTerms)} \xB7 ${canvasCountHighlights(nHigh)}`,
+      p.id
+    );
+  }
+  item.addedFrom = p.addedFrom;
+  return item;
+}
+function termItem(c, t, level, link) {
+  let item;
+  if (link && c.preset.structure.emit.term) {
+    item = c.file("term", "term", level, t.rep.canvasPath, false, t.rep.id);
+  } else if (c.preset.files.termNode === "file") {
+    item = c.file("term", "term", level, t.rep.notePath, true, t.rep.id);
+  } else {
+    item = c.text("term", "term", level, termText(c, t, false), t.rep.id);
+  }
+  item.paperIds = t.paperIds;
+  return item;
+}
+function moreItem(c, level, hidden, styleKind, notePath) {
+  const line = canvasMoreLine(hidden);
+  const text = notePath ? `${line}
+${wikilink(c.opts, notePath, CANVAS_COPY.fullList)}` : line;
+  return c.text("more", styleKind, level, text);
+}
+function makeGroup(c, ownerId, key, label, styleKind, level, items) {
+  const pad = c.preset.layout.groupPadding;
+  const gap = Math.max(16, round(c.preset.layout.siblingGap / 2));
+  const cols = Math.max(1, c.preset.layout.groupColumns);
+  const boxes = [];
+  let y = 0;
+  for (let i = 0; i < items.length; i += cols) {
+    const row = items.slice(i, i + cols);
+    let x = 0;
+    let rowH = 0;
+    for (const item of row) {
+      boxes.push({ id: item.id, x, y, width: item.width, height: item.height });
+      x += item.width + gap;
+      rowH = Math.max(rowH, item.height);
+    }
+    y += rowH + gap;
+  }
+  const rel = resolvePlacement(boxes, gap);
+  let minX = 0;
+  let minY = 0;
+  let maxX = 0;
+  let maxY = 0;
+  rel.forEach((p, i) => {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x + items[i].width);
+    maxY = Math.max(maxY, p.y + items[i].height);
+  });
+  const shifted = rel.map((p) => ({ x: p.x - minX + pad, y: p.y - minY + pad }));
+  const group = {
+    id: c.uid(`group:${ownerId}:${key}`),
+    label,
+    styleKind,
+    level,
+    items,
+    width: round(maxX - minX + pad * 2),
+    height: round(maxY - minY + pad * 2),
+    rel: shifted
+  };
+  return { id: group.id, group, children: [] };
+}
+function paperClusters(c, paper, level, ownerId) {
+  const g = c.preset.grouping;
+  const terms = sortTerms(
+    c.lib.terms.filter((t) => t.paperIds.includes(paper.id)),
+    c.preset
+  );
+  const highlights = sortHighlights(
+    c.lib.highlights.filter((h) => h.paperId === paper.id),
+    c.preset
+  );
+  const clusters = [];
+  if (g.terms !== "hidden" && terms.length > 0) {
+    const shown = g.maxTerms > 0 ? terms.slice(0, g.maxTerms) : terms;
+    const items = shown.map((t) => termItem(c, t, level, true));
+    if (shown.length < terms.length) {
+      items.push(moreItem(c, level, terms.length - shown.length, "term", paper.notePath));
+    }
+    clusters.push({ key: "terms", label: CANVAS_COPY.groupTerms, kind: "term", items });
+  }
+  if (g.highlights !== "hidden" && highlights.length > 0) {
+    const shown = g.maxHighlights > 0 ? highlights.slice(0, g.maxHighlights) : highlights;
+    const items = shown.map((h) => c.text("highlight", "highlight", level, highlightText(c, h), h.id));
+    if (shown.length < highlights.length) {
+      items.push(moreItem(c, level, highlights.length - shown.length, "highlight", paper.notePath));
+    }
+    clusters.push({ key: "highlights", label: CANVAS_COPY.groupHighlights, kind: "highlight", items });
+  }
+  if (g.notes !== "hidden" && c.preset.files.noteNodes[c.level]) {
+    const items = [c.file("note", "note", level, paper.notePath, false, `paper:${paper.id}`)];
+    if (g.terms !== "hidden" && c.preset.files.termNode !== "file") {
+      const shown = g.maxTerms > 0 ? terms.slice(0, g.maxTerms) : terms;
+      for (const t of shown) items.push(c.file("note", "note", level, t.rep.notePath, false, `term:${t.rep.id}`));
+    }
+    clusters.push({ key: "notes", label: CANVAS_COPY.groupNotes, kind: "note", items });
+  }
+  const separate = clusters.filter((cl) => (cl.key === "terms" ? g.terms : cl.key === "highlights" ? g.highlights : g.notes) === "separate");
+  const merged = clusters.filter((cl) => !separate.includes(cl));
+  const out = separate.map((cl) => makeGroup(c, ownerId, cl.key, cl.label, cl.kind, level, cl.items));
+  if (merged.length > 0) {
+    out.push(
+      makeGroup(
+        c,
+        ownerId,
+        "merged",
+        CANVAS_COPY.groupMerged,
+        merged[0].kind,
+        level,
+        merged.flatMap((cl) => cl.items)
+      )
+    );
+  }
+  return out;
+}
+function projectTermsGroup(c, project, level, ownerId) {
+  const g = c.preset.grouping;
+  if (g.projectTerms === "none" || g.terms === "hidden") return null;
+  const ids = new Set(project.papers.map((p) => p.id));
+  let terms = c.lib.terms.filter((t) => t.paperIds.some((id) => ids.has(id)));
+  if (g.projectTerms === "shared") {
+    terms = terms.filter((t) => t.paperIds.filter((id) => ids.has(id)).length >= 2);
+  }
+  if (terms.length === 0) return null;
+  const sorted = sortTerms(terms, c.preset);
+  const shown = g.maxTerms > 0 ? sorted.slice(0, g.maxTerms) : sorted;
+  const items = shown.map((t) => termItem(c, t, level, true));
+  if (shown.length < sorted.length) items.push(moreItem(c, level, sorted.length - shown.length, "term", null));
+  return makeGroup(c, ownerId, "project-terms", CANVAS_COPY.groupProjectTerms, "term", level, items);
+}
+function leaf(item) {
+  return { id: item.id, item, children: [] };
+}
+function emptyChild(c, text) {
+  return leaf(c.text("empty", null, 1, text));
+}
+function projectCanvasEmitted(preset, p) {
+  return p.id !== null || preset.structure.unassigned === "bucket";
+}
+function rootProjects(c) {
+  const list = sortProjects(c.lib.projects, c.preset);
+  if (c.preset.structure.unassigned === "bucket" && c.lib.unfiled.length > 0) list.push(c.lib.unassigned);
+  return list;
+}
+function papersUnder(c, papers, level, inline) {
+  return sortPapers(c.lib, papers, c.preset).map((paper) => {
+    const item = paperItem(c, paper, level, !inline);
+    const node = leaf(item);
+    if (inline) node.children = paperClusters(c, paper, level + 1, item.id);
+    return node;
+  });
+}
+function buildOverview(c) {
+  const s = c.preset.structure;
+  const lib = c.lib;
+  const inline = s.depth === 2;
+  if (s.root === "library" || s.root === "project") {
+    const projects = rootProjects(c);
+    const named = lib.projects.length;
+    const hubText = s.root === "library" ? hubLines(c, CANVAS_COPY.libraryHub, `${canvasCountProjects(named)} \xB7 ${canvasCountPapers(lib.papers.length)}`, libraryUrl2(c.opts)) : hubLines(c, CANVAS_COPY.projectsHub, canvasCountProjects(named), libraryUrl2(c.opts));
+    const hub2 = c.text("hub", "hub", 0, hubText.join("\n"), "root");
+    const root2 = leaf(hub2);
+    const inlinePapers = s.root === "library" && inline;
+    for (const project of projects) {
+      const item = projectItem(c, project, 1, !inlinePapers);
+      const node = leaf(item);
+      if (inlinePapers) node.children = papersUnder(c, project.papers, 2, false);
+      root2.children.push(node);
+    }
+    if (s.unassigned === "root") root2.children.push(...papersUnder(c, lib.unfiled, 1, false));
+    if (root2.children.length === 0) root2.children.push(emptyChild(c, CANVAS_COPY.emptyLibrary));
+    return root2;
+  }
+  if (s.root === "paper") {
+    const hub2 = c.text(
+      "hub",
+      "hub",
+      0,
+      hubLines(c, CANVAS_COPY.papersHub, canvasCountPapers(lib.papers.length), libraryUrl2(c.opts)).join("\n"),
+      "root"
+    );
+    const root2 = leaf(hub2);
+    const papers = s.unassigned === "hidden" ? lib.papers.filter((p) => p.projectIds.length > 0) : lib.papers;
+    root2.children = papersUnder(c, papers, 1, inline);
+    if (root2.children.length === 0) root2.children.push(emptyChild(c, CANVAS_COPY.emptyLibrary));
+    return root2;
+  }
+  const hub = c.text(
+    "hub",
+    "hub",
+    0,
+    hubLines(c, CANVAS_COPY.termsHub, canvasCountTerms(lib.terms.length), libraryUrl2(c.opts)).join("\n"),
+    "root"
+  );
+  const root = leaf(hub);
+  const sorted = sortTerms(lib.terms, c.preset);
+  const cap = c.preset.grouping.maxTerms;
+  const shown = cap > 0 ? sorted.slice(0, cap) : sorted;
+  for (const t of shown) {
+    const item = termItem(c, t, 1, !inline);
+    const node = leaf(item);
+    if (inline) {
+      const papers = t.paperIds.map((id) => lib.paperById.get(id)).filter((p) => Boolean(p));
+      node.children = sortPapers(lib, papers, c.preset).map((p) => leaf(paperItem(c, p, 2, true)));
+    }
+    root.children.push(node);
+  }
+  if (shown.length < sorted.length) root.children.push(leaf(moreItem(c, 1, sorted.length - shown.length, "term", null)));
+  if (root.children.length === 0) root.children.push(emptyChild(c, CANVAS_COPY.emptyTerms));
+  return root;
+}
+function buildProjectCanvas(c, project) {
+  var _a2;
+  const s = c.preset.structure;
+  const key = (_a2 = project.id) != null ? _a2 : "unassigned";
+  const counts = project.id === null ? CANVAS_COPY.unassignedHint : canvasCountPapers(project.papers.length);
+  const hub = c.text("hub", "hub", 0, hubLines(c, project.name, counts, libraryUrl2(c.opts)).join("\n"), `project:${key}`);
+  const root = leaf(hub);
+  const inline = s.root === "project" && s.depth === 2;
+  root.children = papersUnder(c, project.papers, 1, inline);
+  const terms = projectTermsGroup(c, project, 1, hub.id);
+  if (terms) root.children.push(terms);
+  if (root.children.length === 0) root.children.push(emptyChild(c, CANVAS_COPY.emptyProject));
+  if (c.preset.files.backlinkToParent && s.emit.overview) {
+    c.up.push(c.file("up", "note", 0, OVERVIEW_PATHS[s.root], false, "overview"));
+  }
+  return root;
+}
+function buildPaperCanvas(c, paper) {
+  var _a2;
+  const s = c.preset.structure;
+  const lib = c.lib;
+  const nTerms = paperTermCount(lib, paper);
+  const nHigh = lib.highlights.filter((h) => h.paperId === paper.id).length;
+  const hub = c.text(
+    "hub",
+    "hub",
+    0,
+    hubLines(c, paper.title, `${canvasCountTerms(nTerms)} \xB7 ${canvasCountHighlights(nHigh)}`, paperUrl(c.opts, paper.id)).join("\n"),
+    `paper:${paper.id}`
+  );
+  const root = leaf(hub);
+  root.children = paperClusters(c, paper, 1, hub.id);
+  if (c.preset.connections.backlinks && paper.addedFrom) {
+    const source = lib.paperById.get(paper.addedFrom);
+    if (source && source.id !== paper.id) root.children.push(leaf(paperItem(c, source, 1, true)));
+  }
+  if (root.children.length === 0) root.children.push(emptyChild(c, CANVAS_COPY.emptyPaper));
+  if (c.preset.files.backlinkToParent) {
+    const viaProjects = (s.root === "library" || s.root === "project") && s.emit.project && !(s.root === "library" && s.depth === 2);
+    let added = false;
+    if (viaProjects) {
+      const owners = paper.projectIds.map((id) => lib.projectById.get(id)).filter((p) => Boolean(p));
+      if (owners.length === 0 && s.unassigned === "bucket") owners.push(lib.unassigned);
+      for (const owner of sortProjects(owners, c.preset)) {
+        c.up.push(c.file("up", "note", 0, owner.canvasPath, false, `project:${(_a2 = owner.id) != null ? _a2 : "unassigned"}`));
+        added = true;
+      }
+    }
+    if (!added && s.emit.overview) c.up.push(c.file("up", "note", 0, OVERVIEW_PATHS[s.root], false, "overview"));
+  }
+  return root;
+}
+function buildTermCanvas(c, term) {
+  const s = c.preset.structure;
+  const lib = c.lib;
+  const lines = hubLines(c, `${term.rep.term}${term.rep.typeTag ? ` \xB7 ${term.rep.typeTag}` : ""}`, canvasTermInPapers(term.paperIds.length), term.paperIds.length > 0 ? paperUrl(c.opts, term.paperIds[0]) : null);
+  const full = termText(c, term, true).split("\n").slice(1);
+  const hub = c.text("hub", "hub", 0, [...lines, ...full].join("\n"), `term:${term.rep.id}`);
+  const root = leaf(hub);
+  const papers = term.paperIds.map((id) => lib.paperById.get(id)).filter((p) => Boolean(p));
+  root.children = sortPapers(lib, papers, c.preset).map((p) => leaf(paperItem(c, p, 1, true)));
+  const g = c.preset.grouping;
+  if (g.highlights !== "hidden") {
+    const hs = sortHighlights(lib.highlights.filter((h) => term.highlightIds.includes(h.id)), c.preset);
+    const shown = g.maxHighlights > 0 ? hs.slice(0, g.maxHighlights) : hs;
+    if (shown.length > 0) {
+      const items = shown.map((h) => c.text("highlight", "highlight", 1, highlightText(c, h), h.id));
+      if (shown.length < hs.length) items.push(moreItem(c, 1, hs.length - shown.length, "highlight", null));
+      root.children.push(makeGroup(c, hub.id, "highlights", CANVAS_COPY.groupHighlights, "highlight", 1, items));
+    }
+  }
+  if (g.notes !== "hidden" && c.preset.files.noteNodes.term) {
+    const note = c.file("note", "note", 1, term.rep.notePath, false, `term:${term.rep.id}`);
+    root.children.push(makeGroup(c, hub.id, "notes", CANVAS_COPY.groupNotes, "note", 1, [note]));
+  }
+  if (c.preset.files.backlinkToParent && s.emit.overview) {
+    c.up.push(c.file("up", "note", 0, OVERVIEW_PATHS[s.root], false, "overview"));
+  }
+  return root;
+}
+function toBlock(tree) {
+  var _a2;
+  const size2 = (_a2 = tree.group) != null ? _a2 : tree.item;
+  return {
+    id: tree.id,
+    width: size2 ? size2.width : 0,
+    height: size2 ? size2.height : 0,
+    padTop: tree.group ? GROUP_LABEL_BAND : 0,
+    children: tree.children.map(toBlock)
+  };
+}
+function colorFor(c, styleKind, level) {
+  const look = c.preset.look;
+  if (look.colorMode === "plain") return void 0;
+  if (look.colorMode === "level") return look.levelColors[Math.min(level, look.levelColors.length - 1)];
+  return styleKind ? look.kindColors[styleKind] : void 0;
+}
+function nearestSides(a, b) {
+  const dx = b.x + b.width / 2 - (a.x + a.width / 2);
+  const dy = b.y + b.height / 2 - (a.y + a.height / 2);
+  if (Math.abs(dx) > Math.abs(dy)) return dx >= 0 ? ["right", "left"] : ["left", "right"];
+  return dy >= 0 ? ["bottom", "top"] : ["top", "bottom"];
+}
+function flowSides(c, a, b) {
+  const algo = c.preset.layout.algorithm;
+  if (c.preset.connections.sides === "nearest" || algo === "radial" || algo === "grid") return nearestSides(a, b);
+  if (algo === "tree-LR") {
+    return b.x >= a.x + a.width ? ["right", "left"] : nearestSides(a, b);
+  }
+  return b.y >= a.y + a.height ? ["bottom", "top"] : nearestSides(a, b);
+}
+function render(c, root) {
+  var _a2, _b, _c, _d, _e, _f;
+  const p = c.preset;
+  const block = toBlock(root);
+  const desired = layoutTree(block, p.layout.algorithm, {
+    siblingGap: p.layout.siblingGap,
+    levelGap: p.layout.levelGap,
+    gridColumns: p.layout.gridColumns
+  });
+  const order = [];
+  const queue = [root];
+  for (let i = 0; i < queue.length; i += 1) {
+    order.push(queue[i]);
+    queue.push(...queue[i].children);
+  }
+  const boxes = order.map((t) => {
+    var _a3, _b2;
+    const at = (_a3 = desired.get(t.id)) != null ? _a3 : { x: 0, y: 0 };
+    const size2 = (_b2 = t.group) != null ? _b2 : t.item;
+    return {
+      id: t.id,
+      x: at.x,
+      y: at.y,
+      width: size2 ? size2.width : 0,
+      height: size2 ? size2.height : 0,
+      padTop: t.group ? GROUP_LABEL_BAND : 0
+    };
+  });
+  if (c.up.length > 0) {
+    const hubAt = (_a2 = desired.get(root.id)) != null ? _a2 : { x: 0, y: 0 };
+    const hubW = root.item ? root.item.width : 0;
+    let top = Number.POSITIVE_INFINITY;
+    for (const b of boxes) top = Math.min(top, b.y - ((_b = b.padTop) != null ? _b : 0));
+    const gap = p.layout.siblingGap;
+    const rowW = c.up.reduce((sum, u, i) => sum + u.width + (i > 0 ? gap : 0), 0);
+    const rowH = Math.max(...c.up.map((u) => u.height));
+    let x = hubAt.x + hubW / 2 - rowW / 2;
+    for (const u of c.up) {
+      boxes.splice(1 + c.up.indexOf(u), 0, {
+        id: u.id,
+        x,
+        y: top - p.layout.levelGap - rowH,
+        width: u.width,
+        height: u.height
+      });
+      x += u.width + gap;
+    }
+  }
+  const margin = Math.max(24, Math.min(p.layout.siblingGap, p.layout.levelGap));
+  const placed = resolvePlacement(boxes, margin);
+  const pos = /* @__PURE__ */ new Map();
+  boxes.forEach((b, i) => pos.set(b.id, placed[i]));
+  const groups = [];
+  const nodes = [];
+  const rects = /* @__PURE__ */ new Map();
+  const kindOf = /* @__PURE__ */ new Map();
+  const emitItem = (item, x, y) => {
+    var _a3, _b2;
+    const color2 = colorFor(c, item.styleKind, item.level);
+    const base = {
+      id: item.id,
+      x: round(x),
+      y: round(y),
+      width: item.width,
+      height: item.height,
+      ...color2 ? { color: color2 } : {},
+      paperCollege: item.entityId ? { kind: item.kind, entityId: item.entityId } : { kind: item.kind }
+    };
+    const node = item.type === "file" ? { ...base, type: "file", file: (_a3 = item.file) != null ? _a3 : "" } : { ...base, type: "text", text: (_b2 = item.text) != null ? _b2 : "" };
+    nodes.push(node);
+    rects.set(item.id, { x: node.x, y: node.y, width: node.width, height: node.height });
+    kindOf.set(item.id, { styleKind: item.styleKind, level: item.level });
+  };
+  const upIds = new Set(c.up.map((u) => u.id));
+  for (const b of boxes) {
+    if (!upIds.has(b.id)) continue;
+    const u = c.up.find((x) => x.id === b.id);
+    const at = pos.get(b.id);
+    if (u && at) emitItem(u, at.x, at.y);
+  }
+  for (const t of order) {
+    const at = (_c = pos.get(t.id)) != null ? _c : { x: 0, y: 0 };
+    if (t.item) emitItem(t.item, at.x, at.y);
+    if (t.group) {
+      const g = t.group;
+      const color2 = colorFor(c, g.styleKind, g.level);
+      groups.push({
+        id: g.id,
+        type: "group",
+        x: at.x,
+        y: at.y,
+        width: g.width,
+        height: g.height,
+        label: g.label,
+        ...color2 ? { color: color2 } : {},
+        paperCollege: { kind: "group" }
+      });
+      rects.set(g.id, { x: at.x, y: at.y, width: g.width, height: g.height });
+      kindOf.set(g.id, { styleKind: g.styleKind, level: g.level });
+      g.items.forEach((item, i) => emitItem(item, at.x + g.rel[i].x, at.y + g.rel[i].y));
+    }
+  }
+  const edges = [];
+  const seen = /* @__PURE__ */ new Set();
+  const connect = (from, to, kind) => {
+    if (from === to) return;
+    const a = rects.get(from);
+    const b = rects.get(to);
+    if (!a || !b) return;
+    const id = `edge:${from}->${to}`;
+    if (seen.has(id) || seen.has(`edge:${to}->${from}`)) return;
+    seen.add(id);
+    const [fromSide, toSide] = kind === "tree" ? flowSides(c, a, b) : nearestSides(a, b);
+    const target = kindOf.get(to);
+    const color2 = target ? colorFor(c, target.styleKind, target.level) : void 0;
+    edges.push({
+      id,
+      fromNode: from,
+      toNode: to,
+      fromSide,
+      toSide,
+      fromEnd: "none",
+      toEnd: p.connections.arrow === "end" ? "arrow" : "none",
+      ...color2 ? { color: color2 } : {}
+    });
+  };
+  for (const t of order) {
+    for (const child of t.children) connect(t.id, child.id, "tree");
+  }
+  if (p.connections.siblings) {
+    for (const t of order) {
+      for (let i = 1; i < t.children.length; i += 1) connect(t.children[i - 1].id, t.children[i].id, "other");
+    }
+  }
+  if (p.connections.backlinks) {
+    const allItems = [];
+    for (const t of order) {
+      if (t.item) allItems.push(t.item);
+      if (t.group) allItems.push(...t.group.items);
+    }
+    const paperNodes = /* @__PURE__ */ new Map();
+    for (const item of allItems) {
+      if (item.kind === "paper" && item.entityId) {
+        const list = (_d = paperNodes.get(item.entityId)) != null ? _d : [];
+        list.push(item.id);
+        paperNodes.set(item.entityId, list);
+      }
+    }
+    for (const item of allItems) {
+      if (item.kind === "term" && item.paperIds) {
+        for (const pid of item.paperIds) for (const target of (_e = paperNodes.get(pid)) != null ? _e : []) connect(item.id, target, "other");
+      }
+      if (item.kind === "paper" && item.addedFrom) {
+        for (const target of (_f = paperNodes.get(item.addedFrom)) != null ? _f : []) connect(item.id, target, "other");
+      }
+    }
+  }
+  return {
+    nodes: [...groups, ...nodes],
+    edges,
+    paperCollege: { canvas: c.level, presetId: p.id, schemaVersion: 3, source: "paper.college" }
+  };
+}
+function generateCanvases(payload, preset, options = {}) {
+  var _a2, _b;
+  const opts = {
+    origin: (_a2 = options.origin) != null ? _a2 : DEFAULT_ORIGIN,
+    folder: (_b = options.folder) != null ? _b : ""
+  };
+  const lib = resolveLibrary(payload, preset);
+  const s = preset.structure;
+  const out = [];
+  const make = (level) => new Canvas(lib, preset, level, opts);
+  if (s.emit.overview) {
+    const c = make("overview");
+    out.push({ path: OVERVIEW_PATHS[s.root], document: render(c, buildOverview(c)) });
+  }
+  if (s.emit.project && (s.root === "library" || s.root === "project")) {
+    const projects = rootProjects(make("project"));
+    for (const project of projects) {
+      if (!projectCanvasEmitted(preset, project)) continue;
+      const c = make("project");
+      out.push({ path: project.canvasPath, document: render(c, buildProjectCanvas(c, project)) });
+    }
+  }
+  if (s.emit.paper) {
+    for (const paper of sortPapers(lib, lib.papers, preset)) {
+      const c = make("paper");
+      out.push({ path: paper.canvasPath, document: render(c, buildPaperCanvas(c, paper)) });
+    }
+  }
+  if (s.emit.term) {
+    for (const term of sortTerms(lib.terms, preset)) {
+      const c = make("term");
+      out.push({ path: term.rep.canvasPath, document: render(c, buildTermCanvas(c, term)) });
+    }
+  }
+  return out;
+}
+function serializeCanvas(document2) {
+  return `${JSON.stringify(document2, null, 2)}
+`;
+}
+
+// src/canvas/css-injector.ts
+function folderRelativePath(vaultPath, folder) {
+  const f = folder.replace(/^\/+|\/+$/g, "");
+  const p = vaultPath.replace(/^\/+/, "");
+  if (!f) return p;
+  return p.startsWith(`${f}/`) ? p.slice(f.length + 1) : null;
+}
+function isGeneratedCanvasFile(vaultPath, folder, manifest) {
+  if (!vaultPath.endsWith(".canvas")) return false;
+  const rel = folderRelativePath(vaultPath, folder);
+  if (rel === null) return false;
+  if (manifest && manifest.folder === folder && manifest.paths.includes(rel)) return true;
+  return isGeneratedCanvasPath(rel);
+}
+function parseGeneratedCanvas(text) {
+  var _a2;
+  try {
+    const doc = JSON.parse(text);
+    if (!doc || typeof doc !== "object" || !Array.isArray(doc.nodes)) return null;
+    if (((_a2 = doc.paperCollege) == null ? void 0 : _a2.source) !== "paper.college") return null;
+    return {
+      nodes: doc.nodes,
+      edges: Array.isArray(doc.edges) ? doc.edges : [],
+      paperCollege: doc.paperCollege
+    };
+  } catch (e) {
+    return null;
+  }
+}
+function kindForFilePath(path) {
+  if (/^(Projects|Papers|Terms)\.canvas$/.test(path)) return "up";
+  if (/^Projects\/[^/]+\.canvas$/.test(path)) return "project";
+  if (/^Papers\/[^/]+\.md$/.test(path)) return "paper";
+  if (/^Papers\/(?:[^/]+\/)?[^/]+\.canvas$/.test(path)) return "paper";
+  if (/^Glossary\/[^/]+\.md$/.test(path)) return "term";
+  if (/^Terms\/[^/]+\.canvas$/.test(path)) return "term";
+  return null;
+}
+function documentNodeKind(node) {
+  var _a2;
+  if ((_a2 = node.paperCollege) == null ? void 0 : _a2.kind) return node.paperCollege.kind;
+  if (node.type === "group") return "group";
+  if (node.type === "file") return kindForFilePath(node.file);
+  return null;
+}
+function geometryKey(x, y, width, height) {
+  return `${Math.round(x)},${Math.round(y)},${Math.round(width)},${Math.round(height)}`;
+}
+function geometryFromStyle(style) {
+  var _a2, _b, _c;
+  const m = /translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/.exec((_a2 = style.transform) != null ? _a2 : "");
+  const w = parseFloat((_b = style.width) != null ? _b : "");
+  const h = parseFloat((_c = style.height) != null ? _c : "");
+  if (!m || !Number.isFinite(w) || !Number.isFinite(h)) return null;
+  return geometryKey(parseFloat(m[1]), parseFloat(m[2]), w, h);
+}
+function basename(path) {
+  var _a2;
+  const last = (_a2 = path.split("/").pop()) != null ? _a2 : path;
+  return last.replace(/\.(md|canvas)$/, "");
+}
+function buildKindIndex(document2) {
+  const byGeometry = /* @__PURE__ */ new Map();
+  const byFileName = /* @__PURE__ */ new Map();
+  for (const node of document2.nodes) {
+    const kind = documentNodeKind(node);
+    if (!kind) continue;
+    byGeometry.set(geometryKey(node.x, node.y, node.width, node.height), kind);
+    if (node.type === "file") byFileName.set(basename(node.file), kind);
+  }
+  return { byGeometry, byFileName };
+}
+var SCOPE = `.${CANVAS_SCOPE_CLASS}`;
+var SCOPE_TOKEN_RE = new RegExp(`\\.${CANVAS_SCOPE_CLASS}(?![\\w-])`);
+var THEME_PREFIX_RE = /^((?:body|html)?\.theme-(?:light|dark))\s+(?![>+~])/;
+var NESTING_AT_RULES = /^@(media|supports|container|layer|document)\b/i;
+var VERBATIM_AT_RULES = /^@(-webkit-|-moz-)?(keyframes|font-face|counter-style|property)\b/i;
+function splitTopLevel(input, sep) {
+  const out = [];
+  let depth = 0;
+  let quote = null;
+  let start = 0;
+  for (let i = 0; i < input.length; i++) {
+    const c = input[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'") quote = c;
+    else if (c === "(" || c === "[") depth++;
+    else if (c === ")" || c === "]") depth = Math.max(0, depth - 1);
+    else if (c === sep && depth === 0) {
+      out.push(input.slice(start, i));
+      start = i + 1;
+    }
+  }
+  out.push(input.slice(start));
+  return out;
+}
+function isScopedSelector(selector) {
+  let depth = 0;
+  let quote = null;
+  let flat = "";
+  for (let i = 0; i < selector.length; i++) {
+    const c = selector[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = null;
+      flat += " ";
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      quote = c;
+      flat += " ";
+    } else if (c === "(" || c === "[") {
+      depth++;
+      flat += " ";
+    } else if (c === ")" || c === "]") {
+      depth = Math.max(0, depth - 1);
+      flat += " ";
+    } else {
+      flat += depth === 0 ? c : " ";
+    }
+  }
+  const match = SCOPE_TOKEN_RE.exec(flat);
+  if (!match) return false;
+  const rest = flat.slice(match.index + match[0].length);
+  const combinator = /^[^\s>+~]*\s*([>+~]?)/.exec(rest);
+  const next = combinator ? combinator[1] : "";
+  if (next === "+" || next === "~") return false;
+  return true;
+}
+function scopeSelector(selector) {
+  const s = selector.trim();
+  if (!s) return s;
+  if (isScopedSelector(s)) return s;
+  if (/^(:root|html|body)$/.test(s)) return SCOPE;
+  const theme = THEME_PREFIX_RE.exec(s);
+  if (theme) return `${theme[1]} ${SCOPE} ${s.slice(theme[0].length)}`;
+  if (/^(\.theme-(light|dark)|body\.theme-(light|dark))$/.test(s)) return `${s} ${SCOPE}`;
+  return `${SCOPE} ${s}`;
+}
+function stripComments(css2) {
+  return css2.replace(/\/\*[\s\S]*?\*\//g, "");
+}
+function matchBrace(css2, open) {
+  let depth = 0;
+  let quote = null;
+  for (let i = open; i < css2.length; i++) {
+    const c = css2[i];
+    if (quote) {
+      if (c === "\\") i++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+function scopeBlock(css2) {
+  const out = [];
+  let i = 0;
+  while (i < css2.length) {
+    const open = css2.indexOf("{", i);
+    const semi = css2.indexOf(";", i);
+    if (semi !== -1 && (open === -1 || semi < open)) {
+      i = semi + 1;
+      continue;
+    }
+    if (open === -1) break;
+    const close = matchBrace(css2, open);
+    if (close === -1) break;
+    const prelude = css2.slice(i, open).trim();
+    const body = css2.slice(open + 1, close);
+    i = close + 1;
+    if (!prelude) continue;
+    if (prelude.startsWith("@")) {
+      if (NESTING_AT_RULES.test(prelude)) out.push(`${prelude} {
+${scopeBlock(body)}
+}`);
+      else if (VERBATIM_AT_RULES.test(prelude)) out.push(`${prelude} {${body}}`);
+      continue;
+    }
+    const selectors = splitTopLevel(prelude, ",").map(scopeSelector).filter((sel) => sel.length > 0);
+    if (selectors.length === 0) continue;
+    out.push(`${selectors.join(",\n")} {${body}}`);
+  }
+  return out.join("\n");
+}
+function scopeCss(css2) {
+  return scopeBlock(stripComments(css2 != null ? css2 : ""));
+}
+var NODE_SELECTOR = ".canvas-node";
+var CanvasCssInjector = class {
+  constructor() {
+    this.css = "";
+    this.sheets = /* @__PURE__ */ new Map();
+    this.attached = /* @__PURE__ */ new Map();
+  }
+  /** Sets the active preset's raw CSS (scoped here) and updates every adopted sheet. */
+  setCss(rawCss) {
+    this.css = scopeCss(rawCss);
+    this.sheets.forEach((sheet) => sheet.replaceSync(this.css));
+  }
+  /** Scopes `container` (a canvas view's container) for `document`, tagging file nodes. */
+  attach(container, document2) {
+    const index = buildKindIndex(document2);
+    const existing = this.attached.get(container);
+    if (existing) {
+      existing.index = index;
+      this.tagAll(container, index);
+      return;
+    }
+    container.classList.add(CANVAS_SCOPE_CLASS);
+    this.adopt(container.ownerDocument);
+    const entry = {
+      index,
+      frame: null,
+      observer: new MutationObserver(() => {
+        const win = container.ownerDocument.defaultView;
+        if (!win || entry.frame !== null) return;
+        entry.frame = win.requestAnimationFrame(() => {
+          entry.frame = null;
+          this.tagAll(container, entry.index);
+        });
+      })
+    };
+    entry.observer.observe(container, { childList: true, subtree: true });
+    this.attached.set(container, entry);
+    this.tagAll(container, index);
+  }
+  /** Removes the scope from `container`; drops the stylesheet when its document has none left. */
+  detach(container) {
+    var _a2;
+    const entry = this.attached.get(container);
+    if (!entry) return;
+    entry.observer.disconnect();
+    if (entry.frame !== null) (_a2 = container.ownerDocument.defaultView) == null ? void 0 : _a2.cancelAnimationFrame(entry.frame);
+    this.attached.delete(container);
+    container.classList.remove(CANVAS_SCOPE_CLASS);
+    container.querySelectorAll(`${NODE_SELECTOR}[${KIND_MARKER_ATTR}]`).forEach((el) => {
+      el.removeAttribute(KIND_MARKER_ATTR);
+    });
+    const doc = container.ownerDocument;
+    let stillUsed = false;
+    this.attached.forEach((_entry, el) => {
+      if (el.ownerDocument === doc) stillUsed = true;
+    });
+    if (!stillUsed) this.unadopt(doc);
+  }
+  /** Detaches every container not in `keep`. */
+  retainOnly(keep) {
+    for (const el of Array.from(this.attached.keys())) {
+      if (!keep.has(el) || !el.isConnected) this.detach(el);
+    }
+  }
+  isAttached(container) {
+    return this.attached.has(container);
+  }
+  destroy() {
+    for (const el of Array.from(this.attached.keys())) this.detach(el);
+    this.sheets.forEach((_sheet, doc) => this.unadopt(doc));
+    this.sheets.clear();
+  }
+  adopt(doc) {
+    if (this.sheets.has(doc)) return;
+    const win = doc.defaultView;
+    if (!win) return;
+    const sheet = new win.CSSStyleSheet();
+    sheet.replaceSync(this.css);
+    doc.adoptedStyleSheets = [...doc.adoptedStyleSheets, sheet];
+    this.sheets.set(doc, sheet);
+  }
+  unadopt(doc) {
+    const sheet = this.sheets.get(doc);
+    if (!sheet) return;
+    doc.adoptedStyleSheets = doc.adoptedStyleSheets.filter((s) => s !== sheet);
+    this.sheets.delete(doc);
+  }
+  tagAll(container, index) {
+    container.querySelectorAll(NODE_SELECTOR).forEach((el) => {
+      const kind = kindForElement(el, index);
+      if (kind) {
+        if (el.getAttribute(KIND_MARKER_ATTR) !== kind) el.setAttribute(KIND_MARKER_ATTR, kind);
+      } else if (el.hasAttribute(KIND_MARKER_ATTR)) {
+        el.removeAttribute(KIND_MARKER_ATTR);
+      }
+    });
+  }
+};
+function kindForElement(el, index) {
+  var _a2, _b;
+  const key = geometryFromStyle({
+    transform: el.style.transform,
+    width: el.style.width,
+    height: el.style.height
+  });
+  if (key) {
+    const kind = index.byGeometry.get(key);
+    if (kind) return kind;
+  }
+  const label = el.querySelector(".canvas-node-label, .markdown-embed-title, .file-embed-title");
+  const name = (_a2 = label == null ? void 0 : label.textContent) == null ? void 0 : _a2.trim();
+  return name ? (_b = index.byFileName.get(name)) != null ? _b : null : null;
+}
+
+// src/canvas/presets.ts
+var DEFAULT_PRESET_ID = "library-tree";
+var PAPER_PALETTE = {
+  hub: { light: "#4f46e5", dark: "#818cf8" },
+  project: { light: "#4f46e5", dark: "#818cf8" },
+  paper: { light: "#737373", dark: "#a3a3a3" },
+  term: { light: "#2563eb", dark: "#60a5fa" },
+  highlight: { light: "#d97706", dark: "#fbbf24" },
+  note: { light: "#0d9488", dark: "#2dd4bf" }
+};
+var KINDS = ["hub", "project", "paper", "term", "highlight", "note"];
+function paletteVars(theme) {
+  return KINDS.map((k) => `  --paper-canvas-${k}: ${PAPER_PALETTE[k][theme]};`).join("\n");
+}
+function kindSelector(kind) {
+  return `.${CANVAS_SCOPE_CLASS} .canvas-node[${KIND_MARKER_ATTR}="${kind}"], .${CANVAS_SCOPE_CLASS} .canvas-node:has(.${KIND_MARKER_CLASS}[${KIND_MARKER_ATTR}="${kind}"])`;
+}
+function baseCanvasCss() {
+  const scope = `.${CANVAS_SCOPE_CLASS}`;
+  const rules = KINDS.map(
+    (k) => `${kindSelector(k)} {
+  --paper-canvas-kind-color: var(--paper-canvas-${k});
+}`
+  ).join("\n");
+  return [
+    `.theme-light ${scope} {
+${paletteVars("light")}
+  --paper-canvas-tint: 8%;
+  --paper-canvas-radius: 10px;
+}`,
+    `.theme-dark ${scope} {
+${paletteVars("dark")}
+  --paper-canvas-tint: 14%;
+  --paper-canvas-radius: 10px;
+}`,
+    rules,
+    `${scope} .canvas-node[${KIND_MARKER_ATTR}] .canvas-node-container,
+${scope} .canvas-node:has(.${KIND_MARKER_CLASS}) .canvas-node-container {
+  border-color: var(--paper-canvas-kind-color);
+  border-radius: var(--paper-canvas-radius);
+  background-color: color-mix(in srgb, var(--paper-canvas-kind-color) var(--paper-canvas-tint), var(--background-primary));
+}`,
+    `${scope} .${KIND_MARKER_CLASS} {
+  display: none;
+}`
+  ].join("\n\n");
+}
+function css(extra) {
+  return extra ? `${baseCanvasCss()}
+
+${extra.trim()}` : baseCanvasCss();
+}
+var S = `.${CANVAS_SCOPE_CLASS}`;
+function size(minWidth, maxWidth, minHeight, maxHeight) {
+  return { minWidth, maxWidth, minHeight, maxHeight };
+}
+var BASE = {
+  structure: {
+    root: "library",
+    depth: 3,
+    emit: { overview: true, project: true, paper: true, term: false },
+    unassigned: "bucket"
+  },
+  grouping: {
+    terms: "separate",
+    highlights: "separate",
+    notes: "separate",
+    projectTerms: "shared",
+    sort: "alpha",
+    maxTerms: 30,
+    maxHighlights: 30
+  },
+  layout: {
+    algorithm: "tree-TB",
+    siblingGap: 48,
+    levelGap: 120,
+    groupPadding: 24,
+    groupColumns: 3,
+    gridColumns: 0,
+    sizing: "fixed",
+    maxLines: 8,
+    sizes: {
+      hub: size(240, 340, 100, 220),
+      project: size(200, 280, 80, 160),
+      paper: size(220, 280, 80, 200),
+      term: size(220, 280, 80, 260),
+      highlight: size(240, 320, 80, 260),
+      note: size(200, 260, 64, 320)
+    }
+  },
+  connections: { siblings: false, backlinks: false, arrow: "end", sides: "flow" },
+  look: {
+    colorMode: "kind",
+    kindColors: {
+      hub: PAPER_PALETTE.hub.light,
+      project: PAPER_PALETTE.project.light,
+      paper: PAPER_PALETTE.paper.light,
+      term: PAPER_PALETTE.term.light,
+      highlight: PAPER_PALETTE.highlight.light,
+      note: PAPER_PALETTE.note.light
+    },
+    levelColors: ["#4f46e5", "#818cf8", "#737373", "#2563eb"],
+    hubText: "counts",
+    termText: "definition",
+    highlightText: "page"
+  },
+  files: {
+    noteNodes: { overview: false, project: false, paper: true, term: true },
+    paperNode: "text",
+    termNode: "text",
+    backlinkToParent: true,
+    paperFolders: "project"
+  },
+  css: css("")
+};
+function define(id, o) {
+  var _a2, _b, _c, _d, _e, _f, _g;
+  const copy = CANVAS_PRESET_COPY[id];
+  return {
+    id,
+    name: copy.name,
+    description: copy.description,
+    structure: {
+      ...BASE.structure,
+      ...o.structure,
+      emit: { ...BASE.structure.emit, ...(_a2 = o.structure) == null ? void 0 : _a2.emit }
+    },
+    grouping: { ...BASE.grouping, ...o.grouping },
+    layout: {
+      ...BASE.layout,
+      ...o.layout,
+      sizes: { ...BASE.layout.sizes, ...(_b = o.layout) == null ? void 0 : _b.sizes }
+    },
+    connections: { ...BASE.connections, ...o.connections },
+    look: {
+      ...BASE.look,
+      ...o.look,
+      kindColors: { ...BASE.look.kindColors, ...(_c = o.look) == null ? void 0 : _c.kindColors },
+      levelColors: (_e = (_d = o.look) == null ? void 0 : _d.levelColors) != null ? _e : [...BASE.look.levelColors]
+    },
+    files: {
+      ...BASE.files,
+      ...o.files,
+      noteNodes: { ...BASE.files.noteNodes, ...(_f = o.files) == null ? void 0 : _f.noteNodes }
+    },
+    css: (_g = o.css) != null ? _g : BASE.css
+  };
+}
+var PRESETS = [
+  // 1 — default.
+  define("library-tree", {}),
+  define("library-radial", {
+    layout: { algorithm: "radial", siblingGap: 56, levelGap: 140 },
+    connections: { arrow: "none", sides: "nearest" },
+    css: css(`${S} .canvas-node-container {
+  border-width: 2px;
+}`)
+  }),
+  define("library-columns", {
+    structure: { depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "bucket" },
+    layout: { algorithm: "columns", siblingGap: 40, levelGap: 64 },
+    connections: { arrow: "none" },
+    css: css(`${kindSelector("project")} .canvas-node-container {
+  border-width: 3px;
+}`)
+  }),
+  define("project-tree", {
+    structure: { root: "project", depth: 2, emit: { overview: true, project: true, paper: false, term: false }, unassigned: "bucket" },
+    grouping: { maxTerms: 12, maxHighlights: 12, projectTerms: "shared" },
+    files: { noteNodes: { project: true } }
+  }),
+  define("project-radial", {
+    structure: { root: "project", depth: 3, unassigned: "bucket" },
+    layout: { algorithm: "radial", siblingGap: 56, levelGap: 140 },
+    connections: { arrow: "none", sides: "nearest" }
+  }),
+  define("paper-columns", {
+    structure: { root: "paper", depth: 2, emit: { overview: true, project: false, paper: false, term: false }, unassigned: "root" },
+    grouping: { maxTerms: 10, maxHighlights: 10 },
+    layout: { algorithm: "columns", groupColumns: 1, levelGap: 64 },
+    files: { noteNodes: { overview: true } }
+  }),
+  define("paper-radial", {
+    structure: { root: "paper", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { notes: "hidden", maxTerms: 8, maxHighlights: 8 },
+    layout: { algorithm: "radial", groupColumns: 2, siblingGap: 56, levelGap: 140 },
+    connections: { arrow: "none", sides: "nearest" }
+  }),
+  define("term-tree", {
+    structure: { root: "term", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { sort: "alpha", maxTerms: 60 },
+    layout: { algorithm: "tree-LR", siblingGap: 32, levelGap: 160 },
+    look: { termText: "term" }
+  }),
+  define("term-radial", {
+    structure: { root: "term", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { sort: "shared", maxTerms: 48 },
+    layout: { algorithm: "radial", siblingGap: 40, levelGap: 140 },
+    connections: { arrow: "none", sides: "nearest" },
+    look: { termText: "term" }
+  }),
+  define("library-flat", {
+    structure: { depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { terms: "merged", highlights: "merged", notes: "merged" }
+  }),
+  // 11–20 — custom presets; each sets colours, sizes and CSS of its own.
+  define("reading-desk", {
+    structure: { root: "paper", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { sort: "date", terms: "separate", highlights: "separate", notes: "hidden", maxTerms: 12, maxHighlights: 16 },
+    layout: {
+      algorithm: "columns",
+      sizing: "fit",
+      groupColumns: 1,
+      siblingGap: 56,
+      levelGap: 72,
+      sizes: { highlight: size(260, 380, 80, 320), term: size(200, 300, 64, 200) }
+    },
+    connections: { arrow: "none" },
+    look: {
+      kindColors: { hub: "#b45309", paper: "#78716c", highlight: "#d97706", term: "#2563eb" },
+      termText: "term"
+    },
+    css: css(`.theme-light ${S} {
+  --paper-canvas-hub: #b45309;
+  --paper-canvas-tint: 12%;
+}
+.theme-dark ${S} {
+  --paper-canvas-hub: #f59e0b;
+}
+${kindSelector("highlight")} .canvas-node-content {
+  font-family: var(--font-text-theme, serif);
+  font-style: italic;
+}`)
+  }),
+  define("glossary-atlas", {
+    structure: { root: "term", depth: 3, emit: { overview: true, project: false, paper: true, term: true }, unassigned: "root" },
+    grouping: { sort: "shared", maxTerms: 80, maxHighlights: 12 },
+    layout: { algorithm: "grid", gridColumns: 8, siblingGap: 32, levelGap: 96, sizes: { term: size(200, 240, 64, 140) } },
+    connections: { arrow: "none" },
+    look: { termText: "term", kindColors: { hub: "#1d4ed8", term: "#2563eb" } },
+    files: { termNode: "text" },
+    css: css(`.theme-light ${S} {
+  --paper-canvas-hub: #1d4ed8;
+}
+.theme-dark ${S} {
+  --paper-canvas-hub: #93c5fd;
+}
+${kindSelector("term")} .canvas-node-container {
+  border-radius: 999px;
+}`)
+  }),
+  define("highlight-reel", {
+    structure: { root: "paper", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { terms: "hidden", highlights: "separate", notes: "hidden", maxHighlights: 40 },
+    layout: { algorithm: "tree-LR", groupColumns: 4, siblingGap: 40, levelGap: 120, sizes: { highlight: size(260, 300, 96, 220) } },
+    look: { highlightText: "page", kindColors: { hub: "#d97706", highlight: "#f59e0b" } },
+    css: css(`.theme-light ${S} {
+  --paper-canvas-hub: #d97706;
+  --paper-canvas-highlight: #f59e0b;
+}
+.theme-dark ${S} {
+  --paper-canvas-hub: #fbbf24;
+  --paper-canvas-highlight: #fcd34d;
+}`)
+  }),
+  define("citation-web", {
+    structure: { depth: 2, emit: { overview: true, project: true, paper: true, term: false }, unassigned: "bucket" },
+    grouping: { projectTerms: "shared" },
+    layout: { algorithm: "radial", siblingGap: 64, levelGap: 160 },
+    connections: { backlinks: true, arrow: "none", sides: "nearest" },
+    look: { colorMode: "level", levelColors: ["#4f46e5", "#7c3aed", "#737373", "#2563eb"] },
+    css: css(`${S} .canvas-edges path.canvas-display-path {
+  stroke-opacity: 0.6;
+}`)
+  }),
+  define("minimal-outline", {
+    structure: { depth: 3 },
+    grouping: { notes: "hidden", terms: "merged", highlights: "merged", maxTerms: 20, maxHighlights: 20 },
+    layout: { algorithm: "tree-LR", siblingGap: 24, levelGap: 96, maxLines: 3, sizes: { term: size(180, 220, 56, 120), highlight: size(200, 240, 56, 120) } },
+    connections: { arrow: "none" },
+    look: { colorMode: "plain", hubText: "title", termText: "term", highlightText: "text" },
+    files: { noteNodes: { paper: false, term: false } },
+    css: css(`${S} .canvas-node-container {
+  border-color: var(--background-modifier-border) !important;
+  background-color: transparent !important;
+  box-shadow: none;
+}`)
+  }),
+  define("study-board", {
+    structure: { root: "project", depth: 2, emit: { overview: true, project: true, paper: false, term: false }, unassigned: "bucket" },
+    grouping: { terms: "merged", highlights: "merged", notes: "hidden", maxTerms: 16, maxHighlights: 8 },
+    layout: {
+      algorithm: "grid",
+      gridColumns: 4,
+      groupColumns: 2,
+      siblingGap: 56,
+      levelGap: 96,
+      maxLines: 14,
+      sizes: { term: size(300, 380, 120, 360), highlight: size(300, 380, 100, 300), paper: size(260, 320, 96, 200) }
+    },
+    look: { termText: "definition", kindColors: { term: "#0d9488", hub: "#4338ca" } },
+    css: css(`.theme-light ${S} {
+  --paper-canvas-term: #0d9488;
+}
+.theme-dark ${S} {
+  --paper-canvas-term: #2dd4bf;
+}
+${S} .canvas-node-content {
+  font-size: 1.05em;
+}`)
+  }),
+  define("project-kanban", {
+    structure: { root: "library", depth: 2, emit: { overview: true, project: true, paper: true, term: false }, unassigned: "bucket" },
+    grouping: { sort: "date" },
+    layout: { algorithm: "columns", siblingGap: 32, levelGap: 48, sizes: { paper: size(240, 260, 64, 120), project: size(240, 260, 64, 120) } },
+    connections: { arrow: "none" },
+    look: { kindColors: { project: "#4f46e5", paper: "#737373" } },
+    files: { paperNode: "text" },
+    css: css(`${kindSelector("project")} .canvas-node-container {
+  border-width: 0 0 4px 0;
+}
+${kindSelector("paper")} .canvas-node-container {
+  border-radius: 6px;
+}`)
+  }),
+  define("concept-spine", {
+    structure: { root: "term", depth: 2, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { sort: "shared", maxTerms: 24 },
+    layout: { algorithm: "tree-TB", siblingGap: 40, levelGap: 140 },
+    connections: { siblings: true, arrow: "end" },
+    look: { colorMode: "level", levelColors: ["#4f46e5", "#2563eb", "#737373", "#0d9488"], termText: "term" },
+    css: css(`${kindSelector("term")} .canvas-node-container {
+  border-width: 2px;
+}`)
+  }),
+  define("wide-timeline", {
+    structure: { root: "paper", depth: 3, emit: { overview: true, project: false, paper: true, term: false }, unassigned: "root" },
+    grouping: { sort: "date", maxTerms: 12, maxHighlights: 12 },
+    layout: { algorithm: "tree-TB", siblingGap: 96, levelGap: 160, sizes: { paper: size(240, 280, 96, 160) } },
+    connections: { siblings: true, arrow: "end", sides: "nearest" },
+    look: { kindColors: { paper: "#4f46e5" } },
+    files: { paperFolders: "project" },
+    css: css(`.theme-light ${S} {
+  --paper-canvas-paper: #4f46e5;
+}
+.theme-dark ${S} {
+  --paper-canvas-paper: #818cf8;
+}`)
+  }),
+  define("dense-index", {
+    structure: { depth: 3 },
+    grouping: { maxTerms: 24, maxHighlights: 12, notes: "hidden" },
+    layout: {
+      algorithm: "grid",
+      gridColumns: 6,
+      groupColumns: 4,
+      siblingGap: 24,
+      levelGap: 48,
+      groupPadding: 12,
+      maxLines: 3,
+      sizes: {
+        hub: size(200, 260, 72, 140),
+        project: size(160, 200, 56, 100),
+        paper: size(160, 200, 56, 100),
+        term: size(160, 200, 48, 100),
+        highlight: size(180, 220, 48, 110),
+        note: size(160, 200, 48, 160)
+      }
+    },
+    connections: { arrow: "none" },
+    look: { termText: "term", highlightText: "text" },
+    css: css(`${S} .canvas-node-content {
+  font-size: 0.85em;
+}`)
+  })
+];
+function deepFreeze(value) {
+  if (value && typeof value === "object") {
+    for (const key of Object.keys(value)) deepFreeze(value[key]);
+    Object.freeze(value);
+  }
+  return value;
+}
+var SHIPPED_PRESETS = deepFreeze(PRESETS);
+function shippedPreset(id) {
+  var _a2;
+  return (_a2 = SHIPPED_PRESETS.find((p) => p.id === id)) != null ? _a2 : null;
+}
+function clonePreset(preset) {
+  return JSON.parse(JSON.stringify(preset));
+}
+
+// src/canvas/types.ts
+var STYLED_KINDS = [
+  "hub",
+  "project",
+  "paper",
+  "term",
+  "highlight",
+  "note"
+];
+var CANVAS_LEVELS = ["overview", "project", "paper", "term"];
+
+// src/canvas/store.ts
+var PRESET_STORE_VERSION = 1;
+function defaultPresetStore() {
+  return { version: PRESET_STORE_VERSION, activePresetId: DEFAULT_PRESET_ID, overrides: {} };
+}
+function isRec(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function pick(value, allowed, fallback) {
+  return allowed.includes(value) ? value : fallback;
+}
+function num(value, min, max, fallback) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.round(Math.min(max, Math.max(min, value)));
+}
+function bool(value, fallback) {
+  return typeof value === "boolean" ? value : fallback;
+}
+var COLOR_RE = /^(?:[1-6]|#[0-9a-fA-F]{6})$/;
+function isCanvasColor(value) {
+  return typeof value === "string" && COLOR_RE.test(value);
+}
+function color(value, fallback) {
+  return isCanvasColor(value) ? value : fallback;
+}
+function str(value, fallback, max = 200) {
+  return typeof value === "string" && value.trim() ? value.slice(0, max) : fallback;
+}
+function sanitizeSize(raw, base) {
+  const r = isRec(raw) ? raw : {};
+  const minWidth = num(r.minWidth, 80, 1200, base.minWidth);
+  const maxWidth = num(r.maxWidth, minWidth, 1600, Math.max(minWidth, base.maxWidth));
+  const minHeight = num(r.minHeight, 40, 1200, base.minHeight);
+  const maxHeight = num(r.maxHeight, minHeight, 2e3, Math.max(minHeight, base.maxHeight));
+  return { minWidth, maxWidth, minHeight, maxHeight };
+}
+function sanitizePreset(raw, base) {
+  const r = isRec(raw) ? raw : {};
+  const st = isRec(r.structure) ? r.structure : {};
+  const emit = isRec(st.emit) ? st.emit : {};
+  const gr = isRec(r.grouping) ? r.grouping : {};
+  const la = isRec(r.layout) ? r.layout : {};
+  const sizes = isRec(la.sizes) ? la.sizes : {};
+  const co = isRec(r.connections) ? r.connections : {};
+  const lo = isRec(r.look) ? r.look : {};
+  const kc = isRec(lo.kindColors) ? lo.kindColors : {};
+  const lc = Array.isArray(lo.levelColors) ? lo.levelColors : [];
+  const fi = isRec(r.files) ? r.files : {};
+  const nn = isRec(fi.noteNodes) ? fi.noteNodes : {};
+  const b = base;
+  const emitOut = {};
+  const noteOut = {};
+  for (const level of CANVAS_LEVELS) {
+    emitOut[level] = bool(emit[level], b.structure.emit[level]);
+    noteOut[level] = bool(nn[level], b.files.noteNodes[level]);
+  }
+  const sizeOut = {};
+  const colorOut = {};
+  for (const kind of STYLED_KINDS) {
+    sizeOut[kind] = sanitizeSize(sizes[kind], b.layout.sizes[kind]);
+    colorOut[kind] = color(kc[kind], b.look.kindColors[kind]);
+  }
+  return {
+    id: b.id,
+    name: str(r.name, b.name, 80),
+    description: typeof r.description === "string" ? r.description.slice(0, 300) : b.description,
+    structure: {
+      root: pick(st.root, ["library", "project", "paper", "term"], b.structure.root),
+      depth: pick(st.depth, [2, 3], b.structure.depth),
+      emit: emitOut,
+      unassigned: pick(st.unassigned, ["bucket", "root", "hidden"], b.structure.unassigned)
+    },
+    grouping: {
+      terms: pick(gr.terms, ["separate", "merged", "hidden"], b.grouping.terms),
+      highlights: pick(gr.highlights, ["separate", "merged", "hidden"], b.grouping.highlights),
+      notes: pick(gr.notes, ["separate", "merged", "hidden"], b.grouping.notes),
+      projectTerms: pick(gr.projectTerms, ["all", "shared", "none"], b.grouping.projectTerms),
+      sort: pick(gr.sort, ["alpha", "date", "rating", "shared"], b.grouping.sort),
+      maxTerms: num(gr.maxTerms, 0, 1e3, b.grouping.maxTerms),
+      maxHighlights: num(gr.maxHighlights, 0, 1e3, b.grouping.maxHighlights)
+    },
+    layout: {
+      algorithm: pick(la.algorithm, ["tree-TB", "tree-LR", "radial", "columns", "grid"], b.layout.algorithm),
+      siblingGap: num(la.siblingGap, 8, 600, b.layout.siblingGap),
+      levelGap: num(la.levelGap, 16, 1e3, b.layout.levelGap),
+      groupPadding: num(la.groupPadding, 4, 200, b.layout.groupPadding),
+      groupColumns: num(la.groupColumns, 1, 12, b.layout.groupColumns),
+      gridColumns: num(la.gridColumns, 0, 50, b.layout.gridColumns),
+      sizing: pick(la.sizing, ["fixed", "fit"], b.layout.sizing),
+      maxLines: num(la.maxLines, 0, 100, b.layout.maxLines),
+      sizes: sizeOut
+    },
+    connections: {
+      siblings: bool(co.siblings, b.connections.siblings),
+      backlinks: bool(co.backlinks, b.connections.backlinks),
+      arrow: pick(co.arrow, ["none", "end"], b.connections.arrow),
+      sides: pick(co.sides, ["flow", "nearest"], b.connections.sides)
+    },
+    look: {
+      colorMode: pick(lo.colorMode, ["level", "kind", "plain"], b.look.colorMode),
+      kindColors: colorOut,
+      levelColors: [
+        color(lc[0], b.look.levelColors[0]),
+        color(lc[1], b.look.levelColors[1]),
+        color(lc[2], b.look.levelColors[2]),
+        color(lc[3], b.look.levelColors[3])
+      ],
+      hubText: pick(lo.hubText, ["title", "counts", "counts-link"], b.look.hubText),
+      termText: pick(lo.termText, ["definition", "term"], b.look.termText),
+      highlightText: pick(lo.highlightText, ["page", "text"], b.look.highlightText)
+    },
+    files: {
+      noteNodes: noteOut,
+      paperNode: pick(fi.paperNode, ["text", "file"], b.files.paperNode),
+      termNode: pick(fi.termNode, ["text", "file"], b.files.termNode),
+      backlinkToParent: bool(fi.backlinkToParent, b.files.backlinkToParent),
+      paperFolders: pick(fi.paperFolders, ["project", "flat"], b.files.paperFolders)
+    },
+    css: typeof r.css === "string" ? r.css.slice(0, 5e4) : b.css
+  };
+}
+function migratePresetStore(raw) {
+  const store = defaultPresetStore();
+  if (!isRec(raw)) return store;
+  const overridesRaw = isRec(raw.overrides) ? raw.overrides : isRec(raw.presets) ? raw.presets : {};
+  for (const id of Object.keys(overridesRaw).sort()) {
+    const base = shippedPreset(id);
+    if (!base) continue;
+    store.overrides[id] = sanitizePreset(overridesRaw[id], base);
+  }
+  const active = typeof raw.activePresetId === "string" ? raw.activePresetId : raw.presetId;
+  if (typeof active === "string" && shippedPreset(active)) store.activePresetId = active;
+  return store;
+}
+function resolvePreset(store, id = store.activePresetId) {
+  var _a2, _b;
+  const base = (_b = (_a2 = shippedPreset(id)) != null ? _a2 : shippedPreset(DEFAULT_PRESET_ID)) != null ? _b : SHIPPED_PRESETS[0];
+  const override = store.overrides[base.id];
+  return override ? sanitizePreset(override, base) : clonePreset(base);
+}
+function activePreset(store) {
+  return resolvePreset(store, store.activePresetId);
+}
+function listPresets(store) {
+  return SHIPPED_PRESETS.map((p) => resolvePreset(store, p.id));
+}
+function savePreset(store, preset) {
+  const base = shippedPreset(preset.id);
+  if (!base) return store;
+  return { ...store, overrides: { ...store.overrides, [preset.id]: sanitizePreset(preset, base) } };
+}
+function resetPreset(store, id) {
+  const overrides = { ...store.overrides };
+  delete overrides[id];
+  return { ...store, overrides };
+}
+function setActivePreset(store, id) {
+  return shippedPreset(id) ? { ...store, activePresetId: id } : store;
+}
+
+// src/types.ts
+var DEFAULT_SETTINGS = {
+  baseUrl: "https://paper.college",
+  folder: "Paper",
+  token: "",
+  deviceId: "",
+  accountLabel: "",
+  syncOnStartup: false,
+  lastSyncAt: null,
+  lastPapers: [],
+  firstRunDismissed: false,
+  firstSyncDone: false,
+  lastSyncError: null,
+  lastTermCount: 0,
+  lastPaperCount: 0,
+  lastCanvasOk: false,
+  figureManifest: {},
+  figureFolders: [],
+  canvasPresets: defaultPresetStore(),
+  lastPayload: null,
+  canvasManifest: null
+};
+
+// src/settings-data.ts
+function migrateSettings(stored) {
+  const raw = stored && typeof stored === "object" ? stored : {};
+  return {
+    ...DEFAULT_SETTINGS,
+    ...raw,
+    canvasPresets: migratePresetStore(raw.canvasPresets),
+    lastPayload: raw.lastPayload && typeof raw.lastPayload === "object" ? normalizeSyncPayload(raw.lastPayload) : null,
+    canvasManifest: normalizeManifest(raw.canvasManifest)
+  };
+}
+function normalizeManifest(raw) {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const record = raw;
+  if (typeof record.folder !== "string" || !Array.isArray(record.paths)) {
+    return null;
+  }
+  return {
+    folder: record.folder,
+    paths: record.paths.filter((p) => typeof p === "string")
+  };
 }
 
 // src/canvas-open.ts
@@ -22390,130 +25130,716 @@ function nodeFromDocument(doc, nodeId) {
   });
 }
 
-// src/copy.ts
-var PLUGIN_COPY = {
-  commandConnect: "Connect",
-  commandSync: "Sync glossary and mindmap",
-  commandOpenPdf: "Open paper PDF\u2026",
-  commandOpenFolder: "Open Paper folder",
-  commandDisconnect: "Disconnect",
-  connect: "Connect",
-  syncNow: "Sync now",
-  disconnect: "Disconnect",
-  cancel: "Cancel",
-  retry: "Retry",
-  close: "Close",
-  copied: "Copied.",
-  offline: "No connection. Check your network and try again.",
-  noticeFirstRun: "Paper can put your glossary and mindmap in this vault. PDFs stay on Paper.",
-  noticeFirstRunDismiss: "Not now",
-  noticeSyncError: "Couldn't sync. Your existing notes were left as they are.",
-  noticeSyncEmpty: "Synced. No glossary terms on Paper yet. The folder is ready.",
-  connectionTitle: "Connection",
-  connectionDisconnected: "This vault is not connected to Paper. Create a pairing code in Paper Settings, then paste it here.",
-  connectionManualUrl: "If the browser did not open, copy this link:",
-  connectionCodeLabel: "Pairing code",
-  connectionCodeHelp: "Paste the numbers from Paper Settings.",
-  connectionReplace: "Replace connection",
-  connectionReplaceTitle: "Replace this connection?",
-  connectionReplaceBody: "This vault will use a new pairing. Notes already in the folder stay.",
-  connectionReplaceConfirm: "Replace",
-  folderTitle: "Vault folder",
-  folderHelp: "Glossary notes, paper notes, and the mindmap go in this folder. PDFs are not saved here.",
-  folderError: "Choose a folder name. If that path is already a file, pick a different name.",
-  folderDefault: "Paper",
-  syncTitle: "Sync",
-  syncStartup: "Sync on startup",
-  syncDisabledHelp: "Connect this vault before you sync.",
-  overwriteDisclosure: "On sync, Paper replaces files it created in this folder. Your other notes are left alone.",
-  pdfTitle: "PDF",
-  pdfPolicy: "Papers open through Paper. The PDF is not saved to this vault or to your computer.",
-  siteUrlTitle: "Paper URL",
-  siteUrlHelp: "Default https://paper.college. Use http://localhost:3000 when developing.",
-  statusNever: "Not synced yet",
-  statusSyncing: "Syncing\u2026",
-  statusLastSyncFallback: "Synced",
-  statusError: "Sync failed",
-  pickerTitle: "Open paper PDF",
-  pickerEmpty: "No papers from the last sync. Sync to list them here.",
-  pickerUntitled: "Untitled paper",
-  pickerSearch: "Search papers",
-  pdfLoading: "Loading paper\u2026",
-  pdfOpenInPaper: "Open in Paper",
-  pdfOffline: "This paper needs a network connection to open. Your vault notes still work.",
-  pdfPartialPages: "Some pages could not load. Try again.",
-  pdfErrorAuth: "Connection expired. Reconnect to open this paper.",
-  pdfErrorMissing: "This paper is no longer on Paper.",
-  pdfErrorRetry: "Couldn't open this paper. Try again.",
-  pdfErrorEmpty: "No paper selected. Close this view.",
-  pdfErrorRefresh: "Couldn't refresh this paper. Try again.",
-  pdfZoomIn: "Zoom in",
-  pdfZoomOut: "Zoom out",
-  connectInvalidCode: "That code did not work. Create a new code in Paper Settings.",
-  connectExpiredCode: "That code expired. Create a new one in Paper Settings.",
-  connectOfferSync: "Connected. Sync your glossary and mindmap when you are ready.",
-  connectExchanging: "Connecting\u2026",
-  disconnectTitle: "Disconnect this vault?",
-  disconnectBody: "This vault will stop getting updates. Glossary notes, paper notes, and the mindmap already in the vault stay where they are.",
-  disconnectConfirm: "Disconnect",
-  noteFolderEmpty: "No glossary terms yet. Highlight terms in your papers on Paper, then sync.",
-  notePaperOpenPdf: "Open PDF",
-  noteGlossaryOpenPdf: "Open paper PDF",
-  failedPartGlossary: "glossary notes",
-  failedPartMindmap: "mindmap",
-  canvasFallbackTitle: "Mindmap"
-};
-function connectedAs(accountLabel) {
-  return `Connected as ${accountLabel}.`;
-}
-function statusBarText(slot) {
-  return `Paper \xB7 ${slot}`;
-}
-function formatRelativeTime(iso, nowMs = Date.now()) {
-  const then = Date.parse(iso);
-  if (!Number.isFinite(then)) {
-    return PLUGIN_COPY.statusLastSyncFallback;
+// src/payload-guard.ts
+var PDF_MAGIC = "%PDF";
+var PDF_PATH = /\.pdf(?:$|[?#])/i;
+var SIGNED_STORAGE = /\/storage\/v1\/object\/sign\//i;
+var STORAGE_OBJECT = /\/storage\/v1\/object\//i;
+var MAX_CANVAS_FIELD_CHARS = 1e5;
+var BINARY_KEY = /pdf|binary|bytes|file_b64|pdf_bytes/i;
+function findPdfHazards(payload) {
+  if (!payload || typeof payload !== "object") {
+    return [];
   }
-  const deltaSec = Math.max(0, Math.round((nowMs - then) / 1e3));
-  if (deltaSec < 60) {
-    return `${deltaSec} sec ago`;
+  const record = payload;
+  const hazards = [];
+  if (scanValue(record.glossary_terms, "glossary").length > 0) {
+    hazards.push({ part: "glossary", reason: "glossary payload contains PDF/binary" });
   }
-  const deltaMin = Math.round(deltaSec / 60);
-  if (deltaMin < 60) {
-    return `${deltaMin} min ago`;
+  if (scanValue(record.papers, "papers").length > 0) {
+    hazards.push({ part: "papers", reason: "papers payload contains PDF/binary" });
   }
-  const deltaHours = Math.round(deltaMin / 60);
-  if (deltaHours < 48) {
-    return `${deltaHours} hour${deltaHours === 1 ? "" : "s"} ago`;
+  if ([
+    record.papers,
+    record.glossary_terms,
+    record.projects,
+    record.project_papers,
+    record.highlights
+  ].some((value) => hasRealHazard(value))) {
+    hazards.push({ part: "canvas", reason: "canvas payload contains PDF/binary" });
   }
-  const deltaDays = Math.round(deltaHours / 24);
-  return `${deltaDays} day${deltaDays === 1 ? "" : "s"} ago`;
+  return hazards;
 }
-function termCountPhrase(termCount) {
-  return termCount === 1 ? "1 term" : `${termCount} terms`;
-}
-function paperCountPhrase(paperCount) {
-  return paperCount === 1 ? "1 paper" : `${paperCount} papers`;
-}
-function syncSuccessNotice(termCount, paperCount, first) {
-  const base = `Synced ${termCountPhrase(termCount)}, ${paperCountPhrase(paperCount)}, and your mindmap.`;
-  if (first) {
-    return `${base} PDFs stay on Paper and were not copied here.`;
+function hasRealHazard(value, depth = 0) {
+  if (depth > 12 || value == null) {
+    return false;
   }
-  return base;
-}
-function syncPartialNotice(failedPart) {
-  return `Sync finished in part. ${failedPart} did not update. Earlier files were kept.`;
-}
-function pdfPageLabel(current, total) {
-  if (current == null || total == null) {
-    return "Page \u2013 of \u2013";
+  if (typeof value === "string") {
+    return value.trimStart().startsWith(`${PDF_MAGIC}-`) || STORAGE_OBJECT.test(value) || value.length > MAX_CANVAS_FIELD_CHARS;
   }
-  return `Page ${current} of ${total}`;
+  if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.some((item) => hasRealHazard(item, depth + 1));
+  }
+  if (typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      if (BINARY_KEY.test(key) && nested != null && nested !== "") {
+        return true;
+      }
+      if (hasRealHazard(nested, depth + 1)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
-function pdfTabTitle(paperTitle) {
-  const title = paperTitle == null ? void 0 : paperTitle.trim();
-  return title ? title : PLUGIN_COPY.pickerUntitled;
+function scanValue(value, part, depth = 0) {
+  if (depth > 12 || value == null) {
+    return [];
+  }
+  if (typeof value === "string") {
+    if (value.includes(PDF_MAGIC) || PDF_PATH.test(value) || SIGNED_STORAGE.test(value)) {
+      return [part];
+    }
+    return [];
+  }
+  if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    if (looksLikePdfBytes(value)) {
+      return [part];
+    }
+    return [part];
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const hit = scanValue(item, part, depth + 1);
+      if (hit.length > 0) {
+        return hit;
+      }
+    }
+    return [];
+  }
+  if (typeof value === "object") {
+    const obj = value;
+    if (obj.type === "file") {
+      const file = typeof obj.file === "string" ? obj.file : "";
+      if (PDF_PATH.test(file) || file.toLowerCase().includes("pdf")) {
+        return [part];
+      }
+    }
+    for (const [key, nested] of Object.entries(obj)) {
+      if (/pdf|binary|bytes|file_b64|pdf_bytes/i.test(key)) {
+        if (typeof nested === "string" && nested.length > 0) {
+          return [part];
+        }
+        if (nested && typeof nested === "object") {
+          return [part];
+        }
+      }
+      const hit = scanValue(nested, part, depth + 1);
+      if (hit.length > 0) {
+        return hit;
+      }
+    }
+  }
+  return [];
+}
+function looksLikePdfBytes(value) {
+  const bytes = value instanceof ArrayBuffer ? new Uint8Array(value) : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+  if (bytes.length < 4) {
+    return false;
+  }
+  return bytes[0] === 37 && bytes[1] === 80 && bytes[2] === 68 && bytes[3] === 70;
+}
+function isAllowedVaultPath(relativePath) {
+  const lower = relativePath.toLowerCase();
+  if (lower.endsWith(".pdf") || lower.includes(".pdf/") || lower.includes("/.pdf")) {
+    return false;
+  }
+  return lower.endsWith(".md") || lower.endsWith(".canvas");
+}
+function isJsonCanvas(value) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const record = value;
+  return Array.isArray(record.nodes) && Array.isArray(record.edges);
+}
+
+// src/sync-apply.ts
+var GLOSSARY_DIR2 = "Glossary";
+var PAPERS_DIR2 = "Papers";
+var PROJECTS_DIR2 = "Projects";
+var LEGACY_CANVAS_FILENAME = "Mindmap.canvas";
+var EMPTY_INDEX_FILENAME = "Glossary.md";
+function defaultPreset() {
+  var _a2;
+  return clonePreset((_a2 = shippedPreset(DEFAULT_PRESET_ID)) != null ? _a2 : SHIPPED_PRESETS[0]);
+}
+function previewCanvases(payload, preset, opts = {}) {
+  var _a2;
+  const source = payload != null ? payload : { papers: [] };
+  return generateCanvases(source, preset, {
+    folder: normalizeFolderName((_a2 = opts.folder) != null ? _a2 : ""),
+    origin: opts.origin
+  });
+}
+function isPluginOwnedContent(path, content) {
+  if (!path.toLowerCase().endsWith(".canvas")) {
+    return hasPaperSyncMarker(content);
+  }
+  try {
+    const parsed = JSON.parse(content);
+    if (!parsed || typeof parsed !== "object") {
+      return false;
+    }
+    const meta = parsed.paperCollege;
+    return !!meta && typeof meta === "object" && meta.source === "paper.college";
+  } catch (e) {
+    return false;
+  }
+}
+function normalizeFolderName(raw) {
+  const trimmed = raw.trim().replace(/^\/+|\/+$/g, "");
+  return trimmed.length > 0 ? trimmed : PLUGIN_COPY.folderDefault;
+}
+function buildApplyPlan(payload, folderRaw, options = {}) {
+  var _a2, _b, _c, _d, _e;
+  const folder = normalizeFolderName(folderRaw);
+  const hazards = findPdfHazards(payload);
+  const abortReasons = hazards.map((h) => h.reason);
+  const glossaryAborted = hazards.some((h) => h.part === "glossary");
+  const papersAborted = hazards.some((h) => h.part === "papers");
+  const canvasAborted = hazards.some((h) => h.part === "canvas");
+  const writes = [];
+  const terms = Array.isArray(payload.glossary_terms) ? payload.glossary_terms : [];
+  const papers = Array.isArray(payload.papers) ? payload.papers : [];
+  const emptyGlossary = terms.length === 0;
+  const usedTermNames = /* @__PURE__ */ new Set();
+  const usedPaperNames = /* @__PURE__ */ new Set();
+  const termPaths = /* @__PURE__ */ new Map();
+  if (!glossaryAborted) {
+    for (const term of terms) {
+      const write = planGlossaryWrite(folder, term, usedTermNames);
+      if (write) {
+        writes.push(write);
+        termPaths.set(term.id, {
+          term: term.term,
+          path: write.relativePath
+        });
+      }
+    }
+    if (emptyGlossary) {
+      const indexPath = joinVaultPath(folder, EMPTY_INDEX_FILENAME);
+      if (isAllowedVaultPath(indexPath)) {
+        writes.push({
+          relativePath: indexPath,
+          content: emptyIndexMarkdown(),
+          kind: "index"
+        });
+      }
+    }
+  }
+  if (!papersAborted) {
+    const termsByPaper = groupTermsByPaper(terms);
+    const figuresByPaper = /* @__PURE__ */ new Map();
+    for (const placed of (_a2 = options.figures) != null ? _a2 : []) {
+      const list = (_b = figuresByPaper.get(placed.figure.paper_id)) != null ? _b : [];
+      list.push(placed);
+      figuresByPaper.set(placed.figure.paper_id, list);
+    }
+    for (const paper of papers) {
+      const linked = ((_c = termsByPaper.get(paper.id)) != null ? _c : []).map((term) => termPaths.get(term.id)).filter((item) => Boolean(item));
+      const write = planPaperWrite(
+        folder,
+        paper,
+        linked,
+        usedPaperNames,
+        (_d = figuresByPaper.get(paper.id)) != null ? _d : [],
+        options.origin
+      );
+      if (write) {
+        writes.push(write);
+      }
+    }
+  }
+  const canvasPaths = [];
+  if (!canvasAborted) {
+    const generated = previewCanvases(payload, (_e = options.preset) != null ? _e : defaultPreset(), {
+      folder,
+      origin: options.origin
+    });
+    for (const entry of generated) {
+      const canvasPath = joinVaultPath(folder, entry.path);
+      if (!isAllowedVaultPath(canvasPath) || !isJsonCanvas(entry.document)) {
+        abortReasons.push(`canvas ${entry.path} is not valid`);
+        continue;
+      }
+      canvasPaths.push(entry.path);
+      writes.push({
+        relativePath: canvasPath,
+        content: serializeCanvas(rewriteFileNodePaths(entry.document, folder)),
+        kind: "canvas"
+      });
+    }
+  }
+  return {
+    writes: writes.filter((w) => isAllowedVaultPath(w.relativePath)),
+    folder,
+    glossaryAborted,
+    canvasAborted,
+    papersAborted,
+    abortReasons,
+    termCount: terms.length,
+    paperCount: papers.length,
+    emptyGlossary,
+    canvasPaths
+  };
+}
+function rewriteFileNodePaths(document2, folder) {
+  const nodes = document2.nodes.map(
+    (node) => node.type === "file" ? { ...node, file: `${folder}/${node.file}` } : node
+  );
+  return { ...document2, nodes };
+}
+function planGlossaryWrite(folder, term, used) {
+  const basename2 = uniqueBasename(term.term, term.id, used);
+  const relativePath = joinVaultPath(folder, GLOSSARY_DIR2, `${basename2}.md`);
+  if (!isAllowedVaultPath(relativePath)) {
+    return null;
+  }
+  return {
+    relativePath,
+    content: glossaryNoteMarkdown(term),
+    kind: "glossary"
+  };
+}
+function planPaperWrite(folder, paper, linked, used, figures, baseUrl) {
+  var _a2;
+  const title = ((_a2 = paper.title) == null ? void 0 : _a2.trim()) || PLUGIN_COPY.pickerUntitled;
+  const basename2 = uniqueBasename(title, paper.id, used);
+  const relativePath = joinVaultPath(folder, PAPERS_DIR2, `${basename2}.md`);
+  if (!isAllowedVaultPath(relativePath)) {
+    return null;
+  }
+  return {
+    relativePath,
+    content: paperStubMarkdown(paper, linked, figures, baseUrl),
+    kind: "paper"
+  };
+}
+function groupTermsByPaper(terms) {
+  var _a2;
+  const map = /* @__PURE__ */ new Map();
+  for (const term of terms) {
+    const list = (_a2 = map.get(term.paper_id)) != null ? _a2 : [];
+    list.push(term);
+    map.set(term.paper_id, list);
+  }
+  return map;
+}
+async function applyPlan(vault, plan, options = {}) {
+  var _a2;
+  const result = {
+    written: [],
+    skippedUser: [],
+    failed: [],
+    removed: [],
+    folderError: null,
+    glossaryOk: !plan.glossaryAborted,
+    canvasOk: !plan.canvasAborted,
+    papersOk: !plan.papersAborted,
+    canvasManifest: null
+  };
+  try {
+    await ensureFolderTree(vault, plan.folder);
+    const legacyPath = joinVaultPath(plan.folder, LEGACY_CANVAS_FILENAME);
+    const legacyContent = await vault.read(legacyPath);
+    if (legacyContent !== null && legacyContent !== "" && (hasPaperSyncMarker(legacyContent) || isPluginOwnedContent(legacyPath, legacyContent))) {
+      await vault.writeAtomic(legacyPath, "");
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : PLUGIN_COPY.folderError;
+    result.folderError = message;
+    result.glossaryOk = false;
+    result.canvasOk = false;
+    result.papersOk = false;
+    return result;
+  }
+  for (const write of plan.writes) {
+    if (!isAllowedVaultPath(write.relativePath)) {
+      result.failed.push(write.relativePath);
+      markKindFailed(result, write.kind);
+      continue;
+    }
+    const existing = await vault.read(write.relativePath);
+    if (existing !== null && !isPluginOwnedContent(write.relativePath, existing)) {
+      result.skippedUser.push(write.relativePath);
+      continue;
+    }
+    try {
+      await ensureParentFolder(vault, write.relativePath);
+      await vault.writeAtomic(write.relativePath, write.content);
+      result.written.push(write.relativePath);
+    } catch (e) {
+      result.failed.push(write.relativePath);
+      markKindFailed(result, write.kind);
+    }
+  }
+  if (!plan.canvasAborted) {
+    result.canvasManifest = await cleanupStaleCanvases(vault, plan, result, (_a2 = options.manifest) != null ? _a2 : null);
+  }
+  if (plan.glossaryAborted) {
+    result.glossaryOk = false;
+  }
+  if (plan.canvasAborted) {
+    result.canvasOk = false;
+  }
+  if (plan.papersAborted) {
+    result.papersOk = false;
+  }
+  return result;
+}
+async function cleanupStaleCanvases(vault, plan, result, manifest) {
+  const folder = plan.folder;
+  const current = new Set(plan.canvasPaths);
+  const written = new Set(result.written);
+  const keep = /* @__PURE__ */ new Set();
+  const previous = manifest && manifest.folder === folder ? manifest.paths : null;
+  for (const path of plan.canvasPaths) {
+    const full = joinVaultPath(folder, path);
+    if (written.has(full) || (previous == null ? void 0 : previous.includes(path)) && result.failed.includes(full)) {
+      keep.add(path);
+    }
+  }
+  const candidates = new Set(previous != null ? previous : await existingCanvasPaths(vault, folder));
+  const emptiedParents = /* @__PURE__ */ new Set();
+  for (const path of Array.from(candidates).sort(compareCodeUnits)) {
+    if (current.has(path) || !isGeneratedCanvasPath(path)) {
+      continue;
+    }
+    const full = joinVaultPath(folder, path);
+    const content = await vault.read(full);
+    if (content === null || !isPluginOwnedContent(full, content)) {
+      continue;
+    }
+    try {
+      await vault.remove(full);
+      result.removed.push(full);
+      const parent = path.split("/").slice(0, -1).join("/");
+      if (parent && parent !== PAPERS_DIR2 && parent !== PROJECTS_DIR2 && parent !== GLOSSARY_DIR2) {
+        emptiedParents.add(parent);
+      }
+    } catch (e) {
+      keep.add(path);
+    }
+  }
+  for (const parent of Array.from(emptiedParents).sort(compareCodeUnits).reverse()) {
+    const full = joinVaultPath(folder, parent);
+    const children = await vault.children(full);
+    if (children !== null && children.length === 0) {
+      try {
+        await vault.remove(full);
+      } catch (e) {
+      }
+    }
+  }
+  return { folder, paths: Array.from(keep).sort(compareCodeUnits) };
+}
+async function existingCanvasPaths(vault, folder) {
+  const out = new Set(Object.values(OVERVIEW_PATHS));
+  const walk = async (relative, depth) => {
+    var _a2;
+    const children = await vault.children(joinVaultPath(folder, relative));
+    if (!children) {
+      return;
+    }
+    for (const child of children) {
+      const name = (_a2 = child.split("/").pop()) != null ? _a2 : "";
+      const rel = `${relative}/${name}`;
+      if (name.toLowerCase().endsWith(".canvas")) {
+        out.add(rel);
+      } else if (depth > 0) {
+        await walk(rel, depth - 1);
+      }
+    }
+  };
+  await walk(PAPERS_DIR2, 1);
+  await walk(PROJECTS_DIR2, 0);
+  await walk(TERMS_DIR, 0);
+  return Array.from(out);
+}
+function compareCodeUnits(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+function markKindFailed(result, kind) {
+  if (kind === "glossary" || kind === "index") {
+    result.glossaryOk = false;
+  }
+  if (kind === "canvas") {
+    result.canvasOk = false;
+  }
+  if (kind === "paper") {
+    result.papersOk = false;
+  }
+}
+async function ensureFolderTree(vault, folder) {
+  if (await vault.isFile(folder)) {
+    throw new Error(PLUGIN_COPY.folderError);
+  }
+  if (!await vault.isFolder(folder)) {
+    await vault.createFolder(folder);
+  }
+  for (const child of [GLOSSARY_DIR2, PAPERS_DIR2, PROJECTS_DIR2]) {
+    const path = joinVaultPath(folder, child);
+    if (await vault.isFile(path)) {
+      throw new Error(PLUGIN_COPY.folderError);
+    }
+    if (!await vault.isFolder(path)) {
+      await vault.createFolder(path);
+    }
+  }
+}
+async function ensureParentFolder(vault, filePath) {
+  const parts = filePath.split("/");
+  parts.pop();
+  let cursor = "";
+  for (const part of parts) {
+    cursor = cursor ? `${cursor}/${part}` : part;
+    if (await vault.isFile(cursor)) {
+      throw new Error(PLUGIN_COPY.folderError);
+    }
+    if (!await vault.isFolder(cursor)) {
+      await vault.createFolder(cursor);
+    }
+  }
+}
+
+// src/figures.ts
+var RESERVED_FOLDERS = [GLOSSARY_DIR2, PAPERS_DIR2, PROJECTS_DIR2];
+var LINK_UNSAFE = /[#^[\]|]/g;
+function linkSafe(name) {
+  return name.replace(LINK_UNSAFE, "-");
+}
+function byId(a, b) {
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+function reserve(base, used) {
+  let name = base;
+  let n = 2;
+  while (used.has(name.toLowerCase())) {
+    name = `${base}-${n}`;
+    n += 1;
+  }
+  used.add(name.toLowerCase());
+  return name;
+}
+function figureFolderNames(papers) {
+  var _a2;
+  const used = new Set(RESERVED_FOLDERS.map((name) => name.toLowerCase()));
+  const result = /* @__PURE__ */ new Map();
+  for (const paper of [...papers].sort(byId)) {
+    if (result.has(paper.id)) {
+      continue;
+    }
+    const title = ((_a2 = paper.title) == null ? void 0 : _a2.trim()) || PLUGIN_COPY.pickerUntitled;
+    result.set(paper.id, reserve(linkSafe(shortTitle(title)), used));
+  }
+  return result;
+}
+function figureBasename(page, label, unlabeledIndex) {
+  const trimmed = label == null ? void 0 : label.trim();
+  if (!trimmed) {
+    return `p${page}-${unlabeledIndex}`;
+  }
+  const segment = linkSafe(sanitizeFilename(trimmed)).replace(/\s+/g, "-");
+  return `p${page}-${segment}`;
+}
+function planFigurePlacements(payload, folderRaw) {
+  var _a2, _b, _c, _d;
+  if (!Array.isArray(payload.figure_highlights)) {
+    return null;
+  }
+  const folder = normalizeFolderName(folderRaw);
+  const folders = figureFolderNames((_a2 = payload.papers) != null ? _a2 : []);
+  const figures = [...payload.figure_highlights].sort(byId);
+  const unlabeledCounts = /* @__PURE__ */ new Map();
+  const usedPerFolder = /* @__PURE__ */ new Map();
+  const placed = [];
+  for (const figure of figures) {
+    const shortFolder = folders.get(figure.paper_id);
+    if (!shortFolder) {
+      continue;
+    }
+    let index = 0;
+    if (!((_b = figure.label) == null ? void 0 : _b.trim())) {
+      const key = `${figure.paper_id}\0${figure.page_number}`;
+      index = ((_c = unlabeledCounts.get(key)) != null ? _c : 0) + 1;
+      unlabeledCounts.set(key, index);
+    }
+    const used = (_d = usedPerFolder.get(shortFolder)) != null ? _d : /* @__PURE__ */ new Set();
+    usedPerFolder.set(shortFolder, used);
+    const basename2 = reserve(
+      figureBasename(figure.page_number, figure.label, index),
+      used
+    );
+    placed.push({
+      figure,
+      path: joinVaultPath(folder, shortFolder, `${basename2}.png`)
+    });
+  }
+  return placed;
+}
+function isPngPath(path) {
+  return path.toLowerCase().endsWith(".png");
+}
+function sortedManifest(manifest) {
+  const sorted = {};
+  for (const id of Object.keys(manifest).sort()) {
+    sorted[id] = manifest[id];
+  }
+  return sorted;
+}
+async function syncFigures(vault, fetchImage, placements, previous, folderRaw) {
+  var _a2, _b, _c;
+  const folder = normalizeFolderName(folderRaw);
+  const prev = (_a2 = previous.manifest) != null ? _a2 : {};
+  const result = {
+    state: { manifest: { ...prev }, folders: [...(_b = previous.folders) != null ? _b : []] },
+    available: [],
+    written: [],
+    renamed: [],
+    skipped: [],
+    skippedUser: [],
+    removed: [],
+    missing: [],
+    failed: []
+  };
+  if (await vault.isFile(folder)) {
+    result.failed.push(folder);
+    return result;
+  }
+  const ownedBefore = new Set(Object.values(prev).map((entry) => entry.path));
+  const targeted = new Set(placements.map((p) => p.path));
+  const folders = new Set((_c = previous.folders) != null ? _c : []);
+  const next = {};
+  let stopDownloads = false;
+  const ensureFolders = async (filePath) => {
+    const parts = filePath.split("/");
+    parts.pop();
+    let cursor = "";
+    for (const part of parts) {
+      cursor = cursor ? `${cursor}/${part}` : part;
+      if (await vault.isFile(cursor)) {
+        throw new Error(PLUGIN_COPY.folderError);
+      }
+      if (!await vault.isFolder(cursor)) {
+        await vault.createFolder(cursor);
+        if (cursor !== folder && cursor.startsWith(`${folder}/`)) {
+          folders.add(cursor);
+        }
+      }
+    }
+  };
+  const keepPrevious = async (placed) => {
+    const entry = prev[placed.figure.id];
+    if (!entry) {
+      return;
+    }
+    if (entry.path !== placed.path && targeted.has(entry.path)) {
+      return;
+    }
+    if (await vault.isFile(entry.path)) {
+      next[placed.figure.id] = entry;
+      result.available.push({ figure: placed.figure, path: entry.path });
+    }
+  };
+  for (const placed of placements) {
+    const { figure, path } = placed;
+    const entry = prev[figure.id];
+    if (!isPngPath(path)) {
+      result.failed.push(path);
+      continue;
+    }
+    if (entry && entry.updated_at === figure.updated_at && entry.path === path && await vault.isFile(path)) {
+      next[figure.id] = entry;
+      result.skipped.push(path);
+      result.available.push(placed);
+      continue;
+    }
+    if (await vault.exists(path) && !ownedBefore.has(path)) {
+      result.skippedUser.push(path);
+      await keepPrevious(placed);
+      continue;
+    }
+    if (entry && entry.updated_at === figure.updated_at && !targeted.has(entry.path) && !await vault.exists(path) && await vault.isFile(entry.path)) {
+      try {
+        await ensureFolders(path);
+        await vault.rename(entry.path, path);
+        next[figure.id] = { updated_at: figure.updated_at, path };
+        result.renamed.push(path);
+        result.available.push(placed);
+        continue;
+      } catch (e) {
+      }
+    }
+    if (stopDownloads) {
+      result.failed.push(path);
+      await keepPrevious(placed);
+      continue;
+    }
+    const fetched = await fetchImage(figure.id);
+    if (!fetched.ok) {
+      if (fetched.kind === "missing") {
+        result.missing.push(figure.id);
+        continue;
+      }
+      if (fetched.kind === "auth") {
+        stopDownloads = true;
+      }
+      result.failed.push(path);
+      await keepPrevious(placed);
+      continue;
+    }
+    try {
+      await ensureFolders(path);
+      await vault.writeBinary(path, fetched.data);
+      next[figure.id] = { updated_at: figure.updated_at, path };
+      result.written.push(path);
+      result.available.push(placed);
+    } catch (e) {
+      result.failed.push(path);
+      await keepPrevious(placed);
+    }
+  }
+  const ownedAfter = new Set(Object.values(next).map((entry) => entry.path));
+  for (const id of Object.keys(prev).sort()) {
+    const entry = prev[id];
+    if (ownedAfter.has(entry.path)) {
+      continue;
+    }
+    if (!await vault.isFile(entry.path)) {
+      continue;
+    }
+    try {
+      await vault.remove(entry.path);
+      result.removed.push(entry.path);
+    } catch (e) {
+      result.failed.push(entry.path);
+      if (!next[id]) {
+        next[id] = entry;
+      }
+    }
+  }
+  for (const path of Array.from(folders).sort().reverse()) {
+    if (!await vault.isFolder(path)) {
+      folders.delete(path);
+      continue;
+    }
+    if (await vault.isEmptyFolder(path)) {
+      try {
+        await vault.remove(path);
+        folders.delete(path);
+      } catch (e) {
+      }
+    }
+  }
+  result.state = {
+    manifest: sortedManifest(next),
+    folders: Array.from(folders).sort()
+  };
+  return result;
 }
 
 // src/modals.ts
@@ -22558,8 +25884,9 @@ var ConfirmModal = class extends import_obsidian.Modal {
 // src/obsidian-vault.ts
 var import_obsidian2 = require("obsidian");
 var ObsidianVaultWriter = class {
-  constructor(vault) {
+  constructor(vault, fileManager) {
     this.vault = vault;
+    this.fileManager = fileManager;
   }
   async exists(path) {
     return this.vault.getAbstractFileByPath((0, import_obsidian2.normalizePath)(path)) != null;
@@ -22609,6 +25936,29 @@ var ObsidianVaultWriter = class {
       throw error;
     }
   }
+  async writeBinary(path, data) {
+    const normalized = (0, import_obsidian2.normalizePath)(path);
+    if (!normalized.toLowerCase().endsWith(".png")) {
+      throw new Error("refusing to write a non-PNG binary");
+    }
+    const existing = this.vault.getAbstractFileByPath(normalized);
+    if (existing && "extension" in existing) {
+      await this.vault.modifyBinary(existing, data);
+    } else {
+      await this.vault.createBinary(normalized, data);
+    }
+  }
+  async rename(from, to) {
+    const file = this.vault.getAbstractFileByPath((0, import_obsidian2.normalizePath)(from));
+    if (!file || !("extension" in file)) {
+      throw new Error("rename source is not a file");
+    }
+    await this.fileManager.renameFile(file, (0, import_obsidian2.normalizePath)(to));
+  }
+  async isEmptyFolder(path) {
+    const found = this.vault.getAbstractFileByPath((0, import_obsidian2.normalizePath)(path));
+    return found instanceof import_obsidian2.TFolder && found.children.length === 0;
+  }
   async createFolder(path) {
     const normalized = (0, import_obsidian2.normalizePath)(path);
     const existing = this.vault.getAbstractFileByPath(normalized);
@@ -22619,6 +25969,24 @@ var ObsidianVaultWriter = class {
       return;
     }
     await this.vault.createFolder(normalized);
+  }
+  async children(path) {
+    const found = this.vault.getAbstractFileByPath((0, import_obsidian2.normalizePath)(path));
+    if (!(found instanceof import_obsidian2.TFolder)) {
+      return null;
+    }
+    return found.children.map((child) => child.path);
+  }
+  /** Moves to the user's configured trash (respects their deletion setting). */
+  async remove(path) {
+    const found = this.vault.getAbstractFileByPath((0, import_obsidian2.normalizePath)(path));
+    if (!found) {
+      return;
+    }
+    if (found instanceof import_obsidian2.TFolder && found.children.length > 0) {
+      throw new Error("folder is not empty");
+    }
+    await this.fileManager.trashFile(found);
   }
 };
 
@@ -22796,8 +26164,8 @@ var ZOOM_MAX = 2.5;
 var ZOOM_STEP = 0.25;
 var DEFAULT_ZOOM = 1.1;
 var PaperPdfView = class extends import_obsidian4.ItemView {
-  constructor(leaf, host) {
-    super(leaf);
+  constructor(leaf2, host) {
+    super(leaf2);
     this.host = host;
     this.paperId = "";
     this.paperTitle = "";
@@ -23215,400 +26583,682 @@ var EmptyPaperPickerModal = class extends import_obsidian5.Modal {
 };
 
 // src/settings-tab.ts
+var import_obsidian7 = require("obsidian");
+
+// src/canvas-settings.ts
 var import_obsidian6 = require("obsidian");
 
-// src/vault-notes.ts
-var WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001f]/g;
-function sanitizeFilename(raw) {
-  let name = raw.replace(WINDOWS_FORBIDDEN, "-").replace(/\s+/g, " ").trim();
-  name = name.replace(/^\.+/, "").replace(/\.+$/, "").trim();
-  if (!name) {
-    name = "untitled";
-  }
-  if (name.length > 80) {
-    name = name.slice(0, 80).trim();
-  }
-  return name;
+// src/canvas/preview.ts
+var PREVIEW_PRESET_COLORS = {
+  "1": "rgb(var(--canvas-color-1))",
+  "2": "rgb(var(--canvas-color-2))",
+  "3": "rgb(var(--canvas-color-3))",
+  "4": "rgb(var(--canvas-color-4))",
+  "5": "rgb(var(--canvas-color-5))",
+  "6": "rgb(var(--canvas-color-6))"
+};
+var HEX_RE = /^#[0-9a-fA-F]{6}$/;
+function resolvePreviewColor(color2) {
+  if (!color2) return null;
+  if (PREVIEW_PRESET_COLORS[color2]) return PREVIEW_PRESET_COLORS[color2];
+  return HEX_RE.test(color2) ? color2.toLowerCase() : null;
 }
-function uniqueBasename(preferred, id, used) {
-  const base = sanitizeFilename(preferred).toLowerCase();
-  if (!used.has(base)) {
-    used.add(base);
-    return sanitizeFilename(preferred);
-  }
-  const withId = sanitizeFilename(`${sanitizeFilename(preferred)}-${id.slice(0, 8)}`);
-  const key = withId.toLowerCase();
-  if (!used.has(key)) {
-    used.add(key);
-    return withId;
-  }
-  let n = 2;
-  while (used.has(`${key}-${n}`)) {
-    n += 1;
-  }
-  const fallback = `${withId}-${n}`;
-  used.add(fallback.toLowerCase());
-  return fallback;
+var DEFAULT_PREVIEW_SIZE = { maxWidth: 640, maxHeight: 420, padding: 12 };
+function round2(n) {
+  return Math.round(n * 100) / 100;
 }
-function yamlScalar(value) {
-  if (value === "") {
-    return '""';
+function sidePoint(node, side) {
+  switch (side) {
+    case "top":
+      return { x: node.x + node.width / 2, y: node.y };
+    case "bottom":
+      return { x: node.x + node.width / 2, y: node.y + node.height };
+    case "left":
+      return { x: node.x, y: node.y + node.height / 2 };
+    case "right":
+      return { x: node.x + node.width, y: node.y + node.height / 2 };
   }
-  if (/[:#{}[\],&*?|!<>=!%@`'\n]/.test(value) || value !== value.trim()) {
-    return JSON.stringify(value);
-  }
-  return value;
 }
-function yamlStringArray(values) {
-  if (values.length === 0) {
-    return "[]";
-  }
-  return `[${values.map((v) => yamlScalar(v)).join(", ")}]`;
-}
-function hasPaperSyncMarker(content) {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) {
-    return false;
-  }
-  return /^paper_sync:\s*true\s*$/m.test(match[1]);
-}
-function frontmatterBlock(fields) {
-  const lines = Object.entries(fields).map(([key, value]) => `${key}: ${value}`);
-  return `---
-${lines.join("\n")}
----
-`;
-}
-function glossaryNoteMarkdown(term) {
+function nodeKind(node) {
   var _a2, _b;
-  const tags = Array.isArray(term.tags) ? term.tags : [];
-  const rating = typeof term.rating === "number" && Number.isFinite(term.rating) ? String(term.rating) : '""';
-  const heading = term.term.trim() || "Untitled term";
-  const explanation = (_b = (_a2 = term.explanation) == null ? void 0 : _a2.trim()) != null ? _b : "";
-  const open = PLUGIN_COPY.noteGlossaryOpenPdf;
-  const protocol = openPdfProtocolUrl(term.paper_id);
-  return frontmatterBlock({
-    paper_sync: "true",
-    source: "paper.college",
-    term_id: yamlScalar(term.id),
-    paper_id: yamlScalar(term.paper_id),
-    tags: yamlStringArray(tags),
-    rating
-  }) + `
-# ${heading}
-
-` + (explanation ? `${explanation}
-
-` : "") + `[${open}](${protocol})
-`;
+  if ((_a2 = node.paperCollege) == null ? void 0 : _a2.kind) return node.paperCollege.kind;
+  if (node.type === "group") return "group";
+  if (node.type === "text") return (_b = readKindMarker(node.text)) != null ? _b : "note";
+  return "note";
 }
-function paperStubMarkdown(paper, linkedTerms) {
-  const title = paper.title.trim() || PLUGIN_COPY.pickerUntitled;
-  const open = PLUGIN_COPY.notePaperOpenPdf;
-  const protocol = openPdfProtocolUrl(paper.id);
-  const links = linkedTerms.length === 0 ? "" : `
-${linkedTerms.map((item) => `- [[${wikilinkTarget(item.path)}|${item.term}]]`).join("\n")}
-`;
-  return frontmatterBlock({
-    paper_sync: "true",
-    source: "paper.college",
-    paper_id: yamlScalar(paper.id)
-  }) + `
-# ${title}
-
-[${open}](${protocol})
-` + links;
+function buildPreviewModel(document2, size2 = DEFAULT_PREVIEW_SIZE) {
+  const nodes = document2.nodes;
+  if (nodes.length === 0) {
+    return { width: size2.maxWidth, height: Math.round(size2.maxHeight / 3), scale: 1, groups: [], nodes: [], edges: [] };
+  }
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const n of nodes) {
+    minX = Math.min(minX, n.x);
+    minY = Math.min(minY, n.y);
+    maxX = Math.max(maxX, n.x + n.width);
+    maxY = Math.max(maxY, n.y + n.height);
+  }
+  const spanX = Math.max(1, maxX - minX);
+  const spanY = Math.max(1, maxY - minY);
+  const inner = {
+    w: Math.max(1, size2.maxWidth - size2.padding * 2),
+    h: Math.max(1, size2.maxHeight - size2.padding * 2)
+  };
+  const scale = Math.min(inner.w / spanX, inner.h / spanY);
+  const width = Math.min(size2.maxWidth, Math.ceil(spanX * scale + size2.padding * 2));
+  const height = Math.min(size2.maxHeight, Math.ceil(spanY * scale + size2.padding * 2));
+  const tx = (x) => round2((x - minX) * scale + size2.padding);
+  const ty = (y) => round2((y - minY) * scale + size2.padding);
+  const groups = [];
+  const cards = [];
+  const byId2 = /* @__PURE__ */ new Map();
+  for (const n of nodes) {
+    byId2.set(n.id, n);
+    const rect = {
+      id: n.id,
+      x: tx(n.x),
+      y: ty(n.y),
+      width: round2(n.width * scale),
+      height: round2(n.height * scale),
+      color: resolvePreviewColor(n.color),
+      kind: nodeKind(n)
+    };
+    (n.type === "group" ? groups : cards).push(rect);
+  }
+  const edges = [];
+  for (const e of document2.edges) {
+    const from = byId2.get(e.fromNode);
+    const to = byId2.get(e.toNode);
+    if (!from || !to) continue;
+    const a = sidePoint(from, e.fromSide);
+    const b = sidePoint(to, e.toSide);
+    edges.push({
+      id: e.id,
+      x1: tx(a.x),
+      y1: ty(a.y),
+      x2: tx(b.x),
+      y2: ty(b.y),
+      arrow: e.toEnd === "arrow",
+      color: resolvePreviewColor(e.color)
+    });
+  }
+  return { width, height, scale, groups, nodes: cards, edges };
 }
-function emptyIndexMarkdown() {
-  return frontmatterBlock({
-    paper_sync: "true",
-    source: "paper.college"
-  }) + `
-# Glossary
-
-${PLUGIN_COPY.noteFolderEmpty}
-`;
-}
-function canvasFileContents(mindmap) {
-  return `${JSON.stringify(mindmap, null, 2)}
-`;
-}
-function wikilinkTarget(relativePath) {
-  return relativePath.replace(/\.md$/i, "");
-}
-function joinVaultPath(...parts) {
-  return parts.map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean).join("/");
-}
-
-// src/sync-apply.ts
-var GLOSSARY_DIR = "Glossary";
-var PAPERS_DIR = "Papers";
-var PROJECTS_DIR = "Projects";
-var LEGACY_CANVAS_FILENAME = "Mindmap.canvas";
-var EMPTY_INDEX_FILENAME = "Glossary.md";
-function normalizeFolderName(raw) {
-  const trimmed = raw.trim().replace(/^\/+|\/+$/g, "");
-  return trimmed.length > 0 ? trimmed : PLUGIN_COPY.folderDefault;
-}
-function buildApplyPlan(payload, folderRaw) {
+function textTitle(text, max = 80) {
   var _a2;
-  const folder = normalizeFolderName(folderRaw);
-  const hazards = findPdfHazards(payload);
-  const abortReasons = hazards.map((h) => h.reason);
-  const glossaryAborted = hazards.some((h) => h.part === "glossary");
-  const papersAborted = hazards.some((h) => h.part === "papers");
-  const canvasAborted = hazards.some((h) => h.part === "canvas");
-  const writes = [];
-  const terms = Array.isArray(payload.glossary_terms) ? payload.glossary_terms : [];
-  const papers = Array.isArray(payload.papers) ? payload.papers : [];
-  const emptyGlossary = terms.length === 0;
-  const usedTermNames = /* @__PURE__ */ new Set();
-  const usedPaperNames = /* @__PURE__ */ new Set();
-  const termPaths = /* @__PURE__ */ new Map();
-  if (!glossaryAborted) {
-    for (const term of terms) {
-      const write = planGlossaryWrite(folder, term, usedTermNames);
-      if (write) {
-        writes.push(write);
-        termPaths.set(term.id, {
-          term: term.term,
-          path: write.relativePath
-        });
-      }
+  const withoutTags = text.replace(/<[^>]*>/g, "");
+  const line = (_a2 = withoutTags.split("\n").map((l) => l.trim()).find((l) => l.length > 0)) != null ? _a2 : "";
+  const plain = line.replace(/^#+\s*/, "").replace(/^>\s*/, "").replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2").replace(/\[\[([^\]]+)\]\]/g, "$1").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[*_`]/g, "").trim();
+  return plain.length > max ? `${plain.slice(0, max - 1)}\u2026` : plain;
+}
+function outlineNode(node) {
+  const kind = nodeKind(node);
+  if (node.type === "group") return { id: node.id, type: node.type, kind, title: node.label };
+  if (node.type === "file") return { id: node.id, type: node.type, kind, title: node.file, file: node.file };
+  return { id: node.id, type: node.type, kind, title: textTitle(node.text) };
+}
+function buildOutline(canvases) {
+  return canvases.map(({ path, document: document2 }) => ({
+    path,
+    level: document2.paperCollege.canvas,
+    presetId: document2.paperCollege.presetId,
+    nodeCount: document2.nodes.filter((n) => n.type !== "group").length,
+    edgeCount: document2.edges.length,
+    groupCount: document2.nodes.filter((n) => n.type === "group").length,
+    nodes: document2.nodes.map(outlineNode)
+  }));
+}
+
+// src/canvas/preview-dom.ts
+function attrs(values) {
+  const out = {};
+  for (const key of Object.keys(values)) out[key] = String(values[key]);
+  return out;
+}
+var markerSeq = 0;
+function renderPreviewDrawing(container, model, label) {
+  container.empty();
+  const svg = container.createSvg("svg", {
+    cls: "paper-canvas-preview-svg",
+    attr: attrs({
+      viewBox: `0 0 ${model.width} ${model.height}`,
+      width: model.width,
+      height: model.height,
+      role: "img",
+      "aria-label": label
+    })
+  });
+  const markerId = `paper-canvas-preview-arrow-${++markerSeq}`;
+  const marker = svg.createSvg("defs").createSvg("marker", {
+    attr: attrs({
+      id: markerId,
+      viewBox: "0 0 10 10",
+      refX: 9,
+      refY: 5,
+      markerWidth: 6,
+      markerHeight: 6,
+      orient: "auto-start-reverse"
+    })
+  });
+  marker.createSvg("path", { cls: "paper-canvas-preview-arrow", attr: { d: "M 0 0 L 10 5 L 0 10 z" } });
+  for (const g of model.groups) {
+    const a = { x: g.x, y: g.y, width: g.width, height: g.height, rx: 4 };
+    if (g.color) a.stroke = g.color;
+    svg.createSvg("rect", { cls: "paper-canvas-preview-group", attr: attrs(a) });
+  }
+  for (const e of model.edges) {
+    const a = { x1: e.x1, y1: e.y1, x2: e.x2, y2: e.y2 };
+    if (e.color) a.stroke = e.color;
+    if (e.arrow) a["marker-end"] = `url(#${markerId})`;
+    svg.createSvg("line", { cls: "paper-canvas-preview-edge", attr: attrs(a) });
+  }
+  for (const n of model.nodes) {
+    const a = {
+      x: n.x,
+      y: n.y,
+      width: Math.max(1, n.width),
+      height: Math.max(1, n.height),
+      rx: 2,
+      "data-paper-kind": n.kind
+    };
+    if (n.color) {
+      a.stroke = n.color;
+      a.fill = n.color;
     }
-    if (emptyGlossary) {
-      const indexPath = joinVaultPath(folder, EMPTY_INDEX_FILENAME);
-      if (isAllowedVaultPath(indexPath)) {
-        writes.push({
-          relativePath: indexPath,
-          content: emptyIndexMarkdown(),
-          kind: "index"
-        });
-      }
+    svg.createSvg("rect", { cls: "paper-canvas-preview-node", attr: attrs(a) });
+  }
+}
+function renderOutline(container, files, selectedPath) {
+  container.empty();
+  const list = container.createEl("ul", { cls: "paper-canvas-outline" });
+  for (const file of files) {
+    const details = list.createEl("li").createEl("details");
+    details.open = file.path === selectedPath;
+    details.createEl("summary", { cls: "paper-canvas-outline-file", text: file.path });
+    const nodes = details.createEl("ul");
+    for (const node of file.nodes) {
+      const li = nodes.createEl("li", {
+        cls: "paper-canvas-outline-node",
+        attr: { "data-paper-kind": node.kind }
+      });
+      li.createSpan({ cls: "paper-canvas-outline-kind", text: CANVAS_KIND_LABELS[node.kind] });
+      li.appendText(` ${node.title || node.id}`);
     }
   }
-  if (!papersAborted) {
-    const termsByPaper = groupTermsByPaper(terms);
-    for (const paper of papers) {
-      const linked = ((_a2 = termsByPaper.get(paper.id)) != null ? _a2 : []).map((term) => termPaths.get(term.id)).filter((item) => Boolean(item));
-      const write = planPaperWrite(folder, paper, linked, usedPaperNames);
-      if (write) {
-        writes.push(write);
+}
+
+// src/canvas-settings.ts
+var TEXT_DEBOUNCE_MS = 400;
+var CUSTOM_COLOR = "custom";
+var DEFAULT_CUSTOM_HEX = "#4f46e5";
+var EMIT_LABELS = {
+  overview: CANVAS_SETTINGS_COPY.emitOverview,
+  project: CANVAS_SETTINGS_COPY.emitProject,
+  paper: CANVAS_SETTINGS_COPY.emitPaper,
+  term: CANVAS_SETTINGS_COPY.emitTerm
+};
+var CanvasLayoutSection = class {
+  constructor(plugin) {
+    this.plugin = plugin;
+    /** Collapsible sections the user opened; kept across re-renders. */
+    this.openSections = /* @__PURE__ */ new Set();
+    this.root = null;
+    this.previewPath = null;
+    this.previewMode = "drawing";
+    this.rawJson = false;
+    this.resetButton = null;
+    this.editedBadge = null;
+    this.preview = null;
+    this.commitSoon = (0, import_obsidian6.debounce)(() => void this.commit(), TEXT_DEBOUNCE_MS, true);
+    this.draft = plugin.activeCanvasPreset();
+  }
+  /** Renders the whole section into `root` (cleared first). */
+  render(root) {
+    this.root = root;
+    root.empty();
+    root.addClass("paper-canvas-settings");
+    this.draft = this.plugin.activeCanvasPreset();
+    const store = this.plugin.settings.canvasPresets;
+    new import_obsidian6.Setting(root).setName(CANVAS_SETTINGS_COPY.title).setHeading();
+    root.createEl("p", { cls: "paper-setting-note", text: CANVAS_SETTINGS_COPY.intro });
+    new import_obsidian6.Setting(root).setName(CANVAS_SETTINGS_COPY.preset).setDesc(this.draft.description).addDropdown((dd) => {
+      for (const preset of listPresets(store)) {
+        dd.addOption(preset.id, preset.name);
       }
+      dd.setValue(store.activePresetId);
+      dd.onChange(async (id) => {
+        await this.plugin.updateCanvasPresets(setActivePreset(this.plugin.settings.canvasPresets, id));
+        this.rerender();
+      });
+    });
+    new import_obsidian6.Setting(root).setName(CANVAS_SETTINGS_COPY.reset).setDesc(CANVAS_SETTINGS_COPY.resetDesc).addButton((btn) => {
+      this.resetButton = btn;
+      btn.setButtonText(CANVAS_SETTINGS_COPY.reset);
+      btn.setDisabled(!this.isEdited());
+      btn.onClick(async () => {
+        const current = this.plugin.settings.canvasPresets;
+        await this.plugin.updateCanvasPresets(resetPreset(current, current.activePresetId));
+        this.rerender();
+      });
+    });
+    new import_obsidian6.Setting(root).setName(CANVAS_SETTINGS_COPY.resync).setDesc(CANVAS_SETTINGS_COPY.resyncDesc).addButton((btn) => {
+      btn.setButtonText(this.plugin.syncing ? CANVAS_SETTINGS_COPY.resyncBusy : CANVAS_SETTINGS_COPY.resync);
+      btn.setCta();
+      btn.setDisabled(this.plugin.syncing);
+      btn.onClick(async () => {
+        if (this.plugin.syncing) {
+          return;
+        }
+        btn.setDisabled(true);
+        btn.setButtonText(CANVAS_SETTINGS_COPY.resyncBusy);
+        try {
+          await this.plugin.resyncCanvases();
+        } finally {
+          btn.setDisabled(this.plugin.syncing);
+          btn.setButtonText(CANVAS_SETTINGS_COPY.resync);
+        }
+      });
+    });
+    this.renderEditor(root);
+    this.renderPreview(root);
+    this.refreshPreview();
+  }
+  rerender() {
+    if (this.root) {
+      this.render(this.root);
     }
   }
-  if (!canvasAborted) {
-    const canvases = Array.isArray(payload.canvases) ? payload.canvases : [];
-    if (canvases.length === 0) {
-      const fallback = emptyCanvasDocument();
-      const canvasPath = joinVaultPath(folder, "Projects.canvas");
-      if (isAllowedVaultPath(canvasPath)) {
-        writes.push({
-          relativePath: canvasPath,
-          content: canvasFileContents(fallback),
-          kind: "canvas"
+  isEdited() {
+    const store = this.plugin.settings.canvasPresets;
+    return Boolean(store.overrides[store.activePresetId]);
+  }
+  /**
+   * Saves the draft as the active preset's edit and refreshes the preview.
+   * The draft is swapped for the sanitised copy synchronously, so edits made
+   * while the save is in flight land on the new draft and are not lost.
+   */
+  async commit() {
+    var _a2, _b;
+    const next = savePreset(this.plugin.settings.canvasPresets, this.draft);
+    this.draft = resolvePreset(next);
+    const saving = this.plugin.updateCanvasPresets(next);
+    (_a2 = this.resetButton) == null ? void 0 : _a2.setDisabled(!this.isEdited());
+    (_b = this.editedBadge) == null ? void 0 : _b.toggleClass("paper-is-hidden", !this.isEdited());
+    this.refreshPreview();
+    await saving;
+  }
+  // --- Editor ---------------------------------------------------------------------
+  section(parent, key, title) {
+    const details = parent.createEl("details", { cls: "paper-canvas-editor-section" });
+    details.open = this.openSections.has(key);
+    details.createEl("summary", { text: title });
+    details.addEventListener("toggle", () => {
+      if (details.open) this.openSections.add(key);
+      else this.openSections.delete(key);
+    });
+    return details.createDiv({ cls: "paper-canvas-editor-body" });
+  }
+  renderEditor(root) {
+    const editor = root.createEl("details", { cls: "paper-canvas-editor" });
+    editor.open = this.openSections.has("editor");
+    const summary = editor.createEl("summary", { text: CANVAS_SETTINGS_COPY.edit });
+    this.editedBadge = summary.createSpan({ cls: "paper-canvas-edited", text: CANVAS_SETTINGS_COPY.edited });
+    this.editedBadge.toggleClass("paper-is-hidden", !this.isEdited());
+    editor.addEventListener("toggle", () => {
+      if (editor.open) this.openSections.add("editor");
+      else this.openSections.delete("editor");
+    });
+    const body = editor.createDiv({ cls: "paper-canvas-editor-body" });
+    const d = () => this.draft;
+    const details = this.section(body, "details", CANVAS_SETTINGS_COPY.details);
+    this.text(details, CANVAS_SETTINGS_COPY.name, "", () => d().name, (v) => d().name = v);
+    this.text(details, CANVAS_SETTINGS_COPY.description, "", () => d().description, (v) => d().description = v);
+    const st = this.section(body, "structure", CANVAS_SETTINGS_COPY.structure);
+    this.dropdown(st, CANVAS_SETTINGS_COPY.root, CANVAS_SETTINGS_COPY.rootDesc, CANVAS_OPTION_LABELS.root, () => d().structure.root, (v) => {
+      d().structure.root = v;
+    });
+    this.dropdown(st, CANVAS_SETTINGS_COPY.depth, CANVAS_SETTINGS_COPY.depthDesc, CANVAS_OPTION_LABELS.depth, () => String(d().structure.depth), (v) => {
+      d().structure.depth = v === "2" ? 2 : 3;
+    });
+    new import_obsidian6.Setting(st).setName(CANVAS_SETTINGS_COPY.emitTitle).setHeading();
+    for (const level of CANVAS_LEVELS) {
+      this.toggle(st, EMIT_LABELS[level], "", () => d().structure.emit[level], (v) => d().structure.emit[level] = v);
+    }
+    this.dropdown(st, CANVAS_SETTINGS_COPY.unassigned, "", CANVAS_OPTION_LABELS.unassigned, () => d().structure.unassigned, (v) => {
+      d().structure.unassigned = v;
+    });
+    const gr = this.section(body, "grouping", CANVAS_SETTINGS_COPY.grouping);
+    const cluster = CANVAS_OPTION_LABELS.cluster;
+    this.dropdown(gr, CANVAS_SETTINGS_COPY.groupTerms, "", cluster, () => d().grouping.terms, (v) => d().grouping.terms = v);
+    this.dropdown(gr, CANVAS_SETTINGS_COPY.groupHighlights, "", cluster, () => d().grouping.highlights, (v) => d().grouping.highlights = v);
+    this.dropdown(gr, CANVAS_SETTINGS_COPY.groupNotes, "", cluster, () => d().grouping.notes, (v) => d().grouping.notes = v);
+    this.dropdown(gr, CANVAS_SETTINGS_COPY.projectTerms, "", CANVAS_OPTION_LABELS.projectTerms, () => d().grouping.projectTerms, (v) => {
+      d().grouping.projectTerms = v;
+    });
+    this.dropdown(gr, CANVAS_SETTINGS_COPY.sort, "", CANVAS_OPTION_LABELS.sort, () => d().grouping.sort, (v) => {
+      d().grouping.sort = v;
+    });
+    this.number(gr, CANVAS_SETTINGS_COPY.maxTerms, CANVAS_SETTINGS_COPY.capDesc, () => d().grouping.maxTerms, (v) => d().grouping.maxTerms = v);
+    this.number(gr, CANVAS_SETTINGS_COPY.maxHighlights, CANVAS_SETTINGS_COPY.capDesc, () => d().grouping.maxHighlights, (v) => d().grouping.maxHighlights = v);
+    const la = this.section(body, "layout", CANVAS_SETTINGS_COPY.layout);
+    this.dropdown(la, CANVAS_SETTINGS_COPY.algorithm, "", CANVAS_OPTION_LABELS.algorithm, () => d().layout.algorithm, (v) => {
+      d().layout.algorithm = v;
+    });
+    this.number(la, CANVAS_SETTINGS_COPY.siblingGap, "", () => d().layout.siblingGap, (v) => d().layout.siblingGap = v);
+    this.number(la, CANVAS_SETTINGS_COPY.levelGap, "", () => d().layout.levelGap, (v) => d().layout.levelGap = v);
+    this.number(la, CANVAS_SETTINGS_COPY.groupPadding, "", () => d().layout.groupPadding, (v) => d().layout.groupPadding = v);
+    this.number(la, CANVAS_SETTINGS_COPY.groupColumns, "", () => d().layout.groupColumns, (v) => d().layout.groupColumns = v);
+    this.number(la, CANVAS_SETTINGS_COPY.gridColumns, CANVAS_SETTINGS_COPY.gridColumnsDesc, () => d().layout.gridColumns, (v) => d().layout.gridColumns = v);
+    this.dropdown(la, CANVAS_SETTINGS_COPY.sizing, "", CANVAS_OPTION_LABELS.sizing, () => d().layout.sizing, (v) => {
+      d().layout.sizing = v;
+    });
+    this.number(la, CANVAS_SETTINGS_COPY.maxLines, CANVAS_SETTINGS_COPY.maxLinesDesc, () => d().layout.maxLines, (v) => d().layout.maxLines = v);
+    new import_obsidian6.Setting(la).setName(CANVAS_SETTINGS_COPY.sizesTitle).setDesc(CANVAS_SETTINGS_COPY.sizesDesc).setHeading();
+    for (const kind of STYLED_KINDS) {
+      this.sizeRow(la, CANVAS_KIND_LABELS[kind], () => d().layout.sizes[kind]);
+    }
+    const co = this.section(body, "connections", CANVAS_SETTINGS_COPY.connections);
+    this.toggle(co, CANVAS_SETTINGS_COPY.siblings, CANVAS_SETTINGS_COPY.siblingsDesc, () => d().connections.siblings, (v) => d().connections.siblings = v);
+    this.toggle(co, CANVAS_SETTINGS_COPY.backlinks, CANVAS_SETTINGS_COPY.backlinksDesc, () => d().connections.backlinks, (v) => d().connections.backlinks = v);
+    this.dropdown(co, CANVAS_SETTINGS_COPY.arrow, "", CANVAS_OPTION_LABELS.arrow, () => d().connections.arrow, (v) => {
+      d().connections.arrow = v;
+    });
+    this.dropdown(co, CANVAS_SETTINGS_COPY.sides, "", CANVAS_OPTION_LABELS.sides, () => d().connections.sides, (v) => {
+      d().connections.sides = v;
+    });
+    co.createEl("p", { cls: "paper-setting-note", text: CANVAS_SETTINGS_COPY.noLabels });
+    const lo = this.section(body, "look", CANVAS_SETTINGS_COPY.look);
+    this.dropdown(lo, CANVAS_SETTINGS_COPY.colorMode, "", CANVAS_OPTION_LABELS.colorMode, () => d().look.colorMode, (v) => {
+      d().look.colorMode = v;
+    });
+    new import_obsidian6.Setting(lo).setName(CANVAS_SETTINGS_COPY.kindColorsTitle).setHeading();
+    for (const kind of STYLED_KINDS) {
+      this.color(lo, CANVAS_KIND_LABELS[kind], () => d().look.kindColors[kind], (v) => d().look.kindColors[kind] = v);
+    }
+    new import_obsidian6.Setting(lo).setName(CANVAS_SETTINGS_COPY.levelColorsTitle).setHeading();
+    for (const level of [0, 1, 2, 3]) {
+      this.color(lo, canvasLevelColorLabel(level), () => d().look.levelColors[level], (v) => d().look.levelColors[level] = v);
+    }
+    this.dropdown(lo, CANVAS_SETTINGS_COPY.hubText, "", CANVAS_OPTION_LABELS.hubText, () => d().look.hubText, (v) => {
+      d().look.hubText = v;
+    });
+    this.dropdown(lo, CANVAS_SETTINGS_COPY.termText, "", CANVAS_OPTION_LABELS.termText, () => d().look.termText, (v) => {
+      d().look.termText = v;
+    });
+    this.dropdown(lo, CANVAS_SETTINGS_COPY.highlightText, "", CANVAS_OPTION_LABELS.highlightText, () => d().look.highlightText, (v) => {
+      d().look.highlightText = v;
+    });
+    const fi = this.section(body, "files", CANVAS_SETTINGS_COPY.files);
+    new import_obsidian6.Setting(fi).setName(CANVAS_SETTINGS_COPY.noteNodesTitle).setDesc(CANVAS_SETTINGS_COPY.noteNodesDesc).setHeading();
+    for (const level of CANVAS_LEVELS) {
+      this.toggle(fi, CANVAS_LEVEL_LABELS[level], "", () => d().files.noteNodes[level], (v) => d().files.noteNodes[level] = v);
+    }
+    this.dropdown(fi, CANVAS_SETTINGS_COPY.paperNode, "", CANVAS_OPTION_LABELS.entityNode, () => d().files.paperNode, (v) => d().files.paperNode = v);
+    this.dropdown(fi, CANVAS_SETTINGS_COPY.termNode, "", CANVAS_OPTION_LABELS.entityNode, () => d().files.termNode, (v) => d().files.termNode = v);
+    this.toggle(fi, CANVAS_SETTINGS_COPY.backlinkToParent, "", () => d().files.backlinkToParent, (v) => d().files.backlinkToParent = v);
+    this.dropdown(fi, CANVAS_SETTINGS_COPY.paperFolders, "", CANVAS_OPTION_LABELS.paperFolders, () => d().files.paperFolders, (v) => {
+      d().files.paperFolders = v;
+    });
+    const css2 = this.section(body, "css", CANVAS_SETTINGS_COPY.css);
+    css2.createEl("p", { cls: "paper-setting-note", text: CANVAS_SETTINGS_COPY.cssDesc });
+    const area = css2.createEl("textarea", {
+      cls: "paper-canvas-css",
+      attr: { rows: "12", spellcheck: "false", "aria-label": CANVAS_SETTINGS_COPY.css, placeholder: CANVAS_SETTINGS_COPY.cssPlaceholder }
+    });
+    area.value = d().css;
+    area.addEventListener("input", () => {
+      this.draft.css = area.value;
+      this.commitSoon();
+    });
+  }
+  // --- Controls -------------------------------------------------------------------
+  dropdown(parent, name, desc, options, get, set) {
+    new import_obsidian6.Setting(parent).setName(name).setDesc(desc).addDropdown((dd) => {
+      dd.addOptions(options);
+      dd.setValue(get());
+      dd.onChange((value) => {
+        set(value);
+        void this.commit();
+      });
+    });
+  }
+  toggle(parent, name, desc, get, set) {
+    new import_obsidian6.Setting(parent).setName(name).setDesc(desc).addToggle((t) => {
+      t.setValue(get());
+      t.onChange((value) => {
+        set(value);
+        void this.commit();
+      });
+    });
+  }
+  text(parent, name, desc, get, set) {
+    new import_obsidian6.Setting(parent).setName(name).setDesc(desc).addText((t) => {
+      t.setValue(get());
+      t.onChange((value) => {
+        set(value);
+        this.commitSoon();
+      });
+      t.inputEl.addEventListener("blur", () => {
+        this.commitSoon.run();
+        t.setValue(get());
+      });
+    });
+  }
+  number(parent, name, desc, get, set) {
+    new import_obsidian6.Setting(parent).setName(name).setDesc(desc).addText((t) => {
+      t.inputEl.type = "number";
+      t.inputEl.addClass("paper-canvas-number");
+      t.setValue(String(get()));
+      t.onChange((value) => {
+        const n = Number(value);
+        if (value.trim() === "" || !Number.isFinite(n)) return;
+        set(n);
+        this.commitSoon();
+      });
+      t.inputEl.addEventListener("blur", () => {
+        this.commitSoon.run();
+        t.setValue(String(get()));
+      });
+    });
+  }
+  /** Four number inputs (min/max width/height) for one kind's card size. */
+  sizeRow(parent, name, get) {
+    const setting = new import_obsidian6.Setting(parent).setName(name);
+    setting.controlEl.addClass("paper-canvas-size-row");
+    const fields = [
+      ["minWidth", CANVAS_SETTINGS_COPY.minWidth],
+      ["maxWidth", CANVAS_SETTINGS_COPY.maxWidth],
+      ["minHeight", CANVAS_SETTINGS_COPY.minHeight],
+      ["maxHeight", CANVAS_SETTINGS_COPY.maxHeight]
+    ];
+    for (const [key, label] of fields) {
+      setting.addText((t) => {
+        t.inputEl.type = "number";
+        t.inputEl.addClass("paper-canvas-number");
+        t.inputEl.setAttribute("aria-label", `${name}: ${label}`);
+        t.inputEl.setAttribute("title", label);
+        t.setPlaceholder(label);
+        t.setValue(String(get()[key]));
+        t.onChange((value) => {
+          const n = Number(value);
+          if (value.trim() === "" || !Number.isFinite(n)) return;
+          get()[key] = n;
+          this.commitSoon();
         });
+        t.inputEl.addEventListener("blur", () => {
+          this.commitSoon.run();
+          t.setValue(String(get()[key]));
+        });
+      });
+    }
+  }
+  /** Obsidian preset colour (1–6) or a custom hex with a colour picker. */
+  color(parent, name, get, set) {
+    var _a2;
+    const setting = new import_obsidian6.Setting(parent).setName(name);
+    const current = get();
+    const isPreset = current.length === 1;
+    let lastHex = isPreset ? DEFAULT_CUSTOM_HEX : current;
+    let picker = null;
+    let dropdown = null;
+    const swatch = setting.controlEl.createSpan({ cls: "paper-canvas-swatch", attr: { "aria-hidden": "true" } });
+    const paintSwatch = () => {
+      swatch.setAttribute("data-canvas-color", get());
+      swatch.style.setProperty("--paper-canvas-swatch", get().length === 1 ? `rgb(var(--canvas-color-${get()}))` : get());
+    };
+    paintSwatch();
+    setting.addDropdown((dd) => {
+      dropdown = dd;
+      for (const key of Object.keys(CANVAS_COLOR_PRESET_LABELS)) {
+        dd.addOption(key, `${CANVAS_COLOR_PRESET_LABELS[key]} (${key})`);
+      }
+      dd.addOption(CUSTOM_COLOR, CANVAS_SETTINGS_COPY.colorCustom);
+      dd.setValue(isPreset ? current : CUSTOM_COLOR);
+      dd.selectEl.setAttribute("aria-label", name);
+      dd.onChange((value) => {
+        const next = value === CUSTOM_COLOR ? lastHex : value;
+        if (!isCanvasColor(next)) return;
+        set(next);
+        picker == null ? void 0 : picker.setDisabled(value !== CUSTOM_COLOR);
+        paintSwatch();
+        void this.commit();
+      });
+    });
+    setting.addColorPicker((cp) => {
+      picker = cp;
+      cp.setValue(lastHex);
+      cp.setDisabled(isPreset);
+      cp.onChange((hex) => {
+        const value = hex.toLowerCase();
+        if (!isCanvasColor(value)) return;
+        lastHex = value;
+        set(value);
+        dropdown == null ? void 0 : dropdown.setValue(CUSTOM_COLOR);
+        paintSwatch();
+        this.commitSoon();
+      });
+    });
+    (_a2 = setting.controlEl.querySelector('input[type="color"]')) == null ? void 0 : _a2.setAttribute("aria-label", `${name}: ${CANVAS_SETTINGS_COPY.colorPickerLabel}`);
+  }
+  // --- Preview ---------------------------------------------------------------------
+  renderPreview(root) {
+    const wrap = root.createDiv({ cls: "paper-canvas-preview" });
+    new import_obsidian6.Setting(wrap).setName(CANVAS_SETTINGS_COPY.previewTitle).setDesc(CANVAS_SETTINGS_COPY.previewDesc).setHeading();
+    let fileDropdown = null;
+    new import_obsidian6.Setting(wrap).setName(CANVAS_SETTINGS_COPY.previewFile).addDropdown((dd) => {
+      fileDropdown = dd;
+      dd.selectEl.setAttribute("aria-label", CANVAS_SETTINGS_COPY.previewFile);
+      dd.onChange((path) => {
+        this.previewPath = path;
+        this.refreshPreview();
+      });
+    });
+    new import_obsidian6.Setting(wrap).setName(CANVAS_SETTINGS_COPY.previewMode).addDropdown((dd) => {
+      dd.addOption("drawing", CANVAS_SETTINGS_COPY.previewModeDrawing);
+      dd.addOption("outline", CANVAS_SETTINGS_COPY.previewModeOutline);
+      dd.setValue(this.previewMode);
+      dd.onChange((mode) => {
+        this.previewMode = mode === "outline" ? "outline" : "drawing";
+        this.refreshPreview();
+      });
+    }).addToggle((t) => {
+      t.setTooltip(CANVAS_SETTINGS_COPY.previewRawJson);
+      t.toggleEl.setAttribute("aria-label", CANVAS_SETTINGS_COPY.previewRawJson);
+      t.setValue(this.rawJson);
+      t.onChange((on) => {
+        this.rawJson = on;
+        this.refreshPreview();
+      });
+    });
+    const summary = wrap.createEl("p", { cls: "paper-setting-note", attr: { "aria-live": "polite" } });
+    const empty = wrap.createEl("p", { cls: "paper-setting-note", text: CANVAS_SETTINGS_COPY.previewEmpty });
+    const drawing = wrap.createDiv({ cls: "paper-canvas-preview-drawing" });
+    const outline = wrap.createDiv({ cls: "paper-canvas-preview-outline" });
+    const raw = wrap.createEl("pre", { cls: "paper-canvas-preview-raw" });
+    if (fileDropdown) {
+      this.preview = { fileDropdown, summary, empty, drawing, outline, raw };
+    }
+  }
+  refreshPreview() {
+    var _a2, _b, _c;
+    const p = this.preview;
+    if (!p || !p.drawing.isConnected) return;
+    let canvases;
+    try {
+      canvases = this.plugin.canvasPreview(this.draft);
+    } catch (e) {
+      canvases = [];
+    }
+    const paths = canvases.map((c) => c.path);
+    if (!this.previewPath || !paths.includes(this.previewPath)) {
+      this.previewPath = (_a2 = paths[0]) != null ? _a2 : null;
+    }
+    const select = p.fileDropdown.selectEl;
+    select.empty();
+    for (const path of paths) {
+      p.fileDropdown.addOption(path, path);
+    }
+    if (this.previewPath) p.fileDropdown.setValue(this.previewPath);
+    p.fileDropdown.setDisabled(paths.length === 0);
+    p.empty.toggleClass("paper-is-hidden", this.plugin.settings.lastPayload !== null);
+    const selected = (_b = canvases.find((c) => c.path === this.previewPath)) != null ? _b : null;
+    if (selected) {
+      const doc = selected.document;
+      const groups = doc.nodes.filter((n) => n.type === "group").length;
+      p.summary.setText(canvasPreviewSummary(doc.nodes.length - groups, doc.edges.length, groups));
+    } else {
+      p.summary.setText("");
+    }
+    const drawingMode = this.previewMode === "drawing";
+    p.drawing.toggleClass("paper-is-hidden", !drawingMode);
+    p.outline.toggleClass("paper-is-hidden", drawingMode);
+    if (drawingMode) {
+      if (selected && selected.document.nodes.length > 0) {
+        renderPreviewDrawing(p.drawing, buildPreviewModel(selected.document), CANVAS_SETTINGS_COPY.previewDrawingLabel);
+      } else {
+        p.drawing.empty();
+        p.drawing.createEl("p", { cls: "paper-setting-note", text: CANVAS_SETTINGS_COPY.previewNoNodes });
       }
     } else {
-      for (const entry of canvases) {
-        const canvasPath = joinVaultPath(folder, entry.path);
-        if (!isAllowedVaultPath(canvasPath) || !isJsonCanvas(entry.document)) {
-          abortReasons.push(`canvas ${entry.path} is not valid`);
-          continue;
-        }
-        const doc = rewriteFileNodePaths(entry.document, folder);
-        writes.push({
-          relativePath: canvasPath,
-          content: canvasFileContents(doc),
-          kind: "canvas"
-        });
-      }
+      renderOutline(p.outline, buildOutline(canvases), (_c = this.previewPath) != null ? _c : "");
     }
+    p.raw.toggleClass("paper-is-hidden", !this.rawJson || !selected);
+    p.raw.setText(this.rawJson && selected ? serializeCanvas(selected.document) : "");
   }
-  return {
-    writes: writes.filter((w) => isAllowedVaultPath(w.relativePath)),
-    folder,
-    glossaryAborted,
-    canvasAborted,
-    papersAborted,
-    abortReasons,
-    termCount: terms.length,
-    paperCount: papers.length,
-    emptyGlossary
-  };
-}
-function rewriteFileNodePaths(document2, folder) {
-  const nodes = document2.nodes.map((node) => {
-    if (node.type === "file" && typeof node.file === "string") {
-      return { ...node, file: `${folder}/${node.file}` };
-    }
-    return node;
-  });
-  return { ...document2, nodes };
-}
-function planGlossaryWrite(folder, term, used) {
-  const basename = uniqueBasename(term.term, term.id, used);
-  const relativePath = joinVaultPath(folder, GLOSSARY_DIR, `${basename}.md`);
-  if (!isAllowedVaultPath(relativePath)) {
-    return null;
-  }
-  return {
-    relativePath,
-    content: glossaryNoteMarkdown(term),
-    kind: "glossary"
-  };
-}
-function planPaperWrite(folder, paper, linked, used) {
-  var _a2;
-  const title = ((_a2 = paper.title) == null ? void 0 : _a2.trim()) || PLUGIN_COPY.pickerUntitled;
-  const basename = uniqueBasename(title, paper.id, used);
-  const relativePath = joinVaultPath(folder, PAPERS_DIR, `${basename}.md`);
-  if (!isAllowedVaultPath(relativePath)) {
-    return null;
-  }
-  return {
-    relativePath,
-    content: paperStubMarkdown(paper, linked),
-    kind: "paper"
-  };
-}
-function groupTermsByPaper(terms) {
-  var _a2;
-  const map = /* @__PURE__ */ new Map();
-  for (const term of terms) {
-    const list = (_a2 = map.get(term.paper_id)) != null ? _a2 : [];
-    list.push(term);
-    map.set(term.paper_id, list);
-  }
-  return map;
-}
-async function applyPlan(vault, plan) {
-  const result = {
-    written: [],
-    skippedUser: [],
-    failed: [],
-    folderError: null,
-    glossaryOk: !plan.glossaryAborted,
-    canvasOk: !plan.canvasAborted,
-    papersOk: !plan.papersAborted
-  };
-  try {
-    await ensureFolderTree(vault, plan.folder);
-    const legacyPath = joinVaultPath(plan.folder, LEGACY_CANVAS_FILENAME);
-    const legacyContent = await vault.read(legacyPath);
-    if (legacyContent !== null && hasPaperSyncMarker(legacyContent)) {
-      await vault.writeAtomic(legacyPath, "");
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : PLUGIN_COPY.folderError;
-    result.folderError = message;
-    result.glossaryOk = false;
-    result.canvasOk = false;
-    result.papersOk = false;
-    return result;
-  }
-  for (const write of plan.writes) {
-    if (!isAllowedVaultPath(write.relativePath)) {
-      result.failed.push(write.relativePath);
-      markKindFailed(result, write.kind);
-      continue;
-    }
-    const existing = await vault.read(write.relativePath);
-    if (existing !== null && !hasPaperSyncMarker(existing)) {
-      result.skippedUser.push(write.relativePath);
-      continue;
-    }
-    try {
-      await ensureParentFolder(vault, write.relativePath);
-      await vault.writeAtomic(write.relativePath, write.content);
-      result.written.push(write.relativePath);
-    } catch (e) {
-      result.failed.push(write.relativePath);
-      markKindFailed(result, write.kind);
-    }
-  }
-  if (plan.glossaryAborted) {
-    result.glossaryOk = false;
-  }
-  if (plan.canvasAborted) {
-    result.canvasOk = false;
-  }
-  if (plan.papersAborted) {
-    result.papersOk = false;
-  }
-  return result;
-}
-function markKindFailed(result, kind) {
-  if (kind === "glossary" || kind === "index") {
-    result.glossaryOk = false;
-  }
-  if (kind === "canvas") {
-    result.canvasOk = false;
-  }
-  if (kind === "paper") {
-    result.papersOk = false;
-  }
-}
-async function ensureFolderTree(vault, folder) {
-  if (await vault.isFile(folder)) {
-    throw new Error(PLUGIN_COPY.folderError);
-  }
-  if (!await vault.isFolder(folder)) {
-    await vault.createFolder(folder);
-  }
-  for (const child of [GLOSSARY_DIR, PAPERS_DIR, PROJECTS_DIR]) {
-    const path = joinVaultPath(folder, child);
-    if (await vault.isFile(path)) {
-      throw new Error(PLUGIN_COPY.folderError);
-    }
-    if (!await vault.isFolder(path)) {
-      await vault.createFolder(path);
-    }
-  }
-}
-async function ensureParentFolder(vault, filePath) {
-  const parts = filePath.split("/");
-  parts.pop();
-  let cursor = "";
-  for (const part of parts) {
-    cursor = cursor ? `${cursor}/${part}` : part;
-    if (await vault.isFile(cursor)) {
-      throw new Error(PLUGIN_COPY.folderError);
-    }
-    if (!await vault.isFolder(cursor)) {
-      await vault.createFolder(cursor);
-    }
-  }
-}
+};
 
 // src/settings-tab.ts
-var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
+var PaperSettingTab = class extends import_obsidian7.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
+    this.canvasSection = new CanvasLayoutSection(plugin);
   }
   display() {
     const { containerEl } = this;
     containerEl.empty();
     const connected = this.plugin.isConnected();
     const settings = this.plugin.settings;
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.connectionTitle).setHeading();
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.connectionTitle).setHeading();
     if (connected) {
       containerEl.createEl("p", {
         cls: "paper-setting-note",
         text: connectedAs(settings.accountLabel || settings.deviceId)
       });
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.syncNow).addButton((btn) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.syncNow).addButton((btn) => {
         btn.setButtonText(PLUGIN_COPY.syncNow);
         btn.onClick(() => {
           void this.plugin.syncNow();
         });
       });
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.disconnect).addButton((btn) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.disconnect).addButton((btn) => {
         btn.setButtonText(PLUGIN_COPY.disconnect);
         btn.onClick(() => this.plugin.confirmDisconnect());
       });
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.connectionReplace).setDesc(PLUGIN_COPY.connectionReplaceBody).addButton((btn) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.connectionReplace).setDesc(PLUGIN_COPY.connectionReplaceBody).addButton((btn) => {
         btn.setButtonText(PLUGIN_COPY.connectionReplace);
         btn.onClick(() => this.plugin.confirmReplaceConnection());
       });
@@ -23617,19 +27267,19 @@ var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
         cls: "paper-setting-note",
         text: PLUGIN_COPY.connectionDisconnected
       });
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.connect).addButton((btn) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.connect).addButton((btn) => {
         btn.setButtonText(PLUGIN_COPY.connect);
         btn.onClick(() => this.plugin.startConnect());
       });
       const url = this.plugin.settingsDeepLink();
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.connectionManualUrl).setDesc(url).addButton((btn) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.connectionManualUrl).setDesc(url).addButton((btn) => {
         btn.setButtonText("Copy");
         btn.onClick(async () => {
           await navigator.clipboard.writeText(url);
           btn.setButtonText(PLUGIN_COPY.copied);
         });
       });
-      new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.connectionCodeLabel).setDesc(PLUGIN_COPY.connectionCodeHelp).addText((text) => {
+      new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.connectionCodeLabel).setDesc(PLUGIN_COPY.connectionCodeHelp).addText((text) => {
         text.setPlaceholder("48219307");
         text.inputEl.setAttribute("inputmode", "numeric");
         text.inputEl.setAttribute("pattern", "[0-9]*");
@@ -23650,8 +27300,8 @@ var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
         });
       }
     }
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.folderTitle).setHeading();
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.folderTitle).setDesc(PLUGIN_COPY.folderHelp).addText((text) => {
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.folderTitle).setHeading();
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.folderTitle).setDesc(PLUGIN_COPY.folderHelp).addText((text) => {
       text.setValue(settings.folder);
       text.setDisabled(this.plugin.syncing);
       text.onChange(async (value) => {
@@ -23659,15 +27309,15 @@ var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
         await this.plugin.saveSettings();
       });
     });
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.syncTitle).setHeading();
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.syncNow).setDesc(connected ? "" : PLUGIN_COPY.syncDisabledHelp).addButton((btn) => {
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.syncTitle).setHeading();
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.syncNow).setDesc(connected ? "" : PLUGIN_COPY.syncDisabledHelp).addButton((btn) => {
       btn.setButtonText(PLUGIN_COPY.syncNow);
       btn.setDisabled(!connected);
       btn.onClick(() => {
         void this.plugin.syncNow();
       });
     });
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.syncStartup).addToggle((toggle) => {
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.syncStartup).addToggle((toggle) => {
       toggle.setValue(settings.syncOnStartup);
       toggle.onChange(async (value) => {
         this.plugin.settings.syncOnStartup = value;
@@ -23678,12 +27328,13 @@ var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
       cls: "paper-setting-note",
       text: PLUGIN_COPY.overwriteDisclosure
     });
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.pdfTitle).setHeading();
+    this.canvasSection.render(containerEl.createDiv());
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.pdfTitle).setHeading();
     containerEl.createEl("p", {
       cls: "paper-setting-note",
       text: PLUGIN_COPY.pdfPolicy
     });
-    new import_obsidian6.Setting(containerEl).setName(PLUGIN_COPY.siteUrlTitle).setDesc(PLUGIN_COPY.siteUrlHelp).addText((text) => {
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.siteUrlTitle).setDesc(PLUGIN_COPY.siteUrlHelp).addText((text) => {
       text.setValue(settings.baseUrl);
       text.onChange(async (value) => {
         this.plugin.settings.baseUrl = normalizeBaseUrl(value);
@@ -23693,26 +27344,8 @@ var PaperSettingTab = class extends import_obsidian6.PluginSettingTab {
   }
 };
 
-// src/types.ts
-var DEFAULT_SETTINGS = {
-  baseUrl: "https://paper.college",
-  folder: "Paper",
-  token: "",
-  deviceId: "",
-  accountLabel: "",
-  syncOnStartup: false,
-  lastSyncAt: null,
-  lastPapers: [],
-  firstRunDismissed: false,
-  firstSyncDone: false,
-  lastSyncError: null,
-  lastTermCount: 0,
-  lastPaperCount: 0,
-  lastCanvasOk: false
-};
-
 // src/main.ts
-var PaperPlugin = class extends import_obsidian7.Plugin {
+var PaperPlugin = class extends import_obsidian8.Plugin {
   constructor() {
     super(...arguments);
     this.settings = { ...DEFAULT_SETTINGS };
@@ -23722,6 +27355,8 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     this.statusBar = null;
     this.syncError = false;
     this.hookedCanvasEls = /* @__PURE__ */ new WeakSet();
+    this.canvasCss = new CanvasCssInjector();
+    this.canvasScopeRun = 0;
   }
   isConnected() {
     return this.settings.token.length > 0;
@@ -23733,8 +27368,8 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     await this.loadSettings();
     this.settings.baseUrl = normalizeBaseUrl(this.settings.baseUrl);
     this.settings.syncOnStartup = Boolean(this.settings.syncOnStartup);
-    this.registerView(PDF_VIEW_TYPE, (leaf) => {
-      return new PaperPdfView(leaf, {
+    this.registerView(PDF_VIEW_TYPE, (leaf2) => {
+      return new PaperPdfView(leaf2, {
         getToken: () => this.settings.token,
         getBaseUrl: () => this.settings.baseUrl,
         openConnect: () => this.openConnect()
@@ -23813,6 +27448,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     });
     this.addSettingTab(new PaperSettingTab(this.app, this));
     this.registerCanvasHandlers();
+    this.registerCanvasScope();
     this.registerMarkdownPdfLinks();
     this.app.workspace.onLayoutReady(() => {
       if (!this.settings.firstRunDismissed) {
@@ -23827,7 +27463,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
   }
   async loadSettings() {
     const stored = await this.loadData();
-    this.settings = { ...DEFAULT_SETTINGS, ...stored != null ? stored : {} };
+    this.settings = migrateSettings(stored);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -23840,7 +27476,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     const url = this.settingsDeepLink();
     window.open(url);
     this.openSettings();
-    new import_obsidian7.Notice(`${PLUGIN_COPY.connectionManualUrl} ${url}`);
+    new import_obsidian8.Notice(`${PLUGIN_COPY.connectionManualUrl} ${url}`);
   }
   openConnect() {
     if (this.isConnected()) {
@@ -23860,7 +27496,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     );
     if (!result.ok) {
       this.connectError = exchangeErrorMessage(result.kind);
-      new import_obsidian7.Notice(this.connectError);
+      new import_obsidian8.Notice(this.connectError);
       this.openSettings();
       return;
     }
@@ -23869,7 +27505,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     this.settings.accountLabel = result.accountLabel;
     this.pendingCode = "";
     await this.saveSettings();
-    new import_obsidian7.Notice(PLUGIN_COPY.connectOfferSync);
+    new import_obsidian8.Notice(PLUGIN_COPY.connectOfferSync);
     this.openSettings();
   }
   confirmDisconnect() {
@@ -23911,7 +27547,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     if (!navigator.onLine) {
       this.syncError = true;
       this.refreshStatusBar();
-      new import_obsidian7.Notice(PLUGIN_COPY.offline);
+      new import_obsidian8.Notice(PLUGIN_COPY.offline);
       return;
     }
     this.syncing = true;
@@ -23925,23 +27561,83 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     if (!fetched.ok) {
       this.syncing = false;
       if (fetched.kind === "auth") {
-        new import_obsidian7.Notice(PLUGIN_COPY.pdfErrorAuth);
+        new import_obsidian8.Notice(PLUGIN_COPY.pdfErrorAuth);
         this.openConnect();
         this.refreshStatusBar();
         return;
       }
       this.syncError = true;
       this.refreshStatusBar();
-      new import_obsidian7.Notice(
+      new import_obsidian8.Notice(
         fetched.kind === "offline" ? PLUGIN_COPY.offline : PLUGIN_COPY.noticeSyncError
       );
       return;
     }
-    const plan = buildApplyPlan(fetched.payload, this.settings.folder);
-    const writer = new ObsidianVaultWriter(this.app.vault);
-    const applied = await applyPlan(writer, plan);
+    const figures = await this.syncFigureImages(fetched.payload);
+    await this.applyPayload(fetched.payload, opts, figures);
+  }
+  /**
+   * Re-syncs with the active preset (settings "Re-sync with this preset").
+   * Online and connected: a full sync, so data is fresh. Otherwise the cached
+   * payload is re-applied, rewriting canvases and cleaning up stale ones.
+   */
+  async resyncCanvases(opts) {
+    if (this.syncing) {
+      return;
+    }
+    if (this.isConnected() && navigator.onLine) {
+      await this.syncNow(opts);
+      return;
+    }
+    const cached = this.settings.lastPayload;
+    if (!cached) {
+      new import_obsidian8.Notice(this.isConnected() ? PLUGIN_COPY.offline : PLUGIN_COPY.canvasResyncNeedsSync);
+      return;
+    }
+    await this.applyPayload(cached, opts, await this.cachedFigureImages(cached));
+  }
+  /** The preset canvases are generated with (edits applied). */
+  activeCanvasPreset() {
+    return activePreset(this.settings.canvasPresets);
+  }
+  /** Replaces the preset store (switch / edit / reset) and saves plugin data. */
+  async updateCanvasPresets(store) {
+    this.settings.canvasPresets = migratePresetStore(store);
+    this.canvasCss.setCss(this.activeCanvasPreset().css);
+    await this.saveSettings();
+  }
+  /**
+   * Pure preview from the cached payload: sync-folder-relative canvases for
+   * `preset` (default: the active one). Empty library when never synced.
+   */
+  canvasPreview(preset = this.activeCanvasPreset()) {
+    return previewCanvases(this.settings.lastPayload, preset, {
+      folder: this.settings.folder,
+      origin: this.settings.baseUrl
+    });
+  }
+  async applyPayload(payload, opts, figures = null) {
+    var _a2;
+    this.syncing = true;
+    this.syncError = false;
+    this.refreshStatusBar();
+    const plan = buildApplyPlan(payload, this.settings.folder, {
+      preset: this.activeCanvasPreset(),
+      origin: this.settings.baseUrl,
+      figures: (_a2 = figures == null ? void 0 : figures.available) != null ? _a2 : []
+    });
+    const writer = new ObsidianVaultWriter(this.app.vault, this.app.fileManager);
+    const applied = await applyPlan(writer, plan, {
+      manifest: this.settings.canvasManifest
+    });
+    const figuresOk = !figures || figures.failed.length === 0;
     this.syncing = false;
-    this.settings.lastPapers = fetched.payload.papers.map((p) => ({
+    this.settings.lastPayload = payload;
+    if (applied.canvasManifest) {
+      this.settings.canvasManifest = applied.canvasManifest;
+    }
+    void this.refreshCanvasScope();
+    this.settings.lastPapers = payload.papers.map((p) => ({
       id: p.id,
       title: p.title
     }));
@@ -23949,11 +27645,11 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     this.settings.lastPaperCount = plan.paperCount;
     this.settings.lastCanvasOk = applied.canvasOk;
     this.settings.lastSyncError = applied.folderError;
-    const allOk = applied.folderError == null && applied.failed.length === 0 && applied.glossaryOk && applied.canvasOk && applied.papersOk && !plan.glossaryAborted && !plan.canvasAborted && !plan.papersAborted;
+    const allOk = applied.folderError == null && applied.failed.length === 0 && applied.glossaryOk && applied.canvasOk && applied.papersOk && !plan.glossaryAborted && !plan.canvasAborted && !plan.papersAborted && figuresOk;
     if (applied.folderError) {
       this.syncError = true;
       this.refreshStatusBar();
-      new import_obsidian7.Notice(applied.folderError);
+      new import_obsidian8.Notice(applied.folderError);
       return;
     }
     if (allOk) {
@@ -23965,9 +27661,9 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
       if (!(opts == null ? void 0 : opts.quiet)) {
         if (plan.emptyGlossary) {
           const extra = first ? ` ${syncSuccessNotice(0, plan.paperCount, true)}` : "";
-          new import_obsidian7.Notice(`${PLUGIN_COPY.noticeSyncEmpty}${first ? extra : ""}`.trim());
+          new import_obsidian8.Notice(`${PLUGIN_COPY.noticeSyncEmpty}${first ? extra : ""}`.trim());
         } else {
-          new import_obsidian7.Notice(
+          new import_obsidian8.Notice(
             syncSuccessNotice(plan.termCount, plan.paperCount, first)
           );
         }
@@ -23977,8 +27673,67 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     this.syncError = true;
     await this.saveSettings();
     this.refreshStatusBar();
-    const failedPart = !applied.canvasOk ? PLUGIN_COPY.failedPartMindmap : !applied.glossaryOk ? PLUGIN_COPY.failedPartGlossary : PLUGIN_COPY.failedPartGlossary;
-    new import_obsidian7.Notice(syncPartialNotice(failedPart));
+    const othersOk = applied.failed.length === 0 && applied.glossaryOk && applied.canvasOk && applied.papersOk && !plan.glossaryAborted && !plan.canvasAborted && !plan.papersAborted;
+    const failedPart = !applied.canvasOk ? PLUGIN_COPY.failedPartMindmap : othersOk && !figuresOk ? PLUGIN_COPY.failedPartFigures : PLUGIN_COPY.failedPartGlossary;
+    new import_obsidian8.Notice(syncPartialNotice(failedPart));
+  }
+  /**
+   * Downloads figure PNGs one by one before the notes are written, so each
+   * paper note embeds only images that are actually in the vault. The
+   * manifest is saved straight away: it records files already written.
+   */
+  async syncFigureImages(payload) {
+    var _a2, _b;
+    const placements = planFigurePlacements(payload, this.settings.folder);
+    if (!placements) {
+      return null;
+    }
+    const { baseUrl, token } = this.settings;
+    const result = await syncFigures(
+      new ObsidianVaultWriter(this.app.vault, this.app.fileManager),
+      (id) => fetchFigureImage(obsidianFetch, baseUrl, token, id),
+      placements,
+      {
+        manifest: (_a2 = this.settings.figureManifest) != null ? _a2 : {},
+        folders: (_b = this.settings.figureFolders) != null ? _b : []
+      },
+      this.settings.folder
+    );
+    this.settings.figureManifest = result.state.manifest;
+    this.settings.figureFolders = result.state.folders;
+    await this.saveSettings();
+    return result;
+  }
+  /**
+   * Offline re-apply: no downloads, so the notes keep embedding the figure
+   * images an earlier sync already wrote to the vault.
+   */
+  async cachedFigureImages(payload) {
+    var _a2, _b;
+    const placements = planFigurePlacements(payload, this.settings.folder);
+    if (!placements) {
+      return null;
+    }
+    const manifest = (_a2 = this.settings.figureManifest) != null ? _a2 : {};
+    const writer = new ObsidianVaultWriter(this.app.vault, this.app.fileManager);
+    const available = [];
+    for (const placed of placements) {
+      const entry = manifest[placed.figure.id];
+      if (entry && await writer.isFile(entry.path)) {
+        available.push({ figure: placed.figure, path: entry.path });
+      }
+    }
+    return {
+      state: { manifest, folders: (_b = this.settings.figureFolders) != null ? _b : [] },
+      available,
+      written: [],
+      renamed: [],
+      skipped: [],
+      skippedUser: [],
+      removed: [],
+      missing: [],
+      failed: []
+    };
   }
   openPdfPicker() {
     const papers = this.settings.lastPapers;
@@ -24000,8 +27755,8 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     const known = this.settings.lastPapers.find(
       (p) => p.id === paperId
     );
-    const leaf = this.app.workspace.getLeaf("tab");
-    await leaf.setViewState({
+    const leaf2 = this.app.workspace.getLeaf("tab");
+    await leaf2.setViewState({
       type: PDF_VIEW_TYPE,
       active: true,
       state: {
@@ -24009,21 +27764,21 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
         title: title || (known == null ? void 0 : known.title) || PLUGIN_COPY.pickerUntitled
       }
     });
-    await this.app.workspace.revealLeaf(leaf);
+    await this.app.workspace.revealLeaf(leaf2);
   }
   async openPaperFolder() {
-    const folderPath = (0, import_obsidian7.normalizePath)(this.settings.folder);
+    const folderPath = (0, import_obsidian8.normalizePath)(this.settings.folder);
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
-    if (folder instanceof import_obsidian7.TFolder) {
+    if (folder instanceof import_obsidian8.TFolder) {
       const canvas = this.app.vault.getAbstractFileByPath(
-        (0, import_obsidian7.normalizePath)(joinVaultPath(folderPath, "Projects.canvas"))
+        (0, import_obsidian8.normalizePath)(joinVaultPath(folderPath, "Projects.canvas"))
       );
-      if (canvas instanceof import_obsidian7.TFile) {
+      if (canvas instanceof import_obsidian8.TFile) {
         await this.app.workspace.getLeaf().openFile(canvas);
         return;
       }
     }
-    new import_obsidian7.Notice(PLUGIN_COPY.folderError);
+    new import_obsidian8.Notice(PLUGIN_COPY.folderError);
   }
   openSettings() {
     const setting = this.app.setting;
@@ -24051,7 +27806,7 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     );
   }
   showFirstRunNotice() {
-    const notice = new import_obsidian7.Notice("", 0);
+    const notice = new import_obsidian8.Notice("", 0);
     notice.messageEl.empty();
     notice.messageEl.createSpan({ text: PLUGIN_COPY.noticeFirstRun });
     const actions = notice.messageEl.createDiv({ cls: "paper-notice-actions" });
@@ -24085,6 +27840,9 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
       if (!href.includes(PDF_PROTOCOL_ACTION) && !href.includes("/library/")) {
         return;
       }
+      if (/#page=\d+/.test(href)) {
+        return;
+      }
       const paperId = parsePaperIdFromProtocol(href) || parsePaperIdFromLibraryUrl(href);
       if (!paperId) {
         return;
@@ -24105,9 +27863,9 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
         let doc = null;
         if ((_b = view.file) == null ? void 0 : _b.path) {
           const file = this.app.vault.getAbstractFileByPath(
-            (0, import_obsidian7.normalizePath)(view.file.path)
+            (0, import_obsidian8.normalizePath)(view.file.path)
           );
-          if (file instanceof import_obsidian7.TFile) {
+          if (file instanceof import_obsidian8.TFile) {
             try {
               const raw = await this.app.vault.read(file);
               doc = JSON.parse(raw);
@@ -24126,8 +27884,8 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
     };
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
-        for (const leaf of this.app.workspace.getLeavesOfType("canvas")) {
-          const el = leaf.view.containerEl;
+        for (const leaf2 of this.app.workspace.getLeavesOfType("canvas")) {
+          const el = leaf2.view.containerEl;
           if (this.hookedCanvasEls.has(el)) {
             continue;
           }
@@ -24144,5 +27902,54 @@ var PaperPlugin = class extends import_obsidian7.Plugin {
         }
       })
     );
+  }
+  /**
+   * Scoped preset CSS: while one of Paper's generated canvases is open, its
+   * view container gets the scope class and the active preset's CSS is
+   * adopted. Driven only by workspace / vault events and public DOM.
+   */
+  registerCanvasScope() {
+    this.canvasCss.setCss(this.activeCanvasPreset().css);
+    this.register(() => this.canvasCss.destroy());
+    const refresh = () => {
+      void this.refreshCanvasScope();
+    };
+    this.registerEvent(this.app.workspace.on("active-leaf-change", refresh));
+    this.registerEvent(this.app.workspace.on("layout-change", refresh));
+    this.registerEvent(this.app.workspace.on("file-open", refresh));
+    this.registerEvent(
+      this.app.vault.on("modify", (file) => {
+        if (file instanceof import_obsidian8.TFile && file.extension === "canvas") {
+          refresh();
+        }
+      })
+    );
+    this.registerEvent(this.app.vault.on("rename", refresh));
+    this.app.workspace.onLayoutReady(refresh);
+  }
+  async refreshCanvasScope() {
+    const run = ++this.canvasScopeRun;
+    const scoped = /* @__PURE__ */ new Map();
+    for (const leaf2 of this.app.workspace.getLeavesOfType("canvas")) {
+      const view = leaf2.view;
+      const file = view.file;
+      if (!(file instanceof import_obsidian8.TFile) || !isGeneratedCanvasFile(file.path, (0, import_obsidian8.normalizePath)(this.settings.folder), this.settings.canvasManifest)) {
+        continue;
+      }
+      let doc = null;
+      try {
+        doc = parseGeneratedCanvas(await this.app.vault.cachedRead(file));
+      } catch (e) {
+        doc = null;
+      }
+      if (doc) {
+        scoped.set(view.containerEl, doc);
+      }
+    }
+    if (run !== this.canvasScopeRun) {
+      return;
+    }
+    this.canvasCss.retainOnly(new Set(scoped.keys()));
+    scoped.forEach((doc, el) => this.canvasCss.attach(el, doc));
   }
 };

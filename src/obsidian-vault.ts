@@ -1,13 +1,17 @@
-import { normalizePath, type TAbstractFile, type Vault } from "obsidian";
-import type { VaultWriter } from "./sync-apply";
+import { normalizePath, TFolder, type FileManager, type TAbstractFile, type Vault } from "obsidian";
+import type { FigureVault } from "./figures";
 import { isAllowedVaultPath } from "./payload-guard";
 
 /**
- * Obsidian vault writes: `.md` / `.canvas` only, atomic replace so a
- * failed write leaves the previous file. Never `createBinary`.
+ * Obsidian vault writes: `.md` / `.canvas` text with atomic replace so a
+ * failed write leaves the previous file, plus figure `.png` images (the only
+ * binary the plugin ever writes; never a PDF).
  */
-export class ObsidianVaultWriter implements VaultWriter {
-  constructor(private readonly vault: Vault) {}
+export class ObsidianVaultWriter implements FigureVault {
+  constructor(
+    private readonly vault: Vault,
+    private readonly fileManager: FileManager,
+  ) {}
 
   async exists(path: string): Promise<boolean> {
     return this.vault.getAbstractFileByPath(normalizePath(path)) != null;
@@ -63,6 +67,32 @@ export class ObsidianVaultWriter implements VaultWriter {
     }
   }
 
+  async writeBinary(path: string, data: ArrayBuffer): Promise<void> {
+    const normalized = normalizePath(path);
+    if (!normalized.toLowerCase().endsWith(".png")) {
+      throw new Error("refusing to write a non-PNG binary");
+    }
+    const existing = this.vault.getAbstractFileByPath(normalized);
+    if (existing && "extension" in existing) {
+      await this.vault.modifyBinary(existing as never, data);
+    } else {
+      await this.vault.createBinary(normalized, data);
+    }
+  }
+
+  async rename(from: string, to: string): Promise<void> {
+    const file = this.vault.getAbstractFileByPath(normalizePath(from));
+    if (!file || !("extension" in file)) {
+      throw new Error("rename source is not a file");
+    }
+    await this.fileManager.renameFile(file, normalizePath(to));
+  }
+
+  async isEmptyFolder(path: string): Promise<boolean> {
+    const found = this.vault.getAbstractFileByPath(normalizePath(path));
+    return found instanceof TFolder && found.children.length === 0;
+  }
+
   async createFolder(path: string): Promise<void> {
     const normalized = normalizePath(path);
     const existing = this.vault.getAbstractFileByPath(normalized);
@@ -73,6 +103,26 @@ export class ObsidianVaultWriter implements VaultWriter {
       return;
     }
     await this.vault.createFolder(normalized);
+  }
+
+  async children(path: string): Promise<string[] | null> {
+    const found = this.vault.getAbstractFileByPath(normalizePath(path));
+    if (!(found instanceof TFolder)) {
+      return null;
+    }
+    return found.children.map((child) => child.path);
+  }
+
+  /** Moves to the user's configured trash (respects their deletion setting). */
+  async remove(path: string): Promise<void> {
+    const found = this.vault.getAbstractFileByPath(normalizePath(path));
+    if (!found) {
+      return;
+    }
+    if (found instanceof TFolder && found.children.length > 0) {
+      throw new Error("folder is not empty");
+    }
+    await this.fileManager.trashFile(found);
   }
 }
 

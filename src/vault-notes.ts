@@ -1,6 +1,6 @@
-import { PLUGIN_COPY } from "./copy";
-import type { SyncGlossaryTerm, SyncPaper } from "./types";
-import { openPdfProtocolUrl } from "./urls";
+import { figureHeading, figureOpenPageLink, PLUGIN_COPY } from "./copy";
+import type { PlacedFigure, SyncGlossaryTerm, SyncPaper } from "./types";
+import { DEFAULT_BASE_URL, openPdfProtocolUrl, readerPageUrl } from "./urls";
 
 // eslint-disable-next-line no-control-regex -- Windows rejects control characters in filenames, and paper titles reach us straight from PDF metadata.
 const WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001f]/g;
@@ -15,6 +15,15 @@ export function sanitizeFilename(raw: string): string {
     name = name.slice(0, 80).trim();
   }
   return name;
+}
+
+/**
+ * Folder name for a paper's figure images: the title's first three words,
+ * through `sanitizeFilename`. Mirrored in `src/lib/obsidian/filenames.ts`.
+ */
+export function shortTitle(raw: string): string {
+  const words = raw.trim().split(/\s+/).filter(Boolean).slice(0, 3);
+  return sanitizeFilename(words.join(" "));
 }
 
 export function uniqueBasename(
@@ -101,6 +110,8 @@ export function glossaryNoteMarkdown(term: SyncGlossaryTerm): string {
 export function paperStubMarkdown(
   paper: SyncPaper,
   linkedTerms: Array<{ term: string; path: string }>,
+  figures: PlacedFigure[] = [],
+  baseUrl: string = DEFAULT_BASE_URL,
 ): string {
   const title = paper.title.trim() || PLUGIN_COPY.pickerUntitled;
   const open = PLUGIN_COPY.notePaperOpenPdf;
@@ -120,8 +131,52 @@ export function paperStubMarkdown(
     }) +
     `\n# ${title}\n\n` +
     `[${open}](${protocol})\n` +
-    links
+    links +
+    figuresSectionMarkdown(paper.id, figures, baseUrl)
   );
+}
+
+function compareFigures(a: PlacedFigure, b: PlacedFigure): number {
+  if (a.figure.page_number !== b.figure.page_number) {
+    return a.figure.page_number - b.figure.page_number;
+  }
+  return a.figure.id < b.figure.id ? -1 : a.figure.id > b.figure.id ? 1 : 0;
+}
+
+/**
+ * "## Figures": one block per figure, ordered by page then id so a re-sync
+ * of unchanged data writes identical bytes. Empty string when the paper has
+ * no figures, so the section disappears with its last figure.
+ */
+export function figuresSectionMarkdown(
+  paperId: string,
+  figures: PlacedFigure[],
+  baseUrl: string = DEFAULT_BASE_URL,
+): string {
+  if (figures.length === 0) {
+    return "";
+  }
+  const blocks = [...figures].sort(compareFigures).map(({ figure, path }) => {
+    const page = figure.page_number;
+    const label = figure.label?.trim() || null;
+    const parts = [
+      `### ${figureHeading(page, label)}`,
+      `![[${path}]]`,
+    ];
+    const caption = figure.caption?.replace(/\s+/g, " ").trim();
+    if (caption) {
+      parts.push(`**${PLUGIN_COPY.noteFigureCaption}:** ${caption}`);
+    }
+    const note = figure.note?.trim();
+    if (note) {
+      parts.push(`**${PLUGIN_COPY.noteFigureNote}:** ${note}`);
+    }
+    parts.push(
+      `[${figureOpenPageLink(page)}](${readerPageUrl(baseUrl, paperId, page)})`,
+    );
+    return parts.join("\n\n");
+  });
+  return `\n## ${PLUGIN_COPY.noteFiguresHeading}\n\n${blocks.join("\n\n")}\n`;
 }
 
 export function emptyIndexMarkdown(): string {
@@ -131,10 +186,6 @@ export function emptyIndexMarkdown(): string {
       source: "paper.college",
     }) + `\n# Glossary\n\n${PLUGIN_COPY.noteFolderEmpty}\n`
   );
-}
-
-export function canvasFileContents(mindmap: unknown): string {
-  return `${JSON.stringify(mindmap, null, 2)}\n`;
 }
 
 function wikilinkTarget(relativePath: string): string {
