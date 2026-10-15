@@ -1,4 +1,5 @@
 import {
+  ItemView,
   normalizePath,
   Notice,
   Plugin,
@@ -15,6 +16,7 @@ import { activePreset, migratePresetStore, type PresetStore } from "./canvas/sto
 import { migrateSettings } from "./settings-data";
 import type { CanvasPreset, GeneratedCanvas } from "./canvas/types";
 import { paperIdFromCanvasEvent } from "./canvas-open";
+import { CanvasZoom, isZoomClaimed } from "./canvas-zoom";
 import {
   formatRelativeTime,
   PLUGIN_COPY,
@@ -162,6 +164,7 @@ export default class PaperPlugin extends Plugin {
     this.addSettingTab(new PaperSettingTab(this.app, this));
     this.registerCanvasHandlers();
     this.registerCanvasScope();
+    this.registerCanvasZoom();
     this.registerMarkdownPdfLinks();
 
     this.app.workspace.onLayoutReady(() => {
@@ -637,6 +640,11 @@ export default class PaperPlugin extends Plugin {
 
   private registerCanvasHandlers(): void {
     const activate = async (event: Event) => {
+      // Double-click zoom-focus (canvas-zoom.ts) took this event: a paper card
+      // on a generated canvas zooms instead of opening its PDF.
+      if (isZoomClaimed(event)) {
+        return;
+      }
       const canvasLeaves = this.app.workspace.getLeavesOfType("canvas");
       for (const canvasLeaf of canvasLeaves) {
         const view = canvasLeaf.view as unknown as {
@@ -690,6 +698,22 @@ export default class PaperPlugin extends Plugin {
         }
       }),
     );
+  }
+
+  /**
+   * Double-click zoom-focus + Esc zoom-out on Paper's generated canvases.
+   */
+  private registerCanvasZoom(): void {
+    new CanvasZoom(this, {
+      animate: () => this.settings.animateCanvasZoom,
+      isGenerated: (path) =>
+        isGeneratedCanvasFile(path, normalizePath(this.settings.folder), this.settings.canvasManifest),
+      folder: () => normalizePath(this.settings.folder),
+      activeCanvasView: () => {
+        const view = this.app.workspace.getActiveViewOfType(ItemView);
+        return view?.getViewType() === "canvas" ? view : null;
+      },
+    }).register();
   }
 
   /**

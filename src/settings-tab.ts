@@ -137,6 +137,17 @@ export class PaperSettingTab extends PluginSettingTab {
 
     this.canvasSection.render(containerEl.createDiv());
 
+    new Setting(containerEl)
+      .setName(PLUGIN_COPY.canvasZoomAnimate)
+      .setDesc(PLUGIN_COPY.canvasZoomAnimateHelp)
+      .addToggle((toggle) => {
+        toggle.setValue(settings.animateCanvasZoom);
+        toggle.onChange(async (value) => {
+          this.plugin.settings.animateCanvasZoom = value;
+          await this.plugin.saveSettings();
+        });
+      });
+
     new Setting(containerEl).setName(PLUGIN_COPY.pdfTitle).setHeading();
     containerEl.createEl("p", {
       cls: "paper-setting-note",

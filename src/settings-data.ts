@@ -19,6 +19,8 @@ export function migrateSettings(stored: unknown): PaperPluginSettings {
         ? normalizeSyncPayload(raw.lastPayload)
         : null,
     canvasManifest: normalizeManifest(raw.canvasManifest),
+    animateCanvasZoom:
+      typeof raw.animateCanvasZoom === "boolean" ? raw.animateCanvasZoom : DEFAULT_SETTINGS.animateCanvasZoom,
   };
 }
 

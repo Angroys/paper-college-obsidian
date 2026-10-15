@@ -3529,8 +3529,8 @@ var init_pdf = __esm({
             break;
         }
       }
-      setEditingState(isEditing) {
-        if (isEditing) {
+      setEditingState(isEditing2) {
+        if (isEditing2) {
           __privateMethod(this, _AnnotationEditorUIManager_instances, addFocusManager_fn).call(this);
           __privateMethod(this, _AnnotationEditorUIManager_instances, addCopyPasteListeners_fn).call(this);
           __privateMethod(this, _AnnotationEditorUIManager_instances, dispatchUpdateStates_fn).call(this, {
@@ -11985,11 +11985,11 @@ var init_pdf = __esm({
         annotationCanvasMap = null,
         pageColors = null,
         printAnnotationStorage = null,
-        isEditing = false
+        isEditing: isEditing2 = false
       }) {
         var _a2, _b;
         (_a2 = this._stats) == null ? void 0 : _a2.time("Overall");
-        const intentArgs = this._transport.getRenderingIntent(intent, annotationMode, printAnnotationStorage, isEditing);
+        const intentArgs = this._transport.getRenderingIntent(intent, annotationMode, printAnnotationStorage, isEditing2);
         const {
           renderingIntent,
           cacheKey
@@ -12085,7 +12085,7 @@ var init_pdf = __esm({
         intent = "display",
         annotationMode = AnnotationMode.ENABLE,
         printAnnotationStorage = null,
-        isEditing = false
+        isEditing: isEditing2 = false
       } = {}) {
         var _a2;
         function operatorListChanged() {
@@ -12094,7 +12094,7 @@ var init_pdf = __esm({
             intentState.renderTasks.delete(opListTask);
           }
         }
-        const intentArgs = this._transport.getRenderingIntent(intent, annotationMode, printAnnotationStorage, isEditing, true);
+        const intentArgs = this._transport.getRenderingIntent(intent, annotationMode, printAnnotationStorage, isEditing2, true);
         let intentState = this._intentStates.get(intentArgs.cacheKey);
         if (!intentState) {
           intentState = /* @__PURE__ */ Object.create(null);
@@ -12663,7 +12663,7 @@ var init_pdf = __esm({
       get annotationStorage() {
         return shadow(this, "annotationStorage", new AnnotationStorage());
       }
-      getRenderingIntent(intent, annotationMode = AnnotationMode.ENABLE, printAnnotationStorage = null, isEditing = false, isOpList = false) {
+      getRenderingIntent(intent, annotationMode = AnnotationMode.ENABLE, printAnnotationStorage = null, isEditing2 = false, isOpList = false) {
         let renderingIntent = RenderingIntentFlag.DISPLAY;
         let annotationStorageSerializable = SerializableEmpty;
         switch (intent) {
@@ -12695,7 +12695,7 @@ var init_pdf = __esm({
           default:
             warn(`getRenderingIntent - invalid annotationMode: ${annotationMode}`);
         }
-        if (isEditing) {
+        if (isEditing2) {
           renderingIntent += RenderingIntentFlag.IS_EDITING;
         }
         if (isOpList) {
@@ -21128,8 +21128,8 @@ var init_pdf = __esm({
         var _a2;
         return textLayer === ((_a2 = __privateGet(this, _textLayer)) == null ? void 0 : _a2.div);
       }
-      setEditingState(isEditing) {
-        __privateGet(this, _uiManager3).setEditingState(isEditing);
+      setEditingState(isEditing2) {
+        __privateGet(this, _uiManager3).setEditingState(isEditing2);
       }
       addCommands(params) {
         __privateGet(this, _uiManager3).addCommands(params);
@@ -22330,6 +22330,8 @@ var PLUGIN_COPY = {
   syncStartup: "Sync on startup",
   syncDisabledHelp: "Connect this vault before you sync.",
   overwriteDisclosure: "On sync, Paper replaces files it created in this folder. Your other notes are left alone.",
+  canvasZoomAnimate: "Animate canvas zoom",
+  canvasZoomAnimateHelp: "Double-click a project or paper on a Paper canvas to zoom to it. Press Esc to zoom back out. Turn this off to jump instead of animating.",
   pdfTitle: "PDF",
   pdfPolicy: "Papers open through Paper. The PDF is not saved to this vault or to your computer.",
   siteUrlTitle: "Paper URL",
@@ -25031,7 +25033,8 @@ var DEFAULT_SETTINGS = {
   figureFolders: [],
   canvasPresets: defaultPresetStore(),
   lastPayload: null,
-  canvasManifest: null
+  canvasManifest: null,
+  animateCanvasZoom: true
 };
 
 // src/settings-data.ts
@@ -25042,7 +25045,8 @@ function migrateSettings(stored) {
     ...raw,
     canvasPresets: migratePresetStore(raw.canvasPresets),
     lastPayload: raw.lastPayload && typeof raw.lastPayload === "object" ? normalizeSyncPayload(raw.lastPayload) : null,
-    canvasManifest: normalizeManifest(raw.canvasManifest)
+    canvasManifest: normalizeManifest(raw.canvasManifest),
+    animateCanvasZoom: typeof raw.animateCanvasZoom === "boolean" ? raw.animateCanvasZoom : DEFAULT_SETTINGS.animateCanvasZoom
   };
 }
 function normalizeManifest(raw) {
@@ -25128,6 +25132,469 @@ function nodeFromDocument(doc, nodeId) {
       node && typeof node === "object" && "id" in node && node.id === nodeId
     );
   });
+}
+
+// src/canvas-zoom-logic.ts
+var ZoomStack = class {
+  constructor() {
+    this.items = [];
+  }
+  get depth() {
+    return this.items.length;
+  }
+  push(viewport) {
+    this.items.push({ x: viewport.x, y: viewport.y, zoom: viewport.zoom });
+  }
+  /** The viewport to return to, or null when nothing is zoomed. */
+  pop() {
+    var _a2;
+    return (_a2 = this.items.pop()) != null ? _a2 : null;
+  }
+  peek() {
+    const top = this.items[this.items.length - 1];
+    return top ? { ...top } : null;
+  }
+  reset() {
+    this.items.length = 0;
+  }
+};
+var VIEWPORT_EPSILON = { position: 0.5, zoom: 1e-3 };
+function sameViewport(a, b) {
+  if (!a || !b) return false;
+  return Math.abs(a.x - b.x) <= VIEWPORT_EPSILON.position && Math.abs(a.y - b.y) <= VIEWPORT_EPSILON.position && Math.abs(a.zoom - b.zoom) <= VIEWPORT_EPSILON.zoom;
+}
+function viewportMovedSince(landed, current, target) {
+  if (!landed || !current) return false;
+  if (sameViewport(landed, current)) return false;
+  if (target && sameViewport(landed, target)) return false;
+  return true;
+}
+var DEFAULT_FIT = {
+  paddingPx: 48,
+  topBand: 0,
+  minZoom: -4,
+  maxZoom: 1
+};
+var GROUP_TOP_BAND = 40;
+function bboxFromRect(rect) {
+  return { minX: rect.x, minY: rect.y, maxX: rect.x + rect.width, maxY: rect.y + rect.height };
+}
+function withTopBand(bbox, top) {
+  return { ...bbox, minY: bbox.minY - Math.max(0, top) };
+}
+function clamp2(value, lo, hi) {
+  return Math.min(hi, Math.max(lo, value));
+}
+function fitViewport(bbox, view, options = {}) {
+  const opts = { ...DEFAULT_FIT, ...options };
+  const box = withTopBand(bbox, opts.topBand);
+  const bw = box.maxX - box.minX;
+  const bh = box.maxY - box.minY;
+  if (![box.minX, box.minY, box.maxX, box.maxY, view.width, view.height].every(Number.isFinite) || bw <= 0 || bh <= 0 || view.width <= 0 || view.height <= 0) {
+    return null;
+  }
+  const padX = Math.min(Math.max(0, opts.paddingPx), view.width / 4);
+  const padY = Math.min(Math.max(0, opts.paddingPx), view.height / 4);
+  const scale = Math.min((view.width - 2 * padX) / bw, (view.height - 2 * padY) / bh);
+  return {
+    x: (box.minX + box.maxX) / 2,
+    y: (box.minY + box.maxY) / 2,
+    zoom: clamp2(Math.log2(scale), opts.minZoom, opts.maxZoom)
+  };
+}
+function zoomNodeKind(data, domKind2, folder) {
+  const record = data && typeof data === "object" ? data : {};
+  const meta = record.paperCollege && typeof record.paperCollege === "object" ? record.paperCollege : {};
+  if (record.type === "group" || meta.kind === "group") return "group";
+  if (meta.kind === "paper" || domKind2 === "paper") return "paper-card";
+  if (meta.kind || domKind2) return "other";
+  if (typeof record.file === "string" && folder !== void 0) {
+    const rel = folderRelativePath(record.file, folder);
+    if (rel !== null && kindForFilePath(rel) === "paper") return "paper-card";
+  }
+  if (paperIdFromCanvasNode(record)) return "paper-card";
+  return "other";
+}
+function escapeDecision(ctx) {
+  if (!ctx.generated || ctx.editing || ctx.overlayOpen || ctx.modifiers) return "passthrough";
+  return ctx.depth > 0 ? "zoom-out" : "passthrough";
+}
+var ZOOM_ANIMATION_MS = 300;
+function easeInOutCubic(t) {
+  const p = clamp2(t, 0, 1);
+  return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+}
+function interpolateViewport(from, to, t) {
+  const p = clamp2(t, 0, 1);
+  return {
+    x: from.x + (to.x - from.x) * p,
+    y: from.y + (to.y - from.y) * p,
+    zoom: from.zoom + (to.zoom - from.zoom) * p
+  };
+}
+function animationFrameAt(from, to, elapsedMs, durationMs = ZOOM_ANIMATION_MS) {
+  if (durationMs <= 0 || elapsedMs >= durationMs) return { ...to };
+  return interpolateViewport(from, to, easeInOutCubic(Math.max(0, elapsedMs) / durationMs));
+}
+function shouldAnimate(settingOn, prefersReducedMotion) {
+  return settingOn && !prefersReducedMotion;
+}
+var DOUBLE_PRESS_MS = 500;
+function isRepeatPress(previous, target, time, windowMs = DOUBLE_PRESS_MS) {
+  if (!previous || target === null || previous.target !== target) return false;
+  const gap = time - previous.time;
+  return gap >= 0 && gap <= windowMs;
+}
+
+// src/canvas-zoom.ts
+function windowOf(el) {
+  var _a2, _b;
+  return (_b = (_a2 = el.ownerDocument) == null ? void 0 : _a2.defaultView) != null ? _b : window;
+}
+var claimedEvents = /* @__PURE__ */ new WeakSet();
+function isZoomClaimed(event) {
+  return claimedEvents.has(event);
+}
+var NODE_SELECTOR2 = ".canvas-node";
+var OVERLAY_SELECTOR = ".modal-container, .menu, .suggestion-container";
+var CanvasZoom = class {
+  constructor(plugin, options) {
+    this.plugin = plugin;
+    this.options = options;
+    this.states = /* @__PURE__ */ new Map();
+    this.hookedEls = /* @__PURE__ */ new WeakSet();
+    this.hookedWins = /* @__PURE__ */ new WeakSet();
+    this.lastPress = null;
+  }
+  register() {
+    const { workspace } = this.plugin.app;
+    const sync = () => this.syncViews();
+    this.plugin.registerEvent(workspace.on("layout-change", sync));
+    this.plugin.registerEvent(workspace.on("file-open", sync));
+    this.plugin.registerEvent(workspace.on("active-leaf-change", sync));
+    workspace.onLayoutReady(sync);
+    this.plugin.register(() => {
+      this.states.forEach((state) => this.cancelAnimation(state));
+      this.states.clear();
+    });
+  }
+  // --- View bookkeeping ---------------------------------------------------------------
+  canvasViews() {
+    return this.plugin.app.workspace.getLeavesOfType("canvas").map((leaf2) => leaf2.view).filter((view) => Boolean(view == null ? void 0 : view.containerEl));
+  }
+  /** Hooks new canvas views; resets stacks whose view closed or switched file. */
+  syncViews() {
+    const live = new Set(this.canvasViews());
+    this.states.forEach((state, view) => {
+      var _a2, _b;
+      if (!live.has(view)) {
+        this.cancelAnimation(state);
+        this.states.delete(view);
+      } else if (((_b = (_a2 = view.file) == null ? void 0 : _a2.path) != null ? _b : null) !== state.path) {
+        this.resetState(state, view);
+      }
+    });
+    live.forEach((view) => this.hook(view));
+  }
+  hook(view) {
+    const el = view.containerEl;
+    if (!this.hookedEls.has(el)) {
+      this.hookedEls.add(el);
+      this.plugin.registerDomEvent(el, "dblclick", (ev) => this.onDoubleClick(view, ev), { capture: true });
+      this.plugin.registerDomEvent(el, "pointerdown", (ev) => this.onPress(view, ev), { capture: true });
+      this.plugin.registerDomEvent(el, "mousedown", (ev) => this.onPress(view, ev), { capture: true });
+      this.plugin.registerDomEvent(el, "wheel", () => this.onWheel(view), { capture: true, passive: true });
+    }
+    const win = windowOf(el);
+    if (!this.hookedWins.has(win)) {
+      this.hookedWins.add(win);
+      this.plugin.registerDomEvent(win, "keydown", (ev) => this.onKeyDown(ev), { capture: true });
+    }
+  }
+  state(view) {
+    var _a2, _b;
+    let state = this.states.get(view);
+    const path = (_b = (_a2 = view.file) == null ? void 0 : _a2.path) != null ? _b : null;
+    if (!state) {
+      state = { stack: new ZoomStack(), landed: null, path, anim: null };
+      this.states.set(view, state);
+    } else if (state.path !== path) {
+      this.resetState(state, view);
+    }
+    return state;
+  }
+  resetState(state, view) {
+    var _a2, _b;
+    this.cancelAnimation(state);
+    state.stack.reset();
+    state.landed = null;
+    state.path = (_b = (_a2 = view.file) == null ? void 0 : _a2.path) != null ? _b : null;
+  }
+  isGeneratedView(view) {
+    var _a2;
+    const path = (_a2 = view.file) == null ? void 0 : _a2.path;
+    return typeof path === "string" && this.options.isGenerated(path);
+  }
+  /** Drops the stack when the user moved the view since the plugin landed it. */
+  dropIfMoved(state, canvas) {
+    if (state.anim) return;
+    if (viewportMovedSince(state.landed, readViewport(canvas), readTarget(canvas))) {
+      state.stack.reset();
+      state.landed = null;
+    }
+  }
+  // --- Events -------------------------------------------------------------------------
+  onDoubleClick(view, ev) {
+    var _a2;
+    if (ev.button !== 0 || claimedEvents.has(ev)) return;
+    const hit = this.zoomTarget(view, ev.target);
+    if (!hit) return;
+    claimedEvents.add(ev);
+    ev.preventDefault();
+    ev.stopPropagation();
+    const canvas = hit.canvas;
+    const state = this.state(view);
+    this.dropIfMoved(state, canvas);
+    const current = state.anim ? state.anim.to : readViewport(canvas);
+    if (!current) return;
+    const fit = fitViewport(hit.bbox, viewSize(view, canvas), {
+      topBand: hit.kind === "group" ? GROUP_TOP_BAND : 0
+    });
+    if (fit) {
+      if (sameViewport(fit, current)) return;
+      state.stack.push(current);
+      this.flyTo(view, state, canvas, fit);
+    } else if (typeof canvas.zoomToBbox === "function") {
+      state.stack.push(current);
+      this.cancelAnimation(state);
+      canvas.zoomToBbox(hit.bbox);
+      state.landed = (_a2 = readTarget(canvas)) != null ? _a2 : readViewport(canvas);
+    }
+  }
+  /**
+   * Second press of a double-click on a zoomable node: hidden from Obsidian
+   * so a press-count based edit trigger cannot fire. Any press during an
+   * animation snaps it to its end so the stack stays exact.
+   */
+  onPress(view, ev) {
+    const state = this.states.get(view);
+    if (state == null ? void 0 : state.anim) this.finishAnimation(view, state);
+    if (ev.button !== 0) return;
+    let second = ev.detail >= 2;
+    if (ev.type === "pointerdown") {
+      const nodeEl = ev.target instanceof Element ? ev.target.closest(NODE_SELECTOR2) : null;
+      second = second || isRepeatPress(this.lastPress, nodeEl, ev.timeStamp);
+      this.lastPress = { target: nodeEl, time: ev.timeStamp };
+    }
+    if (second && this.zoomTarget(view, ev.target)) {
+      ev.stopPropagation();
+    }
+  }
+  /** Wheel during an animation: the user took over; drop the stack. */
+  onWheel(view) {
+    const state = this.states.get(view);
+    if (!(state == null ? void 0 : state.anim)) return;
+    this.cancelAnimation(state);
+    state.stack.reset();
+    state.landed = null;
+  }
+  onKeyDown(ev) {
+    var _a2, _b, _c, _d;
+    if (ev.key !== "Escape" || ev.defaultPrevented || ev.isComposing) return;
+    const view = this.activeCanvasView();
+    if (!(view == null ? void 0 : view.canvas)) return;
+    const win = windowOf(view.containerEl);
+    if (ev.view && ev.view !== win) return;
+    const state = this.states.get(view);
+    if (!state) return;
+    if (((_b = (_a2 = view.file) == null ? void 0 : _a2.path) != null ? _b : null) !== state.path) {
+      this.resetState(state, view);
+      return;
+    }
+    const canvas = view.canvas;
+    this.dropIfMoved(state, canvas);
+    const doc = (_c = view.containerEl.ownerDocument) != null ? _c : win.document;
+    const decision = escapeDecision({
+      depth: state.stack.depth,
+      generated: this.isGeneratedView(view),
+      editing: isEditing(doc, canvas),
+      overlayOpen: Boolean((_d = doc.body) == null ? void 0 : _d.querySelector(OVERLAY_SELECTOR)),
+      modifiers: ev.ctrlKey || ev.metaKey || ev.altKey || ev.shiftKey
+    });
+    if (decision !== "zoom-out") return;
+    const back = state.stack.pop();
+    if (!back) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.flyTo(view, state, canvas, back);
+  }
+  activeCanvasView() {
+    const active = this.options.activeCanvasView();
+    if (!active || typeof active !== "object") return null;
+    const view = active;
+    return view.containerEl ? view : null;
+  }
+  // --- Hit testing --------------------------------------------------------------------
+  zoomTarget(view, target) {
+    if (!(target instanceof Element)) return null;
+    const canvas = view.canvas;
+    if (!canvas || !hasViewportApi(canvas) || !this.isGeneratedView(view)) return null;
+    if (target.closest("a, input, textarea, select, [contenteditable='true'], .cm-editor, .is-editing")) {
+      return null;
+    }
+    const nodeEl = target.closest(NODE_SELECTOR2);
+    if (!nodeEl) return null;
+    const node = liveNodeForElement(canvas, nodeEl);
+    if (!node || node.isEditing) return null;
+    const kind = zoomNodeKind(nodeData(node), domKind(nodeEl), this.options.folder());
+    if (kind === "other") return null;
+    const bbox = nodeBBox(node);
+    if (!bbox) return null;
+    return { canvas, bbox, kind };
+  }
+  // --- Animation ----------------------------------------------------------------------
+  flyTo(view, state, canvas, to) {
+    var _a2;
+    this.cancelAnimation(state);
+    const win = windowOf(view.containerEl);
+    const from = readViewport(canvas);
+    const reduced = Boolean((_a2 = win.matchMedia) == null ? void 0 : _a2.call(win, "(prefers-reduced-motion: reduce)").matches);
+    if (!from || !shouldAnimate(this.options.animate(), reduced) || typeof win.requestAnimationFrame !== "function") {
+      this.land(state, canvas, to);
+      return;
+    }
+    let start = null;
+    const step = (now) => {
+      if (state.anim !== anim) return;
+      if (start === null) start = now;
+      const elapsed = now - start;
+      if (elapsed >= ZOOM_ANIMATION_MS) {
+        state.anim = null;
+        this.land(state, canvas, to);
+        return;
+      }
+      applyViewport(canvas, animationFrameAt(from, to, elapsed));
+      anim.frame = win.requestAnimationFrame(step);
+    };
+    const anim = { frame: 0, win, to };
+    state.anim = anim;
+    anim.frame = win.requestAnimationFrame(step);
+  }
+  land(state, canvas, to) {
+    var _a2, _b;
+    applyViewport(canvas, to);
+    state.landed = (_b = (_a2 = readTarget(canvas)) != null ? _a2 : readViewport(canvas)) != null ? _b : to;
+  }
+  finishAnimation(view, state) {
+    const anim = state.anim;
+    if (!anim || !view.canvas) return;
+    this.cancelAnimation(state);
+    this.land(state, view.canvas, anim.to);
+  }
+  cancelAnimation(state) {
+    var _a2, _b;
+    const anim = state.anim;
+    if (!anim) return;
+    state.anim = null;
+    (_b = (_a2 = anim.win).cancelAnimationFrame) == null ? void 0 : _b.call(_a2, anim.frame);
+  }
+};
+function num2(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+function hasViewportApi(canvas) {
+  return num2(canvas.x) && num2(canvas.y) && num2(canvas.zoom) && (typeof canvas.setViewport === "function" || typeof canvas.markViewportChanged === "function");
+}
+function readViewport(canvas) {
+  return num2(canvas.x) && num2(canvas.y) && num2(canvas.zoom) ? { x: canvas.x, y: canvas.y, zoom: canvas.zoom } : null;
+}
+function readTarget(canvas) {
+  return num2(canvas.tx) && num2(canvas.ty) && num2(canvas.tZoom) ? { x: canvas.tx, y: canvas.ty, zoom: canvas.tZoom } : null;
+}
+function applyViewport(canvas, v) {
+  var _a2, _b, _c;
+  try {
+    (_a2 = canvas.setViewport) == null ? void 0 : _a2.call(canvas, v.x, v.y, v.zoom);
+  } catch (e) {
+  }
+  if (num2(canvas.x)) canvas.x = v.x;
+  if (num2(canvas.y)) canvas.y = v.y;
+  if (num2(canvas.zoom)) canvas.zoom = v.zoom;
+  if (num2(canvas.tx)) canvas.tx = v.x;
+  if (num2(canvas.ty)) canvas.ty = v.y;
+  if (num2(canvas.tZoom)) canvas.tZoom = v.zoom;
+  (_b = canvas.markViewportChanged) == null ? void 0 : _b.call(canvas);
+  (_c = canvas.requestFrame) == null ? void 0 : _c.call(canvas);
+}
+function viewSize(view, canvas) {
+  var _a2, _b;
+  const rect = (_b = (_a2 = canvas.wrapperEl) == null ? void 0 : _a2.getBoundingClientRect) == null ? void 0 : _b.call(_a2);
+  if (rect && rect.width > 0 && rect.height > 0) return { width: rect.width, height: rect.height };
+  const cached = canvas.canvasRect;
+  if (cached && num2(cached.width) && num2(cached.height) && cached.width > 0 && cached.height > 0) {
+    return { width: cached.width, height: cached.height };
+  }
+  const own = view.containerEl.getBoundingClientRect();
+  return { width: own.width, height: own.height };
+}
+function liveNodes(canvas) {
+  const nodes = canvas.nodes;
+  if (!nodes) return [];
+  return nodes instanceof Map ? Array.from(nodes.values()) : Object.values(nodes);
+}
+function liveNodeForElement(canvas, nodeEl) {
+  for (const node of liveNodes(canvas)) {
+    if (node && typeof node === "object" && node.nodeEl === nodeEl) {
+      return node;
+    }
+  }
+  const id = nodeEl.getAttribute("data-node-id") || nodeEl.getAttribute("data-id");
+  if (!id || !canvas.nodes) return null;
+  const byId2 = canvas.nodes instanceof Map ? canvas.nodes.get(id) : canvas.nodes[id];
+  return byId2 && typeof byId2 === "object" ? byId2 : null;
+}
+function nodeData(node) {
+  var _a2, _b;
+  let data = null;
+  try {
+    data = (_a2 = node.getData) == null ? void 0 : _a2.call(node);
+  } catch (e) {
+    data = null;
+  }
+  const base = data && typeof data === "object" ? data : {};
+  const extra = node.unknownData && typeof node.unknownData === "object" ? node.unknownData : {};
+  return { ...extra, ...base, paperCollege: (_b = base.paperCollege) != null ? _b : extra.paperCollege };
+}
+function domKind(nodeEl) {
+  var _a2;
+  return nodeEl.getAttribute(KIND_MARKER_ATTR) || ((_a2 = nodeEl.querySelector(`.${KIND_MARKER_CLASS}[${KIND_MARKER_ATTR}]`)) == null ? void 0 : _a2.getAttribute(KIND_MARKER_ATTR)) || null;
+}
+function nodeBBox(node) {
+  var _a2;
+  try {
+    const b = (_a2 = node.getBBox) == null ? void 0 : _a2.call(node);
+    if (b && num2(b.minX) && num2(b.minY) && num2(b.maxX) && num2(b.maxY)) {
+      return { minX: b.minX, minY: b.minY, maxX: b.maxX, maxY: b.maxY };
+    }
+  } catch (e) {
+  }
+  if (num2(node.x) && num2(node.y) && num2(node.width) && num2(node.height)) {
+    return bboxFromRect({ x: node.x, y: node.y, width: node.width, height: node.height });
+  }
+  return null;
+}
+function isEditing(doc, canvas) {
+  const active = doc.activeElement;
+  if (active instanceof HTMLElement) {
+    if (active.isContentEditable) return true;
+    if (active.closest("input, textarea, select, .cm-editor")) return true;
+  }
+  if (canvas.selection instanceof Set) {
+    for (const node of Array.from(canvas.selection)) {
+      if (node && typeof node === "object" && node.isEditing) return true;
+    }
+  }
+  return false;
 }
 
 // src/payload-guard.ts
@@ -27329,6 +27796,13 @@ var PaperSettingTab = class extends import_obsidian7.PluginSettingTab {
       text: PLUGIN_COPY.overwriteDisclosure
     });
     this.canvasSection.render(containerEl.createDiv());
+    new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.canvasZoomAnimate).setDesc(PLUGIN_COPY.canvasZoomAnimateHelp).addToggle((toggle) => {
+      toggle.setValue(settings.animateCanvasZoom);
+      toggle.onChange(async (value) => {
+        this.plugin.settings.animateCanvasZoom = value;
+        await this.plugin.saveSettings();
+      });
+    });
     new import_obsidian7.Setting(containerEl).setName(PLUGIN_COPY.pdfTitle).setHeading();
     containerEl.createEl("p", {
       cls: "paper-setting-note",
@@ -27449,6 +27923,7 @@ var PaperPlugin = class extends import_obsidian8.Plugin {
     this.addSettingTab(new PaperSettingTab(this.app, this));
     this.registerCanvasHandlers();
     this.registerCanvasScope();
+    this.registerCanvasZoom();
     this.registerMarkdownPdfLinks();
     this.app.workspace.onLayoutReady(() => {
       if (!this.settings.firstRunDismissed) {
@@ -27854,6 +28329,9 @@ var PaperPlugin = class extends import_obsidian8.Plugin {
   registerCanvasHandlers() {
     const activate = async (event) => {
       var _a2, _b;
+      if (isZoomClaimed(event)) {
+        return;
+      }
       const canvasLeaves = this.app.workspace.getLeavesOfType("canvas");
       for (const canvasLeaf of canvasLeaves) {
         const view = canvasLeaf.view;
@@ -27902,6 +28380,20 @@ var PaperPlugin = class extends import_obsidian8.Plugin {
         }
       })
     );
+  }
+  /**
+   * Double-click zoom-focus + Esc zoom-out on Paper's generated canvases.
+   */
+  registerCanvasZoom() {
+    new CanvasZoom(this, {
+      animate: () => this.settings.animateCanvasZoom,
+      isGenerated: (path) => isGeneratedCanvasFile(path, (0, import_obsidian8.normalizePath)(this.settings.folder), this.settings.canvasManifest),
+      folder: () => (0, import_obsidian8.normalizePath)(this.settings.folder),
+      activeCanvasView: () => {
+        const view = this.app.workspace.getActiveViewOfType(import_obsidian8.ItemView);
+        return (view == null ? void 0 : view.getViewType()) === "canvas" ? view : null;
+      }
+    }).register();
   }
   /**
    * Scoped preset CSS: while one of Paper's generated canvases is open, its

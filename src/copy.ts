@@ -56,6 +56,10 @@ export const PLUGIN_COPY = {
   overwriteDisclosure:
     "On sync, Paper replaces files it created in this folder. Your other notes are left alone.",
 
+  canvasZoomAnimate: "Animate canvas zoom",
+  canvasZoomAnimateHelp:
+    "Double-click a project or paper on a Paper canvas to zoom to it. Press Esc to zoom back out. Turn this off to jump instead of animating.",
+
   pdfTitle: "PDF",
   pdfPolicy:
     "Papers open through Paper. The PDF is not saved to this vault or to your computer.",

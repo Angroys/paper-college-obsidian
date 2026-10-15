@@ -110,6 +110,8 @@ export type PaperPluginSettings = {
   /** Last sync payload, so the settings preview works offline. */
   lastPayload: SyncPayload | null;
   canvasManifest: CanvasManifest | null;
+  /** Double-click zoom-focus on generated canvases animates (vs instant jump). */
+  animateCanvasZoom: boolean;
 };
 
 export const DEFAULT_SETTINGS: PaperPluginSettings = {
@@ -132,6 +134,7 @@ export const DEFAULT_SETTINGS: PaperPluginSettings = {
   canvasPresets: defaultPresetStore(),
   lastPayload: null,
   canvasManifest: null,
+  animateCanvasZoom: true,
 };
 
 export type PlannedWriteKind = "glossary" | "paper" | "canvas" | "index";
